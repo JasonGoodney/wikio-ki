@@ -1,5 +1,5 @@
 //
-//  DatabaseService+AddFriend.swift
+//  DatabaseService+Friend.swift
 //  picture
 //
 //  Created by Jason Goodney on 1/2/19.
@@ -10,7 +10,29 @@ import Foundation
 import FirebaseFirestore
 
 extension DatabaseService {
+    // MARK: - Fetches
+    func fetchBestFriends(for userUid: String = (UserController.shared.currentUser?.uid)!, completion: @escaping ([String]?, Error?) -> Void) {
+        Firestore.firestore()
+            .collection(Collection.users).document(userUid)
+            .collection(Collection.friends).whereField("isBestFriend", isEqualTo: true).getDocuments { (snapshot, error) in
+                if let error = error {
+                    print(error)
+                    completion(nil, error)
+                    return
+                }
+                
+                let docs = snapshot?.documents
+                var bestFriends: [String] = []
+                docs?.forEach({ (doc) in
+                    let dict = doc.data()
+                    guard let uid = dict.keys.first(where: { $0 != "isBestFriend" }) else { return }
+                    bestFriends.append(uid)
+                    completion(bestFriends, nil)
+                })
+        }
+    }
     
+    // MARK: - Actions
     func removeFriend(_ friend: User, completion: @escaping ErrorCompletion) {
         guard let currentUser = UserController.shared.currentUser else { return }
         
@@ -26,7 +48,6 @@ extension DatabaseService {
         }
         
         changeUserChat(isActive: false, between: currentUser, andFriend: friend)
-        
     }
 }
 

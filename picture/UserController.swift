@@ -16,15 +16,30 @@ class UserController: LoginFlowHandler {
     var currentUser: User?
     
     var blockedUids: [String] = []
+    
+    var bestFriendUids: [String] = []
+    
     var bestFriendsChats: [ChatWithFriend] {
-        return allChatsWithFriends.filter { $0.friend.isBestFriend }
+        get {
+            let bestFriends = allChatsWithFriends.filter { bestFriendUids.contains($0.friend.uid) }
+            
+            return bestFriends.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+                return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
+            })
+        }
     }
-//    var recentChatsWithFriends: [ChatWithFriend] {
-//        return allChatsWithFriends.filter {
-//            !bestFriendsChats.contains($0)
-//                && Date(timeIntervalSince1970: $0.lastChatUpdateTimestamp).isWithinThePast24Hours()
-//        }
-//    }
+    var recentChatsWithFriends: [ChatWithFriend] {
+        get {
+            let recents = allChatsWithFriends.filter {
+                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).isWithinThePast24Hours()
+                && !bestFriendUids.contains($0.friend.uid)
+            }
+            
+            return recents.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+                return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
+            })
+        }
+    }
     var allChatsWithFriends: [ChatWithFriend] = []
     
     func fetchCurrentUser(completion: @escaping (Bool) -> Void = { _ in }) {
@@ -54,6 +69,16 @@ class UserController: LoginFlowHandler {
                     }
                     
                     self.blockedUids = blocked ?? []
+                })
+                
+                dbs.fetchBestFriends(for: uid, completion: { (bestFriends, error) in
+                    if let error = error {
+                        print(error)
+                        completion(false)
+                        return
+                    }
+                    
+                    self.bestFriendUids = bestFriends ?? []
                 })
             } else {
                 print("uids do not match. did not fetch blocked users for \(self.currentUser!.uid)")

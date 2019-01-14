@@ -53,4 +53,18 @@ class DatabaseService {
             completion(nil)
         }
     }
+    
+    func updateDocument(_ document: DocumentReference, withFields fields: [String: Any], completion: @escaping ErrorCompletion) {
+        
+        document.setData(fields, merge: true) { (error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            
+            print("Updated fields for \(document.path)")
+            completion(nil)
+        }
+    }
 }

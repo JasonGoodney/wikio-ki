@@ -15,14 +15,14 @@ import SDWebImage
 
 class FriendsListViewController: UIViewController {
     
-    
+    //typealias ChatWithFriend = (friend: User, chat: Chat)
     
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
     
-    private let sectionHeaders = ["RECENTS", "MY FRIENDS"]
-    private var chatsWithFriends: [ChatWithFriend] = []
-    private var recentChatsWithFriends: [ChatWithFriend] = []
+    private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "MY FRIENDS"]
+    private let sectionHeaderHeight: CGFloat = 50
+//    private var chatsWithFriends: [ChatWithFriend] = []
     
     // MARK: - Subviews
     private var hud = JGProgressHUD(style: .dark)
@@ -128,22 +128,7 @@ class FriendsListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-//        if UserController.shared.currentUser == nil {
-//            UserController.shared.fetchCurrentUser { (success) in
-//                if success {
-//                    self.endRefresh()
-//
-//
-//                }
-//            }
-//        } else {
-//            if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
-//                DispatchQueue.main.async {
-//                    self.profileImageButton.sd_setImage(with: url, for: .normal)
-//                }
-//            }
-//        }
+
         if let tintColor = newConversationButton.tintColor, tintColor == .black && UserController.shared.currentUser != nil {
             Firestore.firestore()
                 .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
@@ -187,7 +172,7 @@ class FriendsListViewController: UIViewController {
                 return
             }
   
-            if self.chatsWithFriends.count == 0 {
+            if UserController.shared.allChatsWithFriends.count == 0 {
                 self.noFriendsLabel.isHidden = false
                 self.tableView.isHidden = true
                 
@@ -195,8 +180,8 @@ class FriendsListViewController: UIViewController {
                 self.noFriendsLabel.isHidden = true
                 self.tableView.isHidden = false
                 
-                self.chatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
-                    return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
+                UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+                    return chatWithFriend1.friend.username < chatWithFriend2.friend.username
                 })
 
                 print("Fetched Chat With Friends")
@@ -268,11 +253,20 @@ private extension FriendsListViewController {
 // MARK: - UITableViewDataSource
 extension FriendsListViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return sectionHeaders.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return chatsWithFriends.count
+        switch section {
+        case 0:
+            return UserController.shared.bestFriendsChats.count
+        case 1:
+            return UserController.shared.recentChatsWithFriends.count
+        case 2:
+            return UserController.shared.allChatsWithFriends.count
+        default:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -280,10 +274,21 @@ extension FriendsListViewController: UITableViewDataSource {
         
         var friend: User
         
-        friend = chatsWithFriends[indexPath.row].friend
+        switch indexPath.section {
+        case 0 where !UserController.shared.bestFriendsChats.isEmpty:
+            friend = UserController.shared.bestFriendsChats[indexPath.row].friend
+            cell.configure(with: friend)
+        case 1 where !UserController.shared.recentChatsWithFriends.isEmpty:
+            friend = UserController.shared.recentChatsWithFriends[indexPath.row].friend
+            cell.configure(with: friend)
+        case 2 where !UserController.shared.allChatsWithFriends.isEmpty:
+            friend = UserController.shared.allChatsWithFriends[indexPath.row].friend
+            cell.configure(with: friend)
+        default:
+            print("SECTION ERROR 🤶\(#function)")
+        }
         
         
-        cell.configure(with: friend)
         cell.delegate = self
         
         return cell
@@ -293,10 +298,24 @@ extension FriendsListViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension FriendsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let friend = chatsWithFriends[indexPath.row].friend
-        let chat = chatsWithFriends[indexPath.row].chat
-        
         let messagesViewController = MessagesViewController()
+        
+        var dataSource: [ChatWithFriend] = []
+        
+        switch indexPath.section {
+        case 0:
+            dataSource = UserController.shared.bestFriendsChats
+        case 1:
+            dataSource = UserController.shared.recentChatsWithFriends
+        case 2:
+            dataSource = UserController.shared.allChatsWithFriends
+        default:
+            print("SECTION ERROR 🤶\(#function)")
+        }
+        
+        let friend = dataSource[indexPath.row].friend
+        let chat = dataSource[indexPath.row].chat
+        
         messagesViewController.friend = friend
         messagesViewController.chat = chat
         navigationController?.pushViewController(messagesViewController, animated: true)
@@ -308,7 +327,7 @@ extension FriendsListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 50))
+        let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: sectionHeaderHeight))
         
         let label = UILabel()
         label.frame = headerView.frame
@@ -316,19 +335,36 @@ extension FriendsListViewController: UITableViewDelegate {
         
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.textColor = #colorLiteral(red: 0.7137254902, green: 0.7568627451, blue: 0.8, alpha: 1)
-
-        if chatsWithFriends.count > 0 {
-            label.text = sectionHeaders[1]
-            headerView.addSubview(label)
-        }
         
+        switch section {
+        case 0 where UserController.shared.bestFriendsChats.count > 0:
+            label.text = sectionHeaders[section]
+            headerView.addSubview(label)
+        case 1 where UserController.shared.recentChatsWithFriends.count > 0:
+            label.text = sectionHeaders[section]
+            headerView.addSubview(label)
+        case 2 where UserController.shared.allChatsWithFriends.count > 0:
+            label.text = sectionHeaders[section]
+            headerView.addSubview(label)
+        default:
+            print("SECTION ERROR 🤶\(#function)")
+        }
+
         return headerView
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
+        switch section {
+        case 0 where !UserController.shared.bestFriendsChats.isEmpty:
+            return sectionHeaderHeight
+        case 1 where !UserController.shared.recentChatsWithFriends.isEmpty:
+            return sectionHeaderHeight
+        case 2 where !UserController.shared.allChatsWithFriends.isEmpty:
+            return sectionHeaderHeight
+        default:
+            return 0
+        }
     }
-
 }
 
 // MARK: - SwiftyCamButtonDelegate
@@ -351,8 +387,24 @@ extension FriendsListViewController: SwiftyCamButtonDelegate {
 extension FriendsListViewController: FriendsListCellDelegate {
     func didTapCameraButton(_ sender: UIButton) {
         let cell = sender.superview?.superview as! FriendsListCell
-        guard let index = tableView.indexPath(for: cell)?.row else { return }
-        let friend = chatsWithFriends[index].friend
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        //let friend = chatsWithFriends[index].friend
+        
+        var dataSource: [ChatWithFriend] = []
+        
+        switch indexPath.section {
+        case 0:
+            dataSource = UserController.shared.bestFriendsChats
+        case 1:
+            dataSource = UserController.shared.recentChatsWithFriends
+        case 2:
+            dataSource = UserController.shared.allChatsWithFriends
+        default:
+            print("SECTION ERROR 🤶\(#function)")
+        }
+        
+        let friend = dataSource[indexPath.row].friend
+        let chat = dataSource[indexPath.row].chat
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
@@ -372,6 +424,8 @@ extension FriendsListViewController: OpenCameraToolbarDelegate {
 // MARK: - Fetch Chats With Friends
 extension FriendsListViewController {
     func fetchChatsWithFriends(completion: @escaping (Error?) -> Void) {
+        UserController.shared.allChatsWithFriends = []
+        
         let dbs = DatabaseService()
         dbs.fetchUserChats(for: UserController.shared.currentUser!, completion: { (userChats, error) in
             if let error = error {
@@ -389,21 +443,24 @@ extension FriendsListViewController {
                         completion(error)
                         return
                     }
-                    
-                    self.chatsWithFriends = []
-                    
-                    guard let chat = chat else { return }
+
+                    guard let chat = chat else { print("chat does not exists"); return }
+
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {
                             print(error)
                             completion(error)
                             return
                         }
-                        guard let friend = user else { return }
-                        if !UserController.shared.blockedUids.contains(friend.uid) {
-                            self.chatsWithFriends.append((friend: friend as! Friend, chat: chat))
-                            UserController.shared.currentUser?.friendsUids.insert(friend.uid)
-                            UserController.shared.allChatsWithFriends.append((friend: friend as! Friend, chat: chat))
+                        guard let user = user else { return }
+                       
+                        if !UserController.shared.blockedUids.contains(user.uid) {
+                            
+                            let friend = UserController.shared.bestFriendUids.contains(user.uid) ? Friend(user: user, isBestFriend: true) : Friend(user: user)
+                            
+                            UserController.shared.currentUser?.friendsUids.insert(user.uid)
+                            
+                            UserController.shared.allChatsWithFriends.append((friend: friend, chat: chat))
                         }
                         completion(nil)
                     })

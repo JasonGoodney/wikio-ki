@@ -50,6 +50,9 @@ extension UIViewController {
     
     func userDescructionActionSheet(completion: @escaping (UserDestructionType) -> Void) {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let bestFriendAction = UIAlertAction(title: "Best Friend", style: .default) { (_) in
+            completion(.bestFriend)
+        }
         let blockAction = UIAlertAction(title: "Block", style: .destructive) { (_) in
             completion(.block)
         }
@@ -65,6 +68,8 @@ extension UIViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
             completion(.none)
         }
+        
+        alertController.addAction(bestFriendAction)
         alertController.addAction(removeAction)
         alertController.addAction(blockAction)
         alertController.addAction(reportAction)

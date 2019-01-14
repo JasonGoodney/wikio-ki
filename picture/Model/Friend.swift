@@ -10,7 +10,7 @@ import UIKit
 
 class Friend: User {
     
-    let isBestFriend: Bool
+    var isBestFriend: Bool
     
     enum Keys {
         static let isBestFriend = "isBestFriend"
@@ -22,11 +22,11 @@ class Friend: User {
         super.init(dictionary: dictionary)
     }
     
-    init(username: String, email: String, score: Int, uid: String, profilePhotoUrl: String, isBestFriend: Bool = false) {
+    init(user: User, isBestFriend: Bool = false) {
         
         self.isBestFriend = isBestFriend
         
-        super.init(username: username, email: email, score: score, uid: uid, profilePhotoUrl: profilePhotoUrl)
+        super.init(username: user.username, email: user.email, score: user.score, uid: user.uid, profilePhotoUrl: user.profilePhotoUrl)
         
     }
 }

@@ -59,7 +59,7 @@
 		D7591F2B21C56EFE00B3EAAD /* OpenedMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7591F2A21C56EFE00B3EAAD /* OpenedMessageViewController.swift */; };
 		D7643B4721DD0EAC00ACE26F /* DatabaseService+BlockUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B4621DD0EAC00ACE26F /* DatabaseService+BlockUser.swift */; };
 		D7643B4921DD0EE100ACE26F /* DatabaseService+SendMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B4821DD0EE100ACE26F /* DatabaseService+SendMessage.swift */; };
-		D7643B4B21DD0EF300ACE26F /* DatabaseService+AddFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B4A21DD0EF300ACE26F /* DatabaseService+AddFriend.swift */; };
+		D7643B4B21DD0EF300ACE26F /* DatabaseService+Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B4A21DD0EF300ACE26F /* DatabaseService+Friend.swift */; };
 		D7643B4E21DD110C00ACE26F /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B4D21DD110C00ACE26F /* StorageService.swift */; };
 		D7643B5021DD112C00ACE26F /* StorageService+StoreMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B4F21DD112C00ACE26F /* StorageService+StoreMedia.swift */; };
 		D7643B5221DD52DA00ACE26F /* DatabaseService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7643B5121DD52DA00ACE26F /* DatabaseService+Fetch.swift */; };
@@ -143,7 +143,7 @@
 		D7591F2A21C56EFE00B3EAAD /* OpenedMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenedMessageViewController.swift; sourceTree = "<group>"; };
 		D7643B4621DD0EAC00ACE26F /* DatabaseService+BlockUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+BlockUser.swift"; sourceTree = "<group>"; };
 		D7643B4821DD0EE100ACE26F /* DatabaseService+SendMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+SendMessage.swift"; sourceTree = "<group>"; };
-		D7643B4A21DD0EF300ACE26F /* DatabaseService+AddFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+AddFriend.swift"; sourceTree = "<group>"; };
+		D7643B4A21DD0EF300ACE26F /* DatabaseService+Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+Friend.swift"; sourceTree = "<group>"; };
 		D7643B4D21DD110C00ACE26F /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		D7643B4F21DD112C00ACE26F /* StorageService+StoreMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageService+StoreMedia.swift"; sourceTree = "<group>"; };
 		D7643B5121DD52DA00ACE26F /* DatabaseService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+Fetch.swift"; sourceTree = "<group>"; };
@@ -395,7 +395,7 @@
 			isa = PBXGroup;
 			children = (
 				D786F67321D6AB85003DA3C6 /* DatabaseService.swift */,
-				D7643B4A21DD0EF300ACE26F /* DatabaseService+AddFriend.swift */,
+				D7643B4A21DD0EF300ACE26F /* DatabaseService+Friend.swift */,
 				D7643B4821DD0EE100ACE26F /* DatabaseService+SendMessage.swift */,
 				D7643B5121DD52DA00ACE26F /* DatabaseService+Fetch.swift */,
 				D7643B4621DD0EAC00ACE26F /* DatabaseService+BlockUser.swift */,
@@ -651,7 +651,7 @@
 				D738322F21DFFAF2006DC2EA /* Date+TimeAgo.swift in Sources */,
 				D778E69421CDDC71005C6C96 /* RoundRectTextField.swift in Sources */,
 				D7591F2521C558BA00B3EAAD /* User.swift in Sources */,
-				D7643B4B21DD0EF300ACE26F /* DatabaseService+AddFriend.swift in Sources */,
+				D7643B4B21DD0EF300ACE26F /* DatabaseService+Friend.swift in Sources */,
 				D7591F2121C415F400B3EAAD /* CaptionTextField.swift in Sources */,
 				D74F7E2621D06AD500B5EF28 /* SettingsCell.swift in Sources */,
 				D73B8AF521C80E6600DD4CA4 /* ImageProcessor.swift in Sources */,
