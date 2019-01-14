@@ -9,6 +9,7 @@
 import Foundation
 
 enum UserDestructionType {
+    case bestFriend
     case remove
     case block
     case report

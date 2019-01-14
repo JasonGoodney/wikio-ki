@@ -8,11 +8,12 @@
 
 import UIKit
 import SwiftyCam
+import FirebaseFirestore
 
 class MessagesViewController: UIViewController {
     
     var chat: Chat?
-    var friend: User? {
+    var friend: Friend? {
         didSet {
             configure()
         }
@@ -84,13 +85,31 @@ class MessagesViewController: UIViewController {
     }
     
     @objc func detailsButtonTapped(_ sender: UIBarButtonItem) {
-        print("🤶\(#function)")
         userDescructionActionSheet { (type) in
             let dbs = DatabaseService()
-            guard let user = self.friend else { return }
+            guard let friend = self.friend else { return }
             switch type {
+            case .bestFriend:
+                var fields: [String: Bool] = [:]
+                let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(friend.uid)
+                if friend.isBestFriend {
+                    print("Remove as best friend")
+                    fields = ["isBestFriend": false]
+                    UserController.shared.bestFriendUids.removeAll(where: { $0 == friend.uid })
+                    
+                } else {
+                    print("add as best friend")
+                    fields = ["isBestFriend": true]
+                    UserController.shared.bestFriendUids.append(friend.uid)
+                }
+                dbs.updateDocument(document, withFields: fields, completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                })
             case .remove:
-                dbs.removeFriend(user, completion: { (error) in
+                dbs.removeFriend(friend, completion: { (error) in
                     if let error = error {
                         print(error)
                         return
@@ -99,12 +118,12 @@ class MessagesViewController: UIViewController {
                     self.navigationController?.popToRootViewController(animated: true)
                 })
             case .block:
-                dbs.block(user: user, completion: { (error) in
+                dbs.block(user: friend, completion: { (error) in
                     if let error = error {
                         print(error)
                         return
                     }
-                    UserController.shared.blockedUids.append(user.uid)
+                    UserController.shared.blockedUids.append(friend.uid)
                     self.navigationController?.popToRootViewController(animated: true)
                 })
             case .report:
