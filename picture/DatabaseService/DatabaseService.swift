@@ -22,6 +22,7 @@ class DatabaseService {
         static let friendRequests = "friendRequests"
         static let sentRequests = "sentRequests"
         static let blocked = "blocked"
+        static let sentMessages = "sentMessages"
     }
     
     func fetchSearchedUser(with searchText: String, completion: @escaping (User?, Error?) -> Void) {

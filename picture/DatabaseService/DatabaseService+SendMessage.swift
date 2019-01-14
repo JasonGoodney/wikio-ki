@@ -51,7 +51,14 @@ import FirebaseFirestore
                         return
                     }
                     print("Saved Message")
-                    completion(nil)
+                    Firestore.firestore().collection(Collection.users).document(UserController.shared.currentUser!.uid).collection(Collection.sentMessages).document(message.uid).setData([message.uid: true], merge: true, completion: { (error) in
+                        if let error = error {
+                            print(error)
+                            completion(error)
+                            return
+                        }
+                        completion(nil)
+                    })
                 }
             }
         }
