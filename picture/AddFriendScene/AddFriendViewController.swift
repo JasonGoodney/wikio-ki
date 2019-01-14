@@ -36,11 +36,22 @@ class AddFriendViewController: UITableViewController {
         tableView.separatorStyle = .none
         tableView.register(AddFriendCell.self, forCellReuseIdentifier: AddFriendCell.reuseIdentifier)
         
+        searchController.delegate = self
         searchController.searchBar.delegate = self
         navigationItem.titleView = titleLabel
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        searchController.searchBar.becomeFirstResponder()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        searchController.isActive = true
+        DispatchQueue.main.async{
+            self.searchController.searchBar.becomeFirstResponder()
+        }
+        
+//        Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friendRequests).liste
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,12 +67,6 @@ class AddFriendViewController: UITableViewController {
         }
         
         fetchSentRequests()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        searchController.searchBar.becomeFirstResponder()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -182,6 +187,7 @@ class AddFriendViewController: UITableViewController {
                 }
                 
                 print("\(currentUser.username) sent request to \(user.username)")
+                self.sentRequestUids.append(user.uid)
                 completion(addFriendState, nil)
         }
     }
@@ -264,7 +270,7 @@ class AddFriendViewController: UITableViewController {
             }
             
             guard let docs = snapshot?.documents else { return }
-                
+            self.sentRequestUids = []
             docs.forEach({ (doc) in
                 let dict = doc.data()
                 self.sentRequestUids.append(dict.values.first! as! String)
@@ -337,6 +343,12 @@ extension AddFriendViewController: AddFriendDelegate {
     }
 }
 
+extension AddFriendViewController: UISearchControllerDelegate {
+    func didPresentSearchController(_ searchController: UISearchController) {
+        searchController.searchBar.becomeFirstResponder()
+    }
+}
+
 extension AddFriendViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
@@ -344,7 +356,8 @@ extension AddFriendViewController: UISearchBarDelegate {
             reloadData()
         } else {
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
-            DatabaseService.fetchSearchedUser(with: searchText) { (searchedUser, error) in
+            let dbs = DatabaseService()
+            dbs.fetchSearchedUser(with: searchText) { (searchedUser, error) in
                 if let error = error {
                     print(error)
                     return
@@ -353,6 +366,7 @@ extension AddFriendViewController: UISearchBarDelegate {
                 guard let searchedUser = searchedUser else { return }
                 if UserController.shared.currentUser == searchedUser
                     || self.friendRequests.contains(searchedUser)
+                    
                     || (UserController.shared.currentUser?.friendsUids.contains((searchedUser.uid)))!
                     || UserController.shared.blockedUids.contains(searchedUser.uid)
                 {

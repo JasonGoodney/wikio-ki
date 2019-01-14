@@ -77,16 +77,47 @@ class RegisterViewModel {
                 completion(error)
                 return
             }
-            print("saved info to firebase")
-            completion(nil)
+            let takenUsernameData = ["username": self.username?.lowercased() ?? ""]
+            Firestore.firestore().collection(DatabaseService.Collection.takenUsernames).addDocument(data: takenUsernameData) { (error) in
+                if let error = error {
+                    completion(error)
+                    return
+                }
+                print("saved info to firebase")
+                completion(nil)
+            }
         }
-        
-//        completion(nil)
     }
     
+    
+    
     private func checkFormValidity() {
-        let isFormValid = username?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && profilePhoto != nil
-        bindableIsFormValid.value = isFormValid
+        guard let username = username, let email = email, let password = password else {
+            bindableIsFormValid.value = false
+            return
+        }
+        
+        AuthValidation.isValidUsername(username) { (error) in
+            var isValidUsername = false
+            if let _ = error {
+                let isFormValid =
+                    isValidUsername
+                    && AuthValidation.isValidEmail(email)
+                    && AuthValidation.isValidPassword(password)
+                    && self.profilePhoto != nil
+                
+                self.bindableIsFormValid.value = isFormValid
+            } else {
+                isValidUsername = true
+                let isFormValid =
+                    isValidUsername
+                        && AuthValidation.isValidEmail(email)
+                        && AuthValidation.isValidPassword(password)
+                        && self.profilePhoto != nil
+                
+                self.bindableIsFormValid.value = isFormValid
+            }
+        }
     }
     
 }

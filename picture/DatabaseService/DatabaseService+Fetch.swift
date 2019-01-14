@@ -161,4 +161,22 @@ extension DatabaseService {
             completion(chat, nil)
         }
     }
+    
+    func fetchTakenUsername(username: String, completion: @escaping (_ isTaken: Bool) -> Void) {
+        Firestore.firestore().collection(Collection.takenUsernames).whereField("username", isEqualTo: username).addSnapshotListener { (snapshot, error) in
+            if let error = error {
+                print(error)
+                completion(false)
+                return
+            }
+            guard let usernamesCount = snapshot?.documents.count else { completion(false); return }
+            
+            if usernamesCount > 0 {
+                print("\(username) count = \(usernamesCount)")
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }
 }

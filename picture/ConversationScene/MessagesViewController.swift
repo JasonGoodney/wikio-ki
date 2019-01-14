@@ -162,9 +162,7 @@ extension MessagesViewController: UICollectionViewDataSource {
         }
         
         cell.configure(with: message, from: sender)
-        
-        cell.openMessageView.delegate = self
-        
+            
         return cell
     }
 }
@@ -212,14 +210,6 @@ extension MessagesViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         return CGSize(width: view.frame.width, height: 88)
-    }
-}
-
-// MARK: - OpenMessageViewDelegate
-extension MessagesViewController: OpenMessageViewDelegate {
-    func openMessage(_ recognizer: UITapGestureRecognizer) {
-        guard let index = collectionView.indexPathsForSelectedItems?[0].row else { return }
-        
     }
 }
 

@@ -25,7 +25,7 @@
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
-		<key>FirebaseFirestore-gRPCCertificates.xcscheme</key>
+		<key>FirebaseFirestore-gRPCCertificates-Firestore.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

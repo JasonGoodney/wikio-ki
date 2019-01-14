@@ -21,7 +21,7 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     private let emailTextField: RoundRectTextField = {
         let textField = RoundRectTextField()
-        textField.placeholder = "Enter email"
+        textField.placeholder = "Email"
         textField.keyboardType = .emailAddress
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
         textField.autocapitalizationType = .none
@@ -30,7 +30,7 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     private let passwordTextField: RoundRectTextField = {
         let textField = RoundRectTextField()
-        textField.placeholder = "Enter password"
+        textField.placeholder = "Password"
         textField.isSecureTextEntry = true
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
         return textField
@@ -63,8 +63,8 @@ class LoginController: UIViewController, LoginFlowHandler {
         button.backgroundColor = .lightGray
         button.setTitleColor(.gray, for: .disabled)
         button.isEnabled = false
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button.layer.cornerRadius = 22
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.layer.cornerRadius = 25
         button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
         return button
     }()
@@ -94,9 +94,9 @@ class LoginController: UIViewController, LoginFlowHandler {
     fileprivate let backToRegisterButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Go back", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        button.setTitleColor(#colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1), for: .normal)
         button.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         return button
     }()
     
@@ -107,11 +107,11 @@ class LoginController: UIViewController, LoginFlowHandler {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //setupGradientLayer()
         view.backgroundColor = .white
         setupLayout()
         setupNotificationObservers()
         setupBindables()
+        setupTapGesture()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -169,6 +169,11 @@ class LoginController: UIViewController, LoginFlowHandler {
         
         view.addSubview(backToRegisterButton)
         backToRegisterButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
+        
+        let attributedText = NSMutableAttributedString(string: "Don't have an account?  ", attributes: [.foregroundColor: WKTheme.textColor])
+        attributedText.append(NSAttributedString(string: "Create one", attributes: [.foregroundColor: #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)]))
+        
+        backToRegisterButton.setAttributedTitle(attributedText, for: .normal)
     }
     
     private func setupNotificationObservers() {

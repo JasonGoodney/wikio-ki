@@ -20,6 +20,20 @@ extension RegisterError: LocalizedError {
     }
 }
 
+public enum RegistrationResult<Value> {
+    case success(Value)
+    case failure(RegisterError)
+    
+    public var value: Value? {
+        switch self {
+        case .success(let value):
+            return value
+        case .failure:
+            return nil
+        }
+    }
+}
+
 class RegisterViewController: UIViewController, LoginFlowHandler {
     
     let registerViewModel = RegisterViewModel()
@@ -27,10 +41,18 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     let gradientLayer = CAGradientLayer()
     
     private let titleLabel = NavigationTitleLabel(title: "Create Account")
+    
+    private let errorLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        label.textColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 0.9679008152)
+        label.numberOfLines = 0
+        return label
+    }()
+    
     private lazy var selectPhotoButton: UIButton = {
         let button = UIButton(type: .system)
-//        button.setTitle("Select Photo", for: .normal)
-        button.setImage(#imageLiteral(resourceName: "icons8-plus_math"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 32, weight: .heavy)
         button.backgroundColor = .white
         button.setTitleColor(.black, for: .normal)
@@ -39,6 +61,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         button.clipsToBounds = true
         button.layer.borderWidth = 1
         button.layer.borderColor = WKTheme.gainsboro.cgColor
+        button.tintColor = WKTheme.gainsboro
         return button
     }()
     
@@ -58,7 +81,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     
     private lazy var usernameTextField: RoundRectTextField = {
         let textField = RoundRectTextField()
-        textField.placeholder = "Enter username"
+        textField.placeholder = "Username"
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
         textField.delegate = self
         textField.autocapitalizationType = .none
@@ -66,20 +89,22 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         return textField
     }()
     
-    private let emailTextField: RoundRectTextField = {
+    private lazy var emailTextField: RoundRectTextField = {
         let textField = RoundRectTextField()
-        textField.placeholder = "Enter email"
+        textField.placeholder = "Email"
         textField.keyboardType = .emailAddress
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
         textField.autocapitalizationType = .none
+        textField.delegate = self
         return textField
     }()
     
-    private let passwordTextField: RoundRectTextField = {
+    private lazy var passwordTextField: RoundRectTextField = {
         let textField = RoundRectTextField()
-        textField.placeholder = "Enter password"
+        textField.placeholder = "Password"
         textField.isSecureTextEntry = true
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
+        textField.delegate = self
         return textField
     }()
     
@@ -87,13 +112,14 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         let button = UIButton(type: .system)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(handleGoToLogin), for: .touchUpInside)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         return button
     }()
     
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
             usernameTextField, emailTextField,
-            passwordTextField, registerButton
+            passwordTextField, registerButton, errorLabel
         ])
         stackView.axis = .vertical
         stackView.spacing = 8
@@ -119,7 +145,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationItem.backBarButtonItem = nil
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     deinit {
@@ -142,8 +168,10 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         
         goToLoginButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
-        let attributedText = NSMutableAttributedString(string: "Have an account already? ", attributes: [.foregroundColor: UIColor.lightGray])
-        attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)]))
+        let attributedText = NSMutableAttributedString(string: "Have an account already?  ", attributes: [.foregroundColor: WKTheme.textColor])
+        attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: WKTheme.buttonBlue]))
+        
+        // #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)
         
         goToLoginButton.setAttributedTitle(attributedText, for: .normal)
     }
@@ -162,8 +190,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         hud.dismiss(afterDelay: 3)
     }
 
-    private func validateUsername(str: String) -> Bool
-    {
+    private func validateUsername(str: String) -> Bool {
         do
         {
             let regex = try NSRegularExpression(pattern: "^[0-9a-zA-Z\\_]{3,15}$", options: .caseInsensitive)
@@ -172,6 +199,10 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         catch {}
         
         return false
+    }
+    
+    private func validatePassword(str: String) -> Bool {
+        return str.count >= 6
     }
     
     private func setupRegisterViewModelObserver() {
@@ -235,7 +266,7 @@ private extension RegisterViewController {
     
     @objc func handleRegister() {
         handleTapDismiss()
-        
+        errorLabel.text = ""
         registerViewModel.performRegistration { [unowned self] (error) in
             if let error = error {
                 self.showHUDWithError(error)
@@ -265,9 +296,9 @@ private extension RegisterViewController {
     @objc func handleKeyboardShow(notification: Notification) {
         guard let value = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = value.cgRectValue
-        let bottomSpace = view.frame.height - stackView.frame.origin.y - stackView.frame.height
+        let bottomSpace = view.frame.height - stackView.frame.origin.y - stackView.frame.height - 36
         let difference = keyboardFrame.height - bottomSpace
-        view.transform = CGAffineTransform(translationX: 0, y: -difference - 8)
+        view.transform = CGAffineTransform(translationX: 0, y: -difference)
     }
     
     @objc func handleKeyboardHide() {
@@ -294,14 +325,51 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
 }
 
 extension RegisterViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == usernameTextField {
             if let username = textField.text, username.isEmpty == false {
-                if !validateUsername(str: username) {
-                    let error = RegisterError(msg: "Invalid Username")
-                    showHUDWithError(error)
+                AuthValidation.isValidUsername(username) { (registerError) in
+                    if let error = registerError {
+                        self.errorLabel.text = error.errorDescription
+                    } else {
+                        
+                        self.errorLabel.text = ""
+                    }
+                    
+                }
+            }
+        } else if textField == passwordTextField {
+                 if let password = passwordTextField.text, password.isEmpty == false
+                {
+                if !validatePassword(str: password) {
+                    errorLabel.text = "Password must be at least 6 characters"
                 }
             }
         }
+        
     }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField == usernameTextField && textField.isFirstResponder {
+            let validString = CharacterSet(charactersIn: " !@#$€%^&*()-_+{}[]|\"<>,.~`/:;?=\\¥'£•¢")
+            
+            if (textField.textInputMode?.primaryLanguage == "emoji") || textField.textInputMode?.primaryLanguage == nil {
+                return false
+            }
+            if let _ = string.rangeOfCharacter(from: validString) {
+                return false
+            }
+        } else if textField.isFirstResponder {
+            if (textField.textInputMode?.primaryLanguage == "emoji") || textField.textInputMode?.primaryLanguage == nil {
+                return false
+            }
+        }
+        
+        return true
+    }
+
 }

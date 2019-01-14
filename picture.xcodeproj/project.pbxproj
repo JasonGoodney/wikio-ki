@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5A0391C1F6D1C4E1D3B0136F /* Pods_picture.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67BAD1BCC23AAA6D2C29CE3C /* Pods_picture.framework */; };
+		D715B51C21E7EE0D008A5E80 /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715B51B21E7EE0D008A5E80 /* ChangePasswordViewController.swift */; };
+		D715B51F21E84F29008A5E80 /* AuthValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715B51E21E84F29008A5E80 /* AuthValidation.swift */; };
 		D726383121E13D8C00FDA242 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726383021E13D8C00FDA242 /* Theme.swift */; };
 		D726383321E13E7E00FDA242 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726383221E13E7E00FDA242 /* UIColor.swift */; };
 		D72D792A21D0912F00FB5327 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D792921D0912F00FB5327 /* LoginController.swift */; };
@@ -66,7 +68,6 @@
 		D778E69421CDDC71005C6C96 /* RoundRectTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D778E69321CDDC71005C6C96 /* RoundRectTextField.swift */; };
 		D778E69621CDE2EC005C6C96 /* Extensions+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D778E69521CDE2EC005C6C96 /* Extensions+UIView.swift */; };
 		D7869FBA21DE6A5700A1B863 /* ProfileImageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */; };
-		D7869FBC21DEA47100A1B863 /* EditSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FBB21DEA47100A1B863 /* EditSettingViewController.swift */; };
 		D7869FBE21DEA8E500A1B863 /* BlockedUsersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FBD21DEA8E500A1B863 /* BlockedUsersViewController.swift */; };
 		D7869FC121DEAA0800A1B863 /* BlockedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FC021DEAA0800A1B863 /* BlockedUserCell.swift */; };
 		D786F67421D6AB85003DA3C6 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D786F67321D6AB85003DA3C6 /* DatabaseService.swift */; };
@@ -74,12 +75,22 @@
 		D786F67A21D92D80003DA3C6 /* AuthError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D786F67921D92D80003DA3C6 /* AuthError.swift */; };
 		D786F67C21D92EBC003DA3C6 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D786F67B21D92EBC003DA3C6 /* Alert.swift */; };
 		D786F67E21D9A894003DA3C6 /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = D786F67D21D9A894003DA3C6 /* Chat.swift */; };
+		D79A2E5721E7023D00502FF1 /* EditSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5621E7023D00502FF1 /* EditSettingViewController.swift */; };
+		D79A2E5921E7025F00502FF1 /* EditEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5821E7025F00502FF1 /* EditEmailViewController.swift */; };
+		D79A2E5B21E70D1600502FF1 /* SettingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5A21E70D1600502FF1 /* SettingTextField.swift */; };
+		D79A2E5D21E70F2700502FF1 /* EditUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5C21E70F2700502FF1 /* EditUsernameViewController.swift */; };
+		D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */; };
+		D7D0007721E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */; };
+		D7D0007921EC2CBE003C3A80 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007821EC2CBE003C3A80 /* Friend.swift */; };
+		D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */; };
 		D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		67BAD1BCC23AAA6D2C29CE3C /* Pods_picture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_picture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C4A2F5F61890854F2340E01 /* Pods-picture.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-picture.release.xcconfig"; path = "Pods/Target Support Files/Pods-picture/Pods-picture.release.xcconfig"; sourceTree = "<group>"; };
+		D715B51B21E7EE0D008A5E80 /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
+		D715B51E21E84F29008A5E80 /* AuthValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthValidation.swift; sourceTree = "<group>"; };
 		D726383021E13D8C00FDA242 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		D726383221E13E7E00FDA242 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		D72D792921D0912F00FB5327 /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
@@ -141,7 +152,6 @@
 		D778E69321CDDC71005C6C96 /* RoundRectTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundRectTextField.swift; sourceTree = "<group>"; };
 		D778E69521CDE2EC005C6C96 /* Extensions+UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Extensions+UIView.swift"; sourceTree = "<group>"; };
 		D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageButton.swift; sourceTree = "<group>"; };
-		D7869FBB21DEA47100A1B863 /* EditSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSettingViewController.swift; sourceTree = "<group>"; };
 		D7869FBD21DEA8E500A1B863 /* BlockedUsersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersViewController.swift; sourceTree = "<group>"; };
 		D7869FC021DEAA0800A1B863 /* BlockedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserCell.swift; sourceTree = "<group>"; };
 		D786F67321D6AB85003DA3C6 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
@@ -149,6 +159,14 @@
 		D786F67921D92D80003DA3C6 /* AuthError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthError.swift; sourceTree = "<group>"; };
 		D786F67B21D92EBC003DA3C6 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		D786F67D21D9A894003DA3C6 /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
+		D79A2E5621E7023D00502FF1 /* EditSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSettingViewController.swift; sourceTree = "<group>"; };
+		D79A2E5821E7025F00502FF1 /* EditEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEmailViewController.swift; sourceTree = "<group>"; };
+		D79A2E5A21E70D1600502FF1 /* SettingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTextField.swift; sourceTree = "<group>"; };
+		D79A2E5C21E70F2700502FF1 /* EditUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUsernameViewController.swift; sourceTree = "<group>"; };
+		D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
+		D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+DeleteAccount.swift"; sourceTree = "<group>"; };
+		D7D0007821EC2CBE003C3A80 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
+		D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatWithFriend.swift; sourceTree = "<group>"; };
 		D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDestructionType.swift; sourceTree = "<group>"; };
 		E68CC50FADF6920AEFED52C8 /* Pods-picture.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-picture.debug.xcconfig"; path = "Pods/Target Support Files/Pods-picture/Pods-picture.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -184,6 +202,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D715B51D21E7F430008A5E80 /* EditSettingScenes */ = {
+			isa = PBXGroup;
+			children = (
+				D79A2E5621E7023D00502FF1 /* EditSettingViewController.swift */,
+				D79A2E5821E7025F00502FF1 /* EditEmailViewController.swift */,
+				D79A2E5C21E70F2700502FF1 /* EditUsernameViewController.swift */,
+				D715B51B21E7EE0D008A5E80 /* ChangePasswordViewController.swift */,
+				D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */,
+			);
+			path = EditSettingScenes;
+			sourceTree = "<group>";
+		};
 		D72D793121D14A3000FB5327 /* AddFriendScene */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,7 +229,9 @@
 			isa = PBXGroup;
 			children = (
 				D7591F2421C558BA00B3EAAD /* User.swift */,
+				D7D0007821EC2CBE003C3A80 /* Friend.swift */,
 				D786F67D21D9A894003DA3C6 /* Chat.swift */,
+				D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */,
 				D7591F2221C554FD00B3EAAD /* Message.swift */,
 				D786F67921D92D80003DA3C6 /* AuthError.swift */,
 				D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */,
@@ -214,6 +246,7 @@
 				D778E69021CDD79B005C6C96 /* RegisterViewModel.swift */,
 				D72D792921D0912F00FB5327 /* LoginController.swift */,
 				D72D792B21D0913900FB5327 /* LoginViewModel.swift */,
+				D715B51E21E84F29008A5E80 /* AuthValidation.swift */,
 			);
 			path = AuthScene;
 			sourceTree = "<group>";
@@ -295,7 +328,7 @@
 			isa = PBXGroup;
 			children = (
 				D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */,
-				D7869FBB21DEA47100A1B863 /* EditSettingViewController.swift */,
+				D715B51D21E7F430008A5E80 /* EditSettingScenes */,
 				D7869FBF21DEA90C00A1B863 /* BlockedUsersScene */,
 				D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */,
 			);
@@ -366,6 +399,7 @@
 				D7643B4821DD0EE100ACE26F /* DatabaseService+SendMessage.swift */,
 				D7643B5121DD52DA00ACE26F /* DatabaseService+Fetch.swift */,
 				D7643B4621DD0EAC00ACE26F /* DatabaseService+BlockUser.swift */,
+				D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */,
 			);
 			path = DatabaseService;
 			sourceTree = "<group>";
@@ -390,6 +424,7 @@
 			isa = PBXGroup;
 			children = (
 				D778E69321CDDC71005C6C96 /* RoundRectTextField.swift */,
+				D79A2E5A21E70D1600502FF1 /* SettingTextField.swift */,
 				D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */,
 				D72D792D21D1399800FB5327 /* OpenCameraToolbar.swift */,
 				D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */,
@@ -517,13 +552,13 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-picture/Pods-picture-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseFirestore/gRPCCertificates.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseFirestore/gRPCCertificates-Firestore.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates-Firestore.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -579,10 +614,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D79A2E5D21E70F2700502FF1 /* EditUsernameViewController.swift in Sources */,
 				D73B8B0221C8865B00DD4CA4 /* ViewMessageCell.swift in Sources */,
 				D726383321E13E7E00FDA242 /* UIColor.swift in Sources */,
 				D778E69121CDD79B005C6C96 /* RegisterViewModel.swift in Sources */,
 				D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */,
+				D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */,
 				D7643B5221DD52DA00ACE26F /* DatabaseService+Fetch.swift in Sources */,
 				D72F166421D4720F0009D43D /* AddFriendButton.swift in Sources */,
 				D7591F1021C2CD9700B3EAAD /* MessagesViewController.swift in Sources */,
@@ -594,15 +631,18 @@
 				D786F67421D6AB85003DA3C6 /* DatabaseService.swift in Sources */,
 				D7591F1C21C3141E00B3EAAD /* PreviewMediaViewController.swift in Sources */,
 				D7643B4721DD0EAC00ACE26F /* DatabaseService+BlockUser.swift in Sources */,
+				D715B51F21E84F29008A5E80 /* AuthValidation.swift in Sources */,
 				D73B8AF921C8117100DD4CA4 /* MediaProcessable.swift in Sources */,
 				D7643B4E21DD110C00ACE26F /* StorageService.swift in Sources */,
 				D7591F2B21C56EFE00B3EAAD /* OpenedMessageViewController.swift in Sources */,
 				D7591F0C21C2C27300B3EAAD /* UIView+Anchors.swift in Sources */,
 				D72D792A21D0912F00FB5327 /* LoginController.swift in Sources */,
 				D786F67A21D92D80003DA3C6 /* AuthError.swift in Sources */,
+				D715B51C21E7EE0D008A5E80 /* ChangePasswordViewController.swift in Sources */,
 				D7591F0A21C2C26100B3EAAD /* ReuseIdentifiable.swift in Sources */,
 				D778E68E21CDD77D005C6C96 /* Bindable.swift in Sources */,
 				D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */,
+				D7D0007721E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift in Sources */,
 				D7591F1F21C3371B00B3EAAD /* MessagesCell.swift in Sources */,
 				D786F67821D85F74003DA3C6 /* LoginFlowHandler.swift in Sources */,
 				D72D793021D13ECD00FB5327 /* UserController.swift in Sources */,
@@ -611,16 +651,18 @@
 				D738322F21DFFAF2006DC2EA /* Date+TimeAgo.swift in Sources */,
 				D778E69421CDDC71005C6C96 /* RoundRectTextField.swift in Sources */,
 				D7591F2521C558BA00B3EAAD /* User.swift in Sources */,
-				D7869FBC21DEA47100A1B863 /* EditSettingViewController.swift in Sources */,
 				D7643B4B21DD0EF300ACE26F /* DatabaseService+AddFriend.swift in Sources */,
 				D7591F2121C415F400B3EAAD /* CaptionTextField.swift in Sources */,
 				D74F7E2621D06AD500B5EF28 /* SettingsCell.swift in Sources */,
 				D73B8AF521C80E6600DD4CA4 /* ImageProcessor.swift in Sources */,
+				D79A2E5B21E70D1600502FF1 /* SettingTextField.swift in Sources */,
 				D7591F1421C2D6D900B3EAAD /* NavigationController.swift in Sources */,
+				D7D0007921EC2CBE003C3A80 /* Friend.swift in Sources */,
 				D786F67C21D92EBC003DA3C6 /* Alert.swift in Sources */,
 				D73B8AFB21C86B1200DD4CA4 /* Merge.swift in Sources */,
 				D7591F0721C2C23300B3EAAD /* FriendsListCell.swift in Sources */,
 				D73B8AFD21C86DA100DD4CA4 /* CaptionProcessor.swift in Sources */,
+				D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */,
 				D7869FC121DEAA0800A1B863 /* BlockedUserCell.swift in Sources */,
 				D74890EE21BC86DC005AAF6B /* AppDelegate.swift in Sources */,
 				D7591F1221C2CE5C00B3EAAD /* ReplyFooterView.swift in Sources */,
@@ -633,7 +675,9 @@
 				D7591F1921C2DFCA00B3EAAD /* SwiftyRecordButton.swift in Sources */,
 				D7591F2321C554FD00B3EAAD /* Message.swift in Sources */,
 				D7591F0421C2C1B700B3EAAD /* FriendsListViewController.swift in Sources */,
+				D79A2E5921E7025F00502FF1 /* EditEmailViewController.swift in Sources */,
 				D7591F2921C56A3C00B3EAAD /* OpenMessageView.swift in Sources */,
+				D79A2E5721E7023D00502FF1 /* EditSettingViewController.swift in Sources */,
 				D7643B4921DD0EE100ACE26F /* DatabaseService+SendMessage.swift in Sources */,
 				D7869FBE21DEA8E500A1B863 /* BlockedUsersViewController.swift in Sources */,
 				D73B8AF721C8114600DD4CA4 /* VideoProcessor.swift in Sources */,

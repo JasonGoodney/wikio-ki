@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "058D234CAB96E00B45B092166D77D9F8"
-               BuildableName = "gRPCCertificates.bundle"
-               BlueprintName = "FirebaseFirestore-gRPCCertificates"
+               BlueprintIdentifier = "E1BAF7B6209A6C0122ED026113BECA42"
+               BuildableName = "gRPCCertificates-Firestore.bundle"
+               BlueprintName = "FirebaseFirestore-gRPCCertificates-Firestore"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "058D234CAB96E00B45B092166D77D9F8"
-            BuildableName = "gRPCCertificates.bundle"
-            BlueprintName = "FirebaseFirestore-gRPCCertificates"
+            BlueprintIdentifier = "E1BAF7B6209A6C0122ED026113BECA42"
+            BuildableName = "gRPCCertificates-Firestore.bundle"
+            BlueprintName = "FirebaseFirestore-gRPCCertificates-Firestore"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

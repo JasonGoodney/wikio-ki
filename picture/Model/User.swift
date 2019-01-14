@@ -15,10 +15,21 @@ class User {
     let username: String
     let email: String
     let score: Int
-    let profilePhotoUrl: String
+    var profilePhotoUrl: String {
+        didSet {
+            cacheImage(for: URL(string: self.profilePhotoUrl)!)
+        }
+    }
     let uid: String
     
     var friendsUids: Set<String> = []
+    
+    var profilePhoto: UIImage?
+    
+    enum Keys {
+        static let profilePhotoUrl = "profilePhotoUrl"
+        static let email = "email"
+    }
     
     init(dictionary: [String: Any]) {
         self.username = dictionary["username"] as? String ?? ""
@@ -42,6 +53,10 @@ extension User {
         Firestore.firestore()
             .collection(DatabaseService.Collection.users).document(uid)
             .collection(DatabaseService.Collection.friends).document(user.uid).setData([user.uid: true])
+    }
+    
+    func cacheImage(for url: URL) {
+        SDWebImageManager.shared().saveImage(toCache: profilePhoto, for: url)
     }
 }
 

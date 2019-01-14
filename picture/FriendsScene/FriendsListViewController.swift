@@ -15,7 +15,7 @@ import SDWebImage
 
 class FriendsListViewController: UIViewController {
     
-    typealias ChatWithFriend = (friend: User, chat: Chat)
+    
     
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
@@ -68,8 +68,6 @@ class FriendsListViewController: UIViewController {
         return button
     }()
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         updateView()
@@ -78,28 +76,54 @@ class FriendsListViewController: UIViewController {
             if success {
                 if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
                     DispatchQueue.main.async {
-                        self.profileImageButton.sd_setImage(with: url, for: .normal)
+                        self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
+                            self.profileImageButton.isUserInteractionEnabled = true
+                        })
                     }
                 }
                 
                 self.handleRefreshFriends()
+                
+                Firestore.firestore()
+                    .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
+                    .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
+                        
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                        
+                        guard let docChanges = snapshot?.documentChanges else { return }
+                        
+                        if docChanges.count > 0 {
+                            self.newConversationButton.tintColor = .blue
+                        } else {
+                            self.newConversationButton.tintColor = .black
+                        }
+                }
             }
         }
-        
-        
-        
+
         if #available(iOS 10.0, *) {
             tableView.refreshControl = refreshControl
         } else {
             tableView.addSubview(refreshControl)
         }
+        
+        
     }
  
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         deselectCell()
         
- 
+        if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
+            DispatchQueue.main.async {
+                self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
+                    self.profileImageButton.isUserInteractionEnabled = true
+                })
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -120,6 +144,25 @@ class FriendsListViewController: UIViewController {
 //                }
 //            }
 //        }
+        if let tintColor = newConversationButton.tintColor, tintColor == .black && UserController.shared.currentUser != nil {
+            Firestore.firestore()
+                .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
+                .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
+                    
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    
+                    guard let docChanges = snapshot?.documentChanges else { return }
+                    
+                    if docChanges.count > 0 {
+                        self.newConversationButton.tintColor = .blue
+                    } else {
+                        self.newConversationButton.tintColor = .black
+                    }
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -358,8 +401,9 @@ extension FriendsListViewController {
                         }
                         guard let friend = user else { return }
                         if !UserController.shared.blockedUids.contains(friend.uid) {
-                            self.chatsWithFriends.append((friend: friend, chat: chat))
+                            self.chatsWithFriends.append((friend: friend as! Friend, chat: chat))
                             UserController.shared.currentUser?.friendsUids.insert(friend.uid)
+                            UserController.shared.allChatsWithFriends.append((friend: friend as! Friend, chat: chat))
                         }
                         completion(nil)
                     })

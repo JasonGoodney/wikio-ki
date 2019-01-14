@@ -9,37 +9,56 @@
 import Foundation
 import Firebase
 
-class UserController {
+class UserController: LoginFlowHandler {
     
     static let shared = UserController(); private init() {}
     
     var currentUser: User?
     
     var blockedUids: [String] = []
+    var bestFriendsChats: [ChatWithFriend] {
+        return allChatsWithFriends.filter { $0.friend.isBestFriend }
+    }
+//    var recentChatsWithFriends: [ChatWithFriend] {
+//        return allChatsWithFriends.filter {
+//            !bestFriendsChats.contains($0)
+//                && Date(timeIntervalSince1970: $0.lastChatUpdateTimestamp).isWithinThePast24Hours()
+//        }
+//    }
+    var allChatsWithFriends: [ChatWithFriend] = []
     
     func fetchCurrentUser(completion: @escaping (Bool) -> Void = { _ in }) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        Firestore.firestore().collection("users").document(uid).getDocument { (snapshot, error) in
+        Firestore.firestore().collection(DatabaseService.Collection.users).document(uid).getDocument { (snapshot, error) in
             if let error = error {
                 print(error)
                 completion(false)
                 return
             }
             
-            let dbs = DatabaseService()
-            dbs.fetchBlocked(completion: { (blocked, error) in
-                if let error = error {
-                    print(error)
-                    completion(false)
-                    return
-                }
-                
-                self.blockedUids = blocked ?? []
-            })
+            guard let dictionary = snapshot?.data() else {
+                print("user data not found, logging out Auth.auth().currentUser")
+                self.handleLogout()
+                return
+            }
             
-            guard let dictionary = snapshot?.data() else { return }
             self.currentUser = User(dictionary: dictionary)
-            print(self.currentUser?.username, self.currentUser?.email)
+            
+            let dbs = DatabaseService()
+            if uid == self.currentUser?.uid {
+                dbs.fetchBlocked(for: uid, completion: { (blocked, error) in
+                    if let error = error {
+                        print(error)
+                        completion(false)
+                        return
+                    }
+                    
+                    self.blockedUids = blocked ?? []
+                })
+            } else {
+                print("uids do not match. did not fetch blocked users for \(self.currentUser!.uid)")
+            }
+
             completion(true)
             
             

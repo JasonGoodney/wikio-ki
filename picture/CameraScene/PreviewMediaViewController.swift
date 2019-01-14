@@ -16,6 +16,7 @@ class PreviewMediaViewController: UIViewController {
         }
     }
     
+    private var previousCaptionConstraints: [NSLayoutConstraint] = []
     private var previousCaptionFrame = CGRect()
     private var captionIsInSuperview = false
     private var captionCanBeDragged = false
@@ -50,8 +51,8 @@ class PreviewMediaViewController: UIViewController {
     
     lazy var resignCaptionEditButton: UIButton = {
         let button = UIButton()
-//        button.setTitle("↩", for: .normal)
-        button.setImage(#imageLiteral(resourceName: "back_button").withRenderingMode(.alwaysTemplate), for: .normal)
+//        button.setImage(#imageLiteral(resourceName: "back_button").withRenderingMode(.alwaysTemplate), for: .normal)
+        
         button.tintColor = .white
         button.addTarget(self, action: #selector(resignCaptionEditButtonTapped(_:)), for: .touchUpInside)
         button.isHidden = true
@@ -209,7 +210,7 @@ class PreviewMediaViewController: UIViewController {
         var messageCaption: String? = nil
         var messageImageData: Data? = nil
         var messageVideoURL: String? = nil
-        
+        var messageType: MessageType = .photo
         
         if captionTextField.text != "", let caption = captionTextField.text, let image = image {
             messageCaption = caption
@@ -236,9 +237,10 @@ class PreviewMediaViewController: UIViewController {
             }) { (progress) in
                 print(progress)
             }
+            messageType = .video
         }
         
-        let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: .photo)
+        let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
         print("chatUID: \(chatUid)")
         let chat = Chat(uid: chatUid, memberUids: [currentUser.uid, friend.uid], lastMessageSent: message.uid, lastSenderUid: currentUser.uid, isNewFriendship: false)
@@ -274,7 +276,6 @@ class PreviewMediaViewController: UIViewController {
                 })
             }
         }
-        
     }
     
     private func saveImageToFirebase(data: Data, for message: Message, completion: @escaping ErrorCompletion) {
@@ -366,6 +367,8 @@ class PreviewMediaViewController: UIViewController {
                 captionIsInSuperview = false
                 captionTextField.resignFirstResponder()
             } else {
+                captionTextField.frame = previousCaptionFrame
+                captionTextField.setNeedsDisplay()
                 captionTextField.resignFirstResponder()
                 UIView.animate(withDuration: 0.2) {
                     self.captionTextField.textAlignment = .center
@@ -401,8 +404,7 @@ private extension PreviewMediaViewController {
     }
     
     func setupConstraints() {
-        
-        
+
         cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
         
         resignCaptionEditButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
@@ -426,24 +428,15 @@ private extension PreviewMediaViewController {
 // MARK: - UITextFieldDelegate
 extension PreviewMediaViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        previousCaptionFrame = textField.frame
+
         textField.textAlignment = .left
         captionCanBeDragged = false
         captionTextField.anchorCenterXToSuperview()
         captionTextField.anchorCenterYToSuperview()
         captionTextField.setNeedsUpdateConstraints()
-
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-//        captionTextField.frame = previousCaptionFrame
-//        self.view.setNeedsDisplay()
-//        captionTextField.setNeedsUpdateConstraints()
-        print()
-        UIView.animate(withDuration: 0, delay: 0, options: .curveEaseInOut, animations: {
-            self.captionTextField.frame = self.previousCaptionFrame
-        }, completion: nil)
-        
         captionCanBeDragged = true
         if textField.text?.last == " " {
             textField.text?.removeLast()

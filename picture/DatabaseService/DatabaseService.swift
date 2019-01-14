@@ -15,14 +15,16 @@ class DatabaseService {
         static let chats = "chats"
         static let messages = "messages"
         static let userChats = "userChats"
-        static let friends = "friends"
         static let users = "users"
+        static let takenUsernames = "takenUsernames"
+        
+        static let friends = "friends"
         static let friendRequests = "friendRequests"
         static let sentRequests = "sentRequests"
         static let blocked = "blocked"
     }
     
-    static func fetchSearchedUser(with searchText: String, completion: @escaping (User?, Error?) -> Void) {
+    func fetchSearchedUser(with searchText: String, completion: @escaping (User?, Error?) -> Void) {
         Firestore.firestore().collection(Collection.users).whereField("username", isEqualTo: searchText).getDocuments { (snapshot, error) in
             if let error = error {
                 print(error)
@@ -38,4 +40,17 @@ class DatabaseService {
         }
     }
     
+    func updateUser(withFields fields: [String: Any], completion: @escaping ErrorCompletion) {
+        
+        guard let uid = UserController.shared.currentUser?.uid else { return }
+        Firestore.firestore().collection(Collection.users).document(uid).setData(fields, merge: true) { (error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            print("Updated fields for user")
+            completion(nil)
+        }
+    }
 }

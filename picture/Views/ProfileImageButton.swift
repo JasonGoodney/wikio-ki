@@ -10,7 +10,7 @@ import UIKit
 
 class ProfileImageButton: UIButton {
 
-    init(height: CGFloat, width: CGFloat, enabled: Bool = true) {
+    init(height: CGFloat, width: CGFloat, enabled: Bool = false) {
         super.init(frame: .zero)
         
         isUserInteractionEnabled = enabled

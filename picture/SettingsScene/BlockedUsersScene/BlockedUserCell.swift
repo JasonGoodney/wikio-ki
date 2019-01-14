@@ -50,9 +50,9 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
         let stackView = UIStackView(arrangedSubviews: [usernameLabel, unblockButton])
         stackView.distribution = .equalSpacing
         addSubview(stackView)
-        stackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 16))
+        stackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 8))
         
-        unblockButton.widthAnchor.constraint(equalToConstant: 64).isActive = true
+        unblockButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
     }
     
     @objc private func unblockButtonTapped() {

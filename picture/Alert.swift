@@ -72,4 +72,20 @@ extension UIViewController {
         
         present(alertController, animated: true, completion: nil)
     }
+    
+    func sendVerifyEmailAlert(to email: String, completion: @escaping (Bool) -> Void) {
+        let alertController = UIAlertController(title: "Send email verification", message: email, preferredStyle: .alert)
+        
+        let sendAction = UIAlertAction(title: "Send", style: .default) { (_) in
+            completion(true)
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
+            completion(false)
+        }
+        
+        alertController.addAction(sendAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
 }

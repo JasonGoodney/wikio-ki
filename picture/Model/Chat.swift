@@ -18,6 +18,7 @@ class Chat {
     var isOpened: Bool
     var isNewFriendship: Bool
     var areFriends: Bool
+    var areMutualBestFriends: Bool
     
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }
@@ -33,6 +34,7 @@ class Chat {
         static let isOpened = "isOpened"
         static let isNewFriendship = "isNewFriendship"
         static let areFriends = "areFriends"
+        static let areMutualBestFriends = "areMutualBestFriends"
     }
     
     init(dictionary: [String: Any]) {
@@ -44,9 +46,11 @@ class Chat {
         self.isOpened = dictionary[Keys.isOpened] as? Bool ?? false
         self.isNewFriendship = dictionary[Keys.isNewFriendship] as? Bool ?? false
         self.areFriends = dictionary[Keys.areFriends] as? Bool ?? false
+        self.areMutualBestFriends = dictionary[Keys.areMutualBestFriends] as? Bool ?? false
     }
     
-    init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String, lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true) {
+    init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String,
+         lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true, areMutualBestFriends: Bool = false) {
         self.uid = uid
         self.memberUids = memberUids
         self.lastMessageSent = lastMessageSent
@@ -55,6 +59,7 @@ class Chat {
         self.isOpened = isOpened
         self.isNewFriendship = isNewFriendship
         self.areFriends = areFriends
+        self.areMutualBestFriends = areMutualBestFriends
     }
     
     func dictionary() -> [String: Any] {
@@ -67,6 +72,7 @@ class Chat {
             Keys.memberUids: memberUids,
             Keys.isNewFriendship: isNewFriendship,
             Keys.areFriends: areFriends,
+            Keys.areMutualBestFriends: areMutualBestFriends,
         ]
         
         return dict

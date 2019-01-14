@@ -46,10 +46,9 @@ extension DatabaseService {
     }
     
     
-    func fetchBlocked(completion: @escaping ([String]?, Error?) -> Void) {
-        guard let currentUser = UserController.shared.currentUser else { return }
+    func fetchBlocked(for userUid: String = (UserController.shared.currentUser?.uid)!, completion: @escaping ([String]?, Error?) -> Void) {
         Firestore.firestore()
-            .collection(Collection.users).document(currentUser.uid)
+            .collection(Collection.users).document(userUid)
             .collection(Collection.blocked).getDocuments { (snapshot, error) in
                 if let error = error {
                     print(error)

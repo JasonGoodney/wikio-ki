@@ -15,7 +15,9 @@ enum WKTheme {
     static let textColor = #colorLiteral(red: 0.7018982768, green: 0.7020008564, blue: 0.7018757463, alpha: 1) // UIColor(hex: 0xB3B3B3)
     static let wkColor = ""
     static let darkGray = #colorLiteral(red: 0.5882352941, green: 0.5960784314, blue: 0.6039215686, alpha: 1) // UIColor(hex: 0x96989a)
-    static let buttonBlue = #colorLiteral(red: 0.3098039216, green: 0.737254902, blue: 1, alpha: 1) // UIColor(hex: 0x4fbcff)
+    static let buttonLightBlue = #colorLiteral(red: 0.3098039216, green: 0.737254902, blue: 1, alpha: 1) // UIColor(hex: 0x4fbcff)
+    static let buttonBlue = #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)
     static let gainsboro = #colorLiteral(red: 0.8431372549, green: 0.8549019608, blue: 0.862745098, alpha: 1) // 0xd7dadc
     static let seashell = #colorLiteral(red: 0.9764705882, green: 0.9647058824, blue: 0.937254902, alpha: 1) // 0xf9f6ef
+    
 }
