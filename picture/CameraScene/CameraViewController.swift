@@ -12,13 +12,13 @@ import SwiftyCam
 class CameraViewController: SwiftyCamViewController {
 
     @IBOutlet weak var captureButton: SwiftyRecordButton!
-    @IBOutlet weak var flashButton: UIButton!
-    @IBOutlet weak var flipCameraButton: UIButton!
+    @IBOutlet weak var flashButton: PopButton!
+    @IBOutlet weak var flipCameraButton: PopButton!
     
     var friend: User?
     
-    private lazy var cancelButton: UIButton = {
-        let button = UIButton(type: .system)
+    private lazy var cancelButton: PopButton = {
+        let button = PopButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "close"), for: .normal)
         button.addTarget(self, action: #selector(cancelButtonTapped(_:)), for: .touchUpInside)
         button.tintColor = .white
@@ -70,17 +70,21 @@ class CameraViewController: SwiftyCamViewController {
         return true
     }
     
-    @IBAction func cameraSwitchTapped(_ sender: Any) {
+    @IBAction func cameraSwitchTapped(_ sender: UIButton) {
+        
         switchCamera()
     }
     
-    @IBAction func toggleFlashTapped(_ sender: Any) {
+    @IBAction func toggleFlashTapped(_ sender: UIButton) {
         flashEnabled = !flashEnabled
         toggleFlashAnimation()
     }
     
-    @objc func cancelButtonTapped(_ sender: UIButton) {
-        dismiss(animated: false, completion: nil)
+    @objc func cancelButtonTapped(_ sender: PopButton) {
+        sender.pop {
+            self.dismiss(animated: true, completion: nil)
+        }
+        
     }
 
 }
@@ -102,6 +106,7 @@ private extension CameraViewController {
         }
         
         flipCameraButton.tintColor = .white
+        flashButton.tintColor = .white
         cancelButton.tintColor = .white
     }
     
@@ -159,9 +164,9 @@ extension CameraViewController {
     
     fileprivate func toggleFlashAnimation() {
         if flashEnabled == true {
-            flashButton.setImage(#imageLiteral(resourceName: "flash"), for: UIControl.State())
+            flashButton.setImage(#imageLiteral(resourceName: "icons8-flash_on"), for: UIControl.State())
         } else {
-            flashButton.setImage(#imageLiteral(resourceName: "flashOutline"), for: UIControl.State())
+            flashButton.setImage(#imageLiteral(resourceName: "icons8-flash_off"), for: UIControl.State())
         }
     }
 }
@@ -216,7 +221,6 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didChangeZoomLevel zoom: CGFloat) {
         print("Zoom level did change. Level: \(zoom)")
-        print(zoom)
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
@@ -226,6 +230,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         } else {
             flipCameraButton.setImage(#imageLiteral(resourceName: "icons8-switch_camera"), for: .normal)
         }
+        
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFailToRecordVideo error: Error) {

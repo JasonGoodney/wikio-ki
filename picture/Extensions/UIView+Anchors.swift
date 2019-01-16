@@ -13,6 +13,10 @@ extension UIView {
         subviews.forEach{ self.addSubview($0) }
     }
     
+    func addSubviews(_ subviews: [UIView]) {
+        subviews.forEach{ self.addSubview($0) }
+    }
+    
     func addShadow() {
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowOpacity = 0.3

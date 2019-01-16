@@ -33,26 +33,25 @@ class PreviewMediaViewController: UIViewController {
     
     private var backgroundImageView = UIImageView()
     
-    lazy var cancelButton: UIButton = {
-        let button = UIButton()
+    lazy var cancelButton: PopButton = {
+        let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "back_button").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         return button
     }()
     
-    lazy var addCaptionButton: UIButton = {
-        let button = UIButton()
+    lazy var addCaptionButton: PopButton = {
+        let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "add_text").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(addCaptionButton(_:)), for: .touchUpInside)
         return button
     }()
     
-    lazy var resignCaptionEditButton: UIButton = {
-        let button = UIButton()
-//        button.setImage(#imageLiteral(resourceName: "back_button").withRenderingMode(.alwaysTemplate), for: .normal)
-        
+    lazy var resignCaptionEditButton: PopButton = {
+        let button = PopButton()
+        button.setImage(#imageLiteral(resourceName: "icons8-undo").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(resignCaptionEditButtonTapped(_:)), for: .touchUpInside)
         button.isHidden = true
@@ -73,8 +72,8 @@ class PreviewMediaViewController: UIViewController {
         return label
     }()
     
-    lazy var sendButton: UIButton = {
-        let button = UIButton(type: .system)
+    lazy var sendButton: PopButton = {
+        let button = PopButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "paper_plane").withRenderingMode(.alwaysOriginal), for: .normal)
         button.backgroundColor = .white
         button.addTarget(self, action: #selector(sendButtonTapped(_:)), for: .touchUpInside)
@@ -205,6 +204,18 @@ class PreviewMediaViewController: UIViewController {
     }
     
     @objc func sendButtonTapped(_ sender: UIButton) {
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(blurEffectView)
+        
+        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
+        let vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
+        vibrancyEffectView.frame = view.bounds
+        
+        blurEffectView.contentView.addSubview(vibrancyEffectView)
+        
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
         var messageCaption: String? = nil
@@ -217,9 +228,9 @@ class PreviewMediaViewController: UIViewController {
 //            message.image = UIImage.createImageWithLabelOverlay(textField: captionTextField, imageSize: backgroundImageView.frame.size, image: image)
             let processor = ImageProcessor()
             let image = processor.addOverlay(captionTextField, to: image, size: view.frame.size)
-            messageImageData = image.jpegData(compressionQuality: 0.75)
+            messageImageData = image.jpegData(compressionQuality: Compression.quality)
         } else if let image = image {
-            messageImageData = image.jpegData(compressionQuality: 0.75)
+            messageImageData = image.jpegData(compressionQuality: Compression.quality)
         } else if let videoURL = videoURL {
             let processor = VideoProcessor()
             let captionProcessor = CaptionProcessor()
@@ -353,6 +364,8 @@ class PreviewMediaViewController: UIViewController {
     }
     
     func handleCaptionResponder() {
+        addCaptionButton.pop()
+        // Caption Active
         if captionIsInSuperview {
             if captionTextField.text != "" && captionCanBeDragged {
                 captionTextField.becomeFirstResponder()
@@ -378,7 +391,9 @@ class PreviewMediaViewController: UIViewController {
                 cancelButton.isHidden = false
                 resignCaptionEditButton.isHidden = true
             }
-        } else {
+        }
+        // Caption Not Active
+        else {
             captionTextField.becomeFirstResponder()
             captionTextField.isHidden = false
             dimView.isHidden = false

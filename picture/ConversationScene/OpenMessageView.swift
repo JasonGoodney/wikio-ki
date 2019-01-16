@@ -23,8 +23,7 @@ class OpenMessageView: UIView {
     
     private let statusLabel: UILabel = {
         let label = UILabel()
-//        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-        label.textColor = .lightGray
+        label.textColor = WKTheme.textColor
         return label
     }()
     

@@ -18,7 +18,7 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
     
     lazy var unblockButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "close").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-multiply-90").withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(unblockButtonTapped), for: .touchUpInside)
         button.tintColor = WKTheme.darkGray
         return button
@@ -26,7 +26,7 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         return label
     }()
     

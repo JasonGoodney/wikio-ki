@@ -145,7 +145,8 @@ extension DatabaseService {
     }
     
     func fetchChat(withFriend friend: User, completion: @escaping (Chat?, Error?) -> Void) {
-        let chatUid = Chat.chatUid(for: UserController.shared.currentUser!, and: friend)
+        guard let currentUser = UserController.shared.currentUser else { return }
+        let chatUid = Chat.chatUid(for: currentUser, and: friend)
         Firestore.firestore().collection(Collection.chats).document(chatUid).getDocument { (snapshot, error) in
             
             if let error = error {
@@ -163,7 +164,7 @@ extension DatabaseService {
     }
     
     func fetchTakenUsername(username: String, completion: @escaping (_ isTaken: Bool) -> Void) {
-        Firestore.firestore().collection(Collection.takenUsernames).whereField("username", isEqualTo: username).addSnapshotListener { (snapshot, error) in
+        let takenUsernameListener = Firestore.firestore().collection(Collection.takenUsernames).whereField("username", isEqualTo: username).addSnapshotListener { (snapshot, error) in
             if let error = error {
                 print(error)
                 completion(false)
@@ -178,5 +179,6 @@ extension DatabaseService {
                 completion(false)
             }
         }
+        takenUsernameListener.remove()
     }
 }

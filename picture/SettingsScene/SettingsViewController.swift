@@ -133,17 +133,6 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             
             let sectionInfoDetail = sectionInfoDetails[indexPath.section][indexPath.row]
             
-//            if sectionInfoDetail.type == .email && Auth.auth().currentUser != nil && !(Auth.auth().currentUser?.isEmailVerified)! {
-//                let warningView = UIImageView(frame: .init(x: 0, y: 0, width: 16, height: 16))
-//                warningView.image = #imageLiteral(resourceName: "icons8-error")
-//                cell.accessoryView = warningView
-//            } else if sectionInfoDetail.type == .username {
-//                cell.accessoryType = .none
-//                cell.selectionStyle = .none
-//            } else {
-//                cell.accessoryType = .disclosureIndicator
-//            }
-            
             cell.accessoryType = .disclosureIndicator
             
             switch sectionInfoDetail.type {

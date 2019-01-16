@@ -93,4 +93,36 @@ extension UIViewController {
         
         present(alertController, animated: true, completion: nil)
     }
+    
+    func destructiveAlert(alertTitle: String, actionTitle: String, completion: @escaping (Bool) -> Void) {
+        let alertController = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
+        
+        let destructiveAction = UIAlertAction(title: actionTitle, style: .destructive) { _ in
+            completion(true)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
+            completion(false)
+        }
+        
+        alertController.addAction(destructiveAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func defaultAlert(alertTitle: String, actionTitle: String, cancelTitle: String = "Cancel", completion: @escaping (Bool) -> Void) {
+        let alertController = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
+        
+        let destructiveAction = UIAlertAction(title: actionTitle, style: .default) { _ in
+            completion(true)
+        }
+        
+        let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { (_) in
+            completion(false)
+        }
+        
+        alertController.addAction(destructiveAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
 }

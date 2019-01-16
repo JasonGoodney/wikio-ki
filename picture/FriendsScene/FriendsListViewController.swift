@@ -15,14 +15,17 @@ import SDWebImage
 
 class FriendsListViewController: UIViewController {
     
-    //typealias ChatWithFriend = (friend: User, chat: Chat)
+    // Firebase Listeners
+    var friendRequestListener: ListenerRegistration?
+    var friendshipChangedListener: ListenerRegistration?
+    var blockedUserListener: ListenerRegistration?
     
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
     
     private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "MY FRIENDS"]
     private let sectionHeaderHeight: CGFloat = 50
-//    private var chatsWithFriends: [ChatWithFriend] = []
+
     
     // MARK: - Subviews
     private var hud = JGProgressHUD(style: .dark)
@@ -55,18 +58,23 @@ class FriendsListViewController: UIViewController {
     
     private let titleLabel = NavigationTitleLabel(title: "Wikio Ki")
     
-    private lazy var launchCameraButton: SwiftyCamButton = {
-        let button = SwiftyCamButton(type: .system)
-        button.delegate = self
+    private lazy var addFriendButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 32, height: 32))
+        button.setImage(#imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.addTarget(self, action: #selector(addFriendButtonTapped), for: .touchUpInside)
+        button.layer.cornerRadius = 16
         return button
     }()
     
-    private lazy var newConversationButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newConversationButtonTapped))
-
     private let profileImageButton: ProfileImageButton = {
         let button = ProfileImageButton(height: 32, width: 32)
         return button
     }()
+    
+    deinit {
+        self.friendRequestListener?.remove()
+        friendshipChangedListener?.remove()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,7 +92,7 @@ class FriendsListViewController: UIViewController {
                 
                 self.handleRefreshFriends()
                 
-                Firestore.firestore()
+                self.friendRequestListener = Firestore.firestore()
                     .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
                     .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
                         
@@ -95,11 +103,12 @@ class FriendsListViewController: UIViewController {
                         
                         guard let docChanges = snapshot?.documentChanges else { return }
                         
-                        if docChanges.count > 0 {
-                            self.newConversationButton.tintColor = .blue
-                        } else {
-                            self.newConversationButton.tintColor = .black
-                        }
+                        docChanges.forEach({ (diff) in
+                            if diff.type == .added {
+                                #warning("pop button animation")
+                                return
+                            }
+                        })
                 }
             }
         }
@@ -109,8 +118,6 @@ class FriendsListViewController: UIViewController {
         } else {
             tableView.addSubview(refreshControl)
         }
-        
-        
     }
  
     override func viewWillAppear(_ animated: Bool) {
@@ -128,35 +135,30 @@ class FriendsListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        if let tintColor = newConversationButton.tintColor, tintColor == .black && UserController.shared.currentUser != nil {
-            Firestore.firestore()
-                .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
-                .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
-                    
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    
-                    guard let docChanges = snapshot?.documentChanges else { return }
-                    
-                    if docChanges.count > 0 {
-                        self.newConversationButton.tintColor = .blue
-                    } else {
-                        self.newConversationButton.tintColor = .black
-                    }
-            }
-        }
+        friendRequestListener?.remove()
+        friendshipChangedListener?.remove()
+        blockedUserListener?.remove()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
-    @objc private func newConversationButtonTapped(_ sender: UIBarButtonItem) {
+    }
+
+    @objc private func addFriendButtonTapped(_ sender: UIBarButtonItem) {
         let addFriendVC = AddFriendViewController()
+        if friendRequestListener != nil {
+            friendRequestListener?.remove()
+            self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math-1"), for: .normal)
+        }
+        
+        friendshipChangedListener = addListenerOnUser(listeningTo: DatabaseService.Collection.friends)
+        
         navigationController?.pushViewController(addFriendVC, animated: true)
     }
     
@@ -191,6 +193,19 @@ class FriendsListViewController: UIViewController {
             }
         })
     }
+    
+    private func addListenerOnUser(listeningTo collection: String, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
+        return Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(collection).addSnapshotListener { (querySnapshot, error) in
+            if let error = error {
+                print(error)
+                completion(false)
+                return
+            }
+            if let changes = querySnapshot?.documentChanges, changes.count > 0 {
+                completion(true)
+            }
+        }
+    }
 }
 
 // MARK: - UI
@@ -211,7 +226,7 @@ private extension FriendsListViewController {
     
     func setupNavigationBar() {
         navigationItem.titleView = titleLabel
-        navigationItem.rightBarButtonItem = newConversationButton
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: addFriendButton)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageButton)
     
         navigationItem.leftBarButtonItem?.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(settingsButtonTapped)))
@@ -245,6 +260,7 @@ private extension FriendsListViewController {
 // MARK: - Actions
 private extension FriendsListViewController {
     @objc func settingsButtonTapped() {
+        blockedUserListener = addListenerOnUser(listeningTo: DatabaseService.Collection.blocked)
         let settingsVC = SettingsViewController()
         navigationController?.pushViewController(settingsVC, animated: true)
     }
@@ -290,6 +306,7 @@ extension FriendsListViewController: UITableViewDataSource {
         
         
         cell.delegate = self
+        cell.profileImageView.delegate = self
         
         return cell
     }
@@ -314,10 +331,16 @@ extension FriendsListViewController: UITableViewDelegate {
         }
         
         let friend = dataSource[indexPath.row].friend
+        
+        if indexPath.section == 0 {
+            friend.isBestFriend = true
+        }
+        
         let chat = dataSource[indexPath.row].chat
         
         messagesViewController.friend = friend
         messagesViewController.chat = chat
+        
         navigationController?.pushViewController(messagesViewController, animated: true)
     
     }
@@ -367,29 +390,65 @@ extension FriendsListViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - SwiftyCamButtonDelegate
-extension FriendsListViewController: SwiftyCamButtonDelegate {
-    func buttonDidBeginLongPress() {}
-    func buttonDidEndLongPress() {}
-    func longPressDidReachMaximumDuration() {}
-    
-    func setMaxiumVideoDuration() -> Double {
-        return 0.0
-    }
-    
-    func buttonWasTapped() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
-        present(cameraViewController, animated: false, completion: nil)
+// MARK: - ProfileImageButtonDelegate
+extension FriendsListViewController: ProfileImageButtonDelegate {
+    func didTapProfileImageButton(_ sender: ProfileImageButton) {
+        let cell = sender.superview?.superview as! FriendsListCell
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        var dataSource: [ChatWithFriend] = []
+        var profileDetailsViewController: ProfileDetailsViewController
+        var isBestFriend = false
+        
+        switch indexPath.section {
+        case 0:
+            dataSource = UserController.shared.bestFriendsChats
+            isBestFriend = true
+        case 1:
+            dataSource = UserController.shared.recentChatsWithFriends
+        case 2:
+            dataSource = UserController.shared.allChatsWithFriends
+            if UserController.shared.bestFriendUids.contains(
+                dataSource[indexPath.row].friend.uid) {
+                isBestFriend = true
+            }
+        default:
+            print("SECTION ERROR 🤶\(#function)")
+        }
+        
+        let friend = dataSource[indexPath.row].friend
+        let chat = dataSource[indexPath.row].chat
+        
+        profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: isBestFriend, addFriendState: .accepted)
+        
+        friendshipChangedListener = addListenerOnUser(listeningTo: DatabaseService.Collection.friends, completion: { (changes) in
+            if changes {
+                DispatchQueue.main.async {
+                    self.handleRefreshFriends()
+                }
+                //self.blockedUserListener?.remove()
+            }
+        })
+//        
+//        blockedUserListener = addListenerOnUser(listeningTo: DatabaseService.Collection.blocked, completion: { (changes) in
+//            if changes {
+//                DispatchQueue.main.async {
+//                    self.handleRefreshFriends()
+//                }
+//                //self.friendshipChangedListener?.remove()
+//            }
+//        })
+        
+        navigationController?.pushViewController(profileDetailsViewController, animated: true)
     }
 }
 
+// MARK: - FriendsListCellDelegate
 extension FriendsListViewController: FriendsListCellDelegate {
-    func didTapCameraButton(_ sender: UIButton) {
+    func didTapCameraButton(_ sender: PopButton) {
         let cell = sender.superview?.superview as! FriendsListCell
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        //let friend = chatsWithFriends[index].friend
-        
+
         var dataSource: [ChatWithFriend] = []
         
         switch indexPath.section {
@@ -409,7 +468,7 @@ extension FriendsListViewController: FriendsListCellDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
         cameraViewController.friend = friend
-        present(cameraViewController, animated: false, completion: nil)
+        present(cameraViewController, animated: true, completion: nil)
     }
 }
 
@@ -436,7 +495,8 @@ extension FriendsListViewController {
             
             guard let userChats = userChats, userChats.count > 0 else { completion(error); return }
             
-            for chatUid in userChats {
+            for i in 0..<userChats.count {
+                let chatUid = userChats[i]
                 dbs.fetchChat(chatUid, completion: { (chat, error) in
                     if let error = error {
                         print(error)
@@ -445,7 +505,7 @@ extension FriendsListViewController {
                     }
 
                     guard let chat = chat else { print("chat does not exists"); return }
-
+                    
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {
                             print(error)
@@ -462,10 +522,17 @@ extension FriendsListViewController {
                             
                             UserController.shared.allChatsWithFriends.append((friend: friend, chat: chat))
                         }
-                        completion(nil)
+                        
+                        // So fetchChatsWithFriends only completes once when all users are fetched
+                        if i == userChats.count - 1 {
+                            completion(nil)
+                        }
                     })
                 })
+                
             }
         })
     }
 }
+
+

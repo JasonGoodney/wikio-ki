@@ -53,6 +53,11 @@ class MessagesViewController: UIViewController {
         return toolbar
     }()
     
+    private let profileImageButton: ProfileImageButton = {
+        let button = ProfileImageButton(height: 32, width: 32)
+        return button
+    }()
+    
     lazy var detailsButton = UIBarButtonItem(title: "•••", style: .plain, target: self, action: #selector(detailsButtonTapped(_:)))
     
     override func viewDidLoad() {
@@ -73,15 +78,22 @@ class MessagesViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
         
-        collectionView.reloadData()
+        if let urlString = friend?.profilePhotoUrl, let url = URL(string: urlString) {
+            DispatchQueue.main.async {
+                self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
+                    self.profileImageButton.isUserInteractionEnabled = true
+                })
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        guard let presentingVC = presentingViewController as? FriendsListViewController else { return }
-        presentingVC.indexPathToReload = selectedFriendListIndexPath
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
     @objc func detailsButtonTapped(_ sender: UIBarButtonItem) {
@@ -133,6 +145,12 @@ class MessagesViewController: UIViewController {
             }
         }
     }
+    
+    @objc private func profileImageButtonTapped() {
+        guard let friend = friend else { return }
+        let profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: friend.isBestFriend, addFriendState: .accepted)
+        navigationController?.pushViewController(profileDetailsViewController, animated: true)
+    }
 }
 
 // MARK: - UI
@@ -158,7 +176,10 @@ private extension MessagesViewController {
         titleLabel.text = navigationItem.title
         navigationItem.titleView = titleLabel
         navigationController?.navigationBar.tintColor = .black
-        navigationItem.rightBarButtonItem = detailsButton
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: profileImageButton)
+        
+        navigationItem.rightBarButtonItem?.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
     }
 }
 

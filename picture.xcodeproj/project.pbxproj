@@ -83,7 +83,12 @@
 		D7D0007721E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */; };
 		D7D0007921EC2CBE003C3A80 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007821EC2CBE003C3A80 /* Friend.swift */; };
 		D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */; };
+		D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007D21ED6BFE003C3A80 /* UIButton.swift */; };
+		D7D0008321ED7518003C3A80 /* ProfileDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */; };
 		D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */; };
+		D7F6A35621EE4487002DDB6D /* PopButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35521EE4487002DDB6D /* PopButton.swift */; };
+		D7F6A35821EE4D43002DDB6D /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35721EE4D43002DDB6D /* Compression.swift */; };
+		D7F6A35A21EE6A04002DDB6D /* BestFriendDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35921EE6A04002DDB6D /* BestFriendDetailCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -167,7 +172,12 @@
 		D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+DeleteAccount.swift"; sourceTree = "<group>"; };
 		D7D0007821EC2CBE003C3A80 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatWithFriend.swift; sourceTree = "<group>"; };
+		D7D0007D21ED6BFE003C3A80 /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailsViewController.swift; sourceTree = "<group>"; };
 		D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDestructionType.swift; sourceTree = "<group>"; };
+		D7F6A35521EE4487002DDB6D /* PopButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopButton.swift; sourceTree = "<group>"; };
+		D7F6A35721EE4D43002DDB6D /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
+		D7F6A35921EE6A04002DDB6D /* BestFriendDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BestFriendDetailCell.swift; sourceTree = "<group>"; };
 		E68CC50FADF6920AEFED52C8 /* Pods-picture.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-picture.debug.xcconfig"; path = "Pods/Target Support Files/Pods-picture/Pods-picture.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -299,6 +309,7 @@
 				D786F67B21D92EBC003DA3C6 /* Alert.swift */,
 				D72D792F21D13ECD00FB5327 /* UserController.swift */,
 				D726383021E13D8C00FDA242 /* Theme.swift */,
+				D7F6A35721EE4D43002DDB6D /* Compression.swift */,
 				D7643B4C21DD10F800ACE26F /* StorageService */,
 				D7643B4521DD0E8B00ACE26F /* DatabaseService */,
 				D72D793121D14A3000FB5327 /* AddFriendScene */,
@@ -313,6 +324,7 @@
 				D74F7E2221D0682900B5EF28 /* SettingsScene */,
 				D74890F121BC86DC005AAF6B /* Main.storyboard */,
 				D7591F1321C2D6D900B3EAAD /* NavigationController.swift */,
+				D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */,
 				D7591F0D21C2C27C00B3EAAD /* Extensions */,
 				D7591F0821C2C23800B3EAAD /* Protocols */,
 				D74890F421BC86DE005AAF6B /* Assets.xcassets */,
@@ -360,6 +372,7 @@
 				D778E69521CDE2EC005C6C96 /* Extensions+UIView.swift */,
 				D738322E21DFFAF2006DC2EA /* Date+TimeAgo.swift */,
 				D726383221E13E7E00FDA242 /* UIColor.swift */,
+				D7D0007D21ED6BFE003C3A80 /* UIButton.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -428,6 +441,7 @@
 				D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */,
 				D72D792D21D1399800FB5327 /* OpenCameraToolbar.swift */,
 				D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */,
+				D7F6A35521EE4487002DDB6D /* PopButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -439,6 +453,15 @@
 				D7869FC021DEAA0800A1B863 /* BlockedUserCell.swift */,
 			);
 			path = BlockedUsersScene;
+			sourceTree = "<group>";
+		};
+		D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */ = {
+			isa = PBXGroup;
+			children = (
+				D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */,
+				D7F6A35921EE6A04002DDB6D /* BestFriendDetailCell.swift */,
+			);
+			path = ProfileDetailsScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -668,22 +691,27 @@
 				D7591F1221C2CE5C00B3EAAD /* ReplyFooterView.swift in Sources */,
 				D72D792C21D0913900FB5327 /* LoginViewModel.swift in Sources */,
 				D72F166621D556BD0009D43D /* AddFriendState.swift in Sources */,
+				D7F6A35821EE4D43002DDB6D /* Compression.swift in Sources */,
 				D7869FBA21DE6A5700A1B863 /* ProfileImageButton.swift in Sources */,
 				D72D793521D14A9200FB5327 /* AddFriendCell.swift in Sources */,
 				D72D793321D14A4A00FB5327 /* AddFriendViewController.swift in Sources */,
 				D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */,
 				D7591F1921C2DFCA00B3EAAD /* SwiftyRecordButton.swift in Sources */,
+				D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */,
 				D7591F2321C554FD00B3EAAD /* Message.swift in Sources */,
 				D7591F0421C2C1B700B3EAAD /* FriendsListViewController.swift in Sources */,
 				D79A2E5921E7025F00502FF1 /* EditEmailViewController.swift in Sources */,
 				D7591F2921C56A3C00B3EAAD /* OpenMessageView.swift in Sources */,
 				D79A2E5721E7023D00502FF1 /* EditSettingViewController.swift in Sources */,
+				D7F6A35A21EE6A04002DDB6D /* BestFriendDetailCell.swift in Sources */,
 				D7643B4921DD0EE100ACE26F /* DatabaseService+SendMessage.swift in Sources */,
 				D7869FBE21DEA8E500A1B863 /* BlockedUsersViewController.swift in Sources */,
 				D73B8AF721C8114600DD4CA4 /* VideoProcessor.swift in Sources */,
 				D726383121E13D8C00FDA242 /* Theme.swift in Sources */,
 				D7643B5021DD112C00ACE26F /* StorageService+StoreMedia.swift in Sources */,
 				D7591F1D21C3141E00B3EAAD /* PhotoViewController.swift in Sources */,
+				D7D0008321ED7518003C3A80 /* ProfileDetailsViewController.swift in Sources */,
+				D7F6A35621EE4487002DDB6D /* PopButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

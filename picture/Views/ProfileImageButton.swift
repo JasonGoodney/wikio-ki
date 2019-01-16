@@ -8,8 +8,14 @@
 
 import UIKit
 
-class ProfileImageButton: UIButton {
+protocol ProfileImageButtonDelegate: class {
+    func didTapProfileImageButton(_ sender: ProfileImageButton)
+}
 
+class ProfileImageButton: PopButton {
+
+    weak var delegate: ProfileImageButtonDelegate?
+    
     init(height: CGFloat, width: CGFloat, enabled: Bool = false) {
         super.init(frame: .zero)
         
@@ -21,9 +27,14 @@ class ProfileImageButton: UIButton {
         backgroundColor = .lightGray
         imageView?.contentMode = .scaleAspectFill
 
+        addTarget(self, action: #selector(handleTap), for: .touchUpInside)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError()
+    }
+    
+    @objc private func handleTap() {
+        delegate?.didTapProfileImageButton(self)
     }
 }

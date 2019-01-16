@@ -49,7 +49,7 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     @objc fileprivate func handleTextChanged(textField: UITextField) {
         if textField == emailTextField {
-            loginViewModel.email = textField.text
+            loginViewModel.email = textField.text?.trimmingCharacters(in: .whitespaces)
         } else {
             loginViewModel.password = textField.text
         }

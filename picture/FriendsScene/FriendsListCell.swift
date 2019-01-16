@@ -10,7 +10,7 @@ import UIKit
 import SDWebImage
 
 protocol FriendsListCellDelegate: class {
-    func didTapCameraButton(_ sender: UIButton)
+    func didTapCameraButton(_ sender: PopButton)
 }
 
 class FriendsListCell: UITableViewCell, ReuseIdentifiable {
@@ -35,23 +35,23 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
     
     private let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .lightGray
+        label.textColor = WKTheme.textColor
         label.font = UIFont.systemFont(ofSize: 14)
         label.text = ""
         return label
     }()
     
-    private lazy var cameraButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "icons8-camera").withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = WKTheme.gainsboro
-        button.imageView?.tintColor = .lightGray
+    private lazy var cameraButton: PopButton = {
+        let button = PopButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "icons8-camera-90").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = WKTheme.textColor
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        button.contentHorizontalAlignment = .trailing
         button.addTarget(self, action: #selector(handleCameraButton), for: .touchUpInside)
         return button
     }()
 
-    private let profileImageView = ProfileImageButton(height: 44, width: 44, enabled: false)
+    let profileImageView = ProfileImageButton(height: 44, width: 44, enabled: true)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -76,6 +76,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         }
         
         let dbs = DatabaseService()
+        
         dbs.fetchChat(withFriend: user) { (chat, error) in
             if let error = error {
                 print(error)
@@ -90,12 +91,12 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
                 self.usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
                 self.detailsLabel.font = UIFont.boldSystemFont(ofSize: 14)
                 self.detailsLabel.text = "New Friend" + timeAgoString
-                self.cameraButton.tintColor = WKTheme.gainsboro
+                self.cameraButton.tintColor = WKTheme.textColor
                 
             } else if !chat.isOpened {
                 if UserController.shared.currentUser!.uid == chat.lastSenderUid {
                     self.detailsLabel.text = "Delivered" + timeAgoString
-                    self.cameraButton.tintColor = WKTheme.gainsboro
+                    self.cameraButton.tintColor = WKTheme.textColor
                     self.usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
                     self.detailsLabel.font = UIFont.systemFont(ofSize: 14)
                 } else {
@@ -108,7 +109,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
                 }
             } else {
                 self.detailsLabel.text = "Opened" + timeAgoString
-                self.cameraButton.tintColor = WKTheme.gainsboro
+                self.cameraButton.tintColor = WKTheme.textColor
                 self.statusImageView.image = #imageLiteral(resourceName: "icons8-circled")
                 self.usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
                 self.detailsLabel.font = UIFont.systemFont(ofSize: 14)

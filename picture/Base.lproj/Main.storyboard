@@ -30,20 +30,23 @@
                                     <constraint firstAttribute="height" constant="75" id="B1S-oG-CEk"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy">
-                                <rect key="frame" x="70" y="598" width="30" height="23"/>
-                                <state key="normal" image="flipCamera"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy" customClass="PopButton" customModule="picture" customModuleProvider="target">
+                                <rect key="frame" x="56" y="587.5" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="jI4-ts-oN3"/>
+                                    <constraint firstAttribute="width" constant="44" id="tqz-CD-P6q"/>
+                                </constraints>
                                 <connections>
                                     <action selector="cameraSwitchTapped:" destination="PPf-vu-qOI" eventType="touchUpInside" id="fH2-pM-SQo"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ba-fA-YFE">
-                                <rect key="frame" x="275" y="594.5" width="18" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ba-fA-YFE" customClass="PopButton" customModule="picture" customModuleProvider="target">
+                                <rect key="frame" x="275" y="587.5" width="44" height="44"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="Ing-9Q-5Ti"/>
-                                    <constraint firstAttribute="width" constant="18" id="thT-q3-7Zh"/>
+                                    <constraint firstAttribute="height" constant="44" id="muH-7g-xTc"/>
+                                    <constraint firstAttribute="width" constant="44" id="raJ-uk-ZZw"/>
                                 </constraints>
-                                <state key="normal" image="flashOutline"/>
+                                <state key="normal" image="icons8-flash_off"/>
                                 <connections>
                                     <action selector="toggleFlashTapped:" destination="PPf-vu-qOI" eventType="touchUpInside" id="rmN-9n-cHH"/>
                                 </connections>
@@ -68,6 +71,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hCB-yz-JLt" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="118" y="-10"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="Uji-g2-EAB">
@@ -94,7 +98,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="flashOutline" width="18" height="30"/>
-        <image name="flipCamera" width="30" height="23"/>
+        <image name="icons8-flash_off" width="30" height="30"/>
     </resources>
 </document>

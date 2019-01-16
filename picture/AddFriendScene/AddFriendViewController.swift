@@ -11,7 +11,7 @@ import FirebaseFirestore
 import JGProgressHUD
 
 class AddFriendViewController: UITableViewController {
-
+    
     private var sentRequestUids: [String] = []
     private var friendRequests: [User] = []
     private var searchedUser: User?
@@ -23,6 +23,7 @@ class AddFriendViewController: UITableViewController {
         bar.dimsBackgroundDuringPresentation = false
         bar.obscuresBackgroundDuringPresentation = false
         bar.definesPresentationContext = true
+        bar.searchBar.showsCancelButton = false
         return bar
     }()
     
@@ -50,8 +51,6 @@ class AddFriendViewController: UITableViewController {
         DispatchQueue.main.async{
             self.searchController.searchBar.becomeFirstResponder()
         }
-        
-//        Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friendRequests).liste
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,6 +66,15 @@ class AddFriendViewController: UITableViewController {
         }
         
         fetchSentRequests()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        if self.presentedViewController != nil {
+            self.presentedViewController?.dismiss(animated: false, completion: nil)
+        }
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -86,12 +94,17 @@ class AddFriendViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: AddFriendCell.reuseIdentifier, for: indexPath) as! AddFriendCell
         
         cell.delegate = self
-                
+        cell.profileImageView.delegate = self
+        
         if indexPath.section == 0 {
             
             if let user = searchedUser {
                 if sentRequestUids.contains(user.uid) {
                     cell.updateView(forAddFriendState: .added)
+                } else if friendRequests.contains(user) {
+                    cell.updateView(forAddFriendState: .requested)
+                } else if UserController.shared.blockedUids.contains(user.uid) {
+                    cell.updateView(forAddFriendState: .blocked)
                 } else {
                     cell.updateView(forAddFriendState: .add)
                 }
@@ -201,7 +214,7 @@ class AddFriendViewController: UITableViewController {
         currentUser.addFriend(user)
         user.addFriend(currentUser)
         
-        removeFriendRequest(from: user) { (error) in
+        removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
             if let error = error {
                 print(error)
                 completion(error)
@@ -211,7 +224,7 @@ class AddFriendViewController: UITableViewController {
             completion(nil)
         }
         
-        removeSentRequest(from: user) { (error) in
+        removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
             if let error = error {
                 print(error)
                 completion(error)
@@ -232,28 +245,28 @@ class AddFriendViewController: UITableViewController {
         }
     }
     
-    private func removeFriendRequest(from user: User, completion: @escaping ErrorCompletion) {
-        Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friendRequests).document(user.uid).delete { (error) in
+    private func removeFriendRequest(to: User, from: User, completion: @escaping ErrorCompletion) {
+        Firestore.firestore().collection(DatabaseService.Collection.users).document(to.uid).collection(DatabaseService.Collection.friendRequests).document(from.uid).delete { (error) in
             if let error = error {
                 print(error)
                 completion(error)
                 return
             }
-            print("Accepted and Removed for \(user.uid)")
+            print("Removed request to \(to.uid)")
             completion(nil)
         }
     }
     
-    private func removeSentRequest(from user: User, completion: @escaping ErrorCompletion) {
+    private func removeSentRequest(from: User, to: User, completion: @escaping ErrorCompletion) {
         Firestore.firestore()
-            .collection(DatabaseService.Collection.users).document(user.uid)
-            .collection(DatabaseService.Collection.sentRequests).document(UserController.shared.currentUser!.uid).delete { (error) in
+            .collection(DatabaseService.Collection.users).document(from.uid)
+            .collection(DatabaseService.Collection.sentRequests).document(to.uid).delete { (error) in
             if let error = error {
                 print(error)
                 completion(error)
                 return
             }
-            print("removed sent request from \(UserController.shared.currentUser!.uid)")
+            print("removed sent request from \(from.uid)")
             completion(nil)
         }
     }
@@ -292,7 +305,7 @@ class AddFriendViewController: UITableViewController {
             }
             
             guard let docs = snapshot?.documents else { return }
-
+            self.friendRequests = []
             docs.forEach({ (doc) in
                 let uid = doc.data().values.first as! String
                 Firestore.firestore()
@@ -314,7 +327,36 @@ class AddFriendViewController: UITableViewController {
 }
 
 extension AddFriendViewController: AddFriendDelegate {
+    func didTapCancelReceivedRequest(cell: AddFriendCell, user: User, state: AddFriendState) {
+        if state == .requested {
+            destructiveAlert(alertTitle: "Remove friend request from \(user.username)", actionTitle: "Remove") { (removed) in
+                if removed {
+                    self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                    }
+                    
+                    self.removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                    }
+                    
+                    DispatchQueue.main.async {
+                        guard let indexPath = self.tableView.indexPath(for: cell) else { return }
+                        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                    }
+                }
+            }
+            
+        }
+    }
+    
     func didTapAddFriendButton(cell: AddFriendCell, user: User, state: AddFriendState) {
+        let dbs = DatabaseService()
         switch state {
         case .add:
             sendFriendRequest(to: user) { (state, error) in
@@ -325,7 +367,29 @@ extension AddFriendViewController: AddFriendDelegate {
                 cell.updateView(forAddFriendState: .added)
             }
         case .added:
-            print("Friend request sent to \(user.uid)")
+            searchController.dismiss(animated: true)
+            print("Removing friend request sent to \(user.username)")
+            self.removeFriendRequest(to: user, from: UserController.shared.currentUser!) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                print("Removed friend request to \(user.username)")
+            }
+            
+            self.removeSentRequest(from: UserController.shared.currentUser!, to: user) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                print("Removed friend request by me")
+            }
+            
+            DispatchQueue.main.async {
+                cell.updateView(forAddFriendState: .add)
+            }
         case .requested:
             acceptFriendRequest(from: user) { (error) in
                 if let error = error {
@@ -339,7 +403,33 @@ extension AddFriendViewController: AddFriendDelegate {
             }
         case .accepted:
             print("Message start new message with user \(user.uid)")
+        case .blocked:
+            print("Alert to unblock user")
+        } 
+    }
+}
+
+extension AddFriendViewController: ProfileImageButtonDelegate {
+    func didTapProfileImageButton(_ sender: ProfileImageButton) {
+        searchController.isActive = false
+        let cell = sender.superview as! AddFriendCell
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        var user: Friend?
+        
+        switch indexPath.section {
+        case 0 where searchedUser != nil:
+            user = Friend(user: searchedUser!)
+        case 1:
+            user = Friend(user: self.friendRequests[indexPath.row])
+        default:
+            print("Section Error 🤶\(#function)")
         }
+        
+        guard let userToPass = user else { return }
+        let profileDetailsViewController = ProfileDetailsViewController(user: userToPass, addFriendState: cell.addFriendState)
+        navigationController?.pushViewController(profileDetailsViewController, animated: true)
+        
     }
 }
 
@@ -350,6 +440,11 @@ extension AddFriendViewController: UISearchControllerDelegate {
 }
 
 extension AddFriendViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchedUser = nil
+        reloadData()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
             searchedUser = nil
@@ -362,13 +457,14 @@ extension AddFriendViewController: UISearchBarDelegate {
                     print(error)
                     return
                 }
-                
+//                || self.friendRequests.contains(searchedUser)
+//                || UserController.shared.blockedUids.contains(searchedUser.uid)
                 guard let searchedUser = searchedUser else { return }
                 if UserController.shared.currentUser == searchedUser
-                    || self.friendRequests.contains(searchedUser)
                     
                     || (UserController.shared.currentUser?.friendsUids.contains((searchedUser.uid)))!
                     || UserController.shared.blockedUids.contains(searchedUser.uid)
+                    
                 {
                     self.searchedUser = nil
                 } else {
