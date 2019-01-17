@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewMessagesViewController: UIViewController {
     private let cellId = ViewMessageCell.reuseIdentifier
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -66,9 +68,10 @@ class ViewMessagesViewController: UIViewController {
     }
     
     @objc func dismissTapped() {
-        dismiss(animated: false)
+        DispatchQueue.main.async {
+            self.dismiss(animated: false)
+        }
     }
-    
 }
 
 // MARK: - UI

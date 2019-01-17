@@ -16,8 +16,8 @@ class PreviewMediaViewController: UIViewController {
         }
     }
     
-    private var previousCaptionConstraints: [NSLayoutConstraint] = []
-    private var previousCaptionFrame = CGRect()
+    private var characterLimit = 140
+    
     private var captionIsInSuperview = false
     private var captionCanBeDragged = false
     override var prefersStatusBarHidden: Bool {
@@ -35,7 +35,7 @@ class PreviewMediaViewController: UIViewController {
     
     lazy var cancelButton: PopButton = {
         let button = PopButton()
-        button.setImage(#imageLiteral(resourceName: "back_button").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-back-filled-96").withRenderingMode(.alwaysTemplate), for: .normal) // Too Small
         button.tintColor = .white
         button.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         return button
@@ -83,16 +83,19 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var captionTextField: UITextField = {
-        let textField = UITextField()
-        textField.backgroundColor = UIColor.black.withAlphaComponent(0.65)
-        textField.delegate = self
-        textField.setLeftPaddingPoints(8)
-        textField.setRightPaddingPoints(8)
-        textField.textColor = .white
-        textField.addGestureRecognizer(captionDragGesture)
-        textField.isHidden = true
-        return textField
+    lazy var captionTextView: UITextView = {
+        let textView = UITextView()
+        textView.backgroundColor = UIColor.black.withAlphaComponent(0.65)
+        textView.delegate = self
+//        textField.setLeftPaddingPoints(8)
+//        textField.setRightPaddingPoints(8)
+        textView.textColor = .white
+        textView.font = UIFont.systemFont(ofSize: 17)
+        textView.addGestureRecognizer(captionDragGesture)
+        textView.isHidden = true
+        textView.isScrollEnabled = false
+//        textView.textContainerInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        return textView
     }()
     
     private var videoURL: URL?
@@ -203,54 +206,7 @@ class PreviewMediaViewController: UIViewController {
         return image!
     }
     
-    @objc func sendButtonTapped(_ sender: UIButton) {
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = view.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(blurEffectView)
-        
-        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
-        let vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
-        vibrancyEffectView.frame = view.bounds
-        
-        blurEffectView.contentView.addSubview(vibrancyEffectView)
-        
-        guard let currentUser = UserController.shared.currentUser,
-            let friend = friend else { return }
-        var messageCaption: String? = nil
-        var messageImageData: Data? = nil
-        var messageVideoURL: String? = nil
-        var messageType: MessageType = .photo
-        
-        if captionTextField.text != "", let caption = captionTextField.text, let image = image {
-            messageCaption = caption
-//            message.image = UIImage.createImageWithLabelOverlay(textField: captionTextField, imageSize: backgroundImageView.frame.size, image: image)
-            let processor = ImageProcessor()
-            let image = processor.addOverlay(captionTextField, to: image, size: view.frame.size)
-            messageImageData = image.jpegData(compressionQuality: Compression.quality)
-        } else if let image = image {
-            messageImageData = image.jpegData(compressionQuality: Compression.quality)
-        } else if let videoURL = videoURL {
-            let processor = VideoProcessor()
-            let captionProcessor = CaptionProcessor()
-            let captionImage = captionProcessor.imageFromView(captionTextField)
-            let captionAsImage = captionTextField.asImage()
-           // message.videoURL = processor.addOverlay(captionTextField, to: videoURL, size: view.frame.size)
-        
-            let config = MergeConfiguration.customPlacement(captionTextField.frame)
-            let merge = Merge(config: config)
-            let asset = AVAsset(url: videoURL)
-            
-            merge.overlayVideo(video: asset, overlayImage: captionTextField.asImage(), completion: { (url) in
-                guard let url = url else { return }
-                messageVideoURL = url.absoluteString
-            }) { (progress) in
-                print(progress)
-            }
-            messageType = .video
-        }
-        
+    fileprivate func sendMessage(_ currentUser: User, _ messageCaption: String?, _ messageType: MessageType, _ friend: User, _ messageImageData: Data?) {
         let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
         print("chatUID: \(chatUid)")
@@ -287,6 +243,64 @@ class PreviewMediaViewController: UIViewController {
                 })
             }
         }
+    }
+    
+    @objc func sendButtonTapped(_ sender: UIButton) {
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(blurEffectView)
+        
+        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
+        let vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
+        vibrancyEffectView.frame = view.bounds
+        
+        blurEffectView.contentView.addSubview(vibrancyEffectView)
+        
+        guard let currentUser = UserController.shared.currentUser,
+            let friend = friend else { return }
+        var messageCaption: String? = nil
+        var messageImageData: Data? = nil
+        var messageVideoURL: String? = nil
+        var messageType: MessageType = .photo
+        
+        if captionTextView.text != "", let caption = captionTextView.text, let image = image {
+            messageCaption = caption
+//            message.image = UIImage.createImageWithLabelOverlay(textField: captionTextField, imageSize: backgroundImageView.frame.size, image: image)
+            let processor = ImageProcessor()
+            let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
+            messageImageData = image.jpegData(compressionQuality: Compression.quality)
+            sendMessage(currentUser, messageCaption, messageType, friend, messageImageData)
+        } else if let image = image {
+            messageImageData = image.jpegData(compressionQuality: Compression.quality)
+            sendMessage(currentUser, messageCaption, messageType, friend, messageImageData)
+        } else if let videoURL = videoURL {
+            let processor = VideoProcessor()
+            let captionProcessor = CaptionProcessor()
+            let captionImage = captionProcessor.imageFromView(captionTextView)
+            let captionAsImage = captionTextView.asImage()
+           // message.videoURL = processor.addOverlay(captionTextField, to: videoURL, size: view.frame.size)
+        
+            let config = MergeConfiguration.customPlacement(captionTextView.frame)
+            let merge = Merge(config: config)
+            let asset = AVAsset(url: videoURL)
+            
+            merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
+                guard let url = url else { return }
+                messageVideoURL = url.absoluteString
+                do {
+                    try messageImageData = Data(contentsOf: url)
+                    self.sendMessage(currentUser, self.captionTextView.text ?? "", .video, friend, messageImageData)
+                } catch let error {
+                    print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                }
+            }) { (progress) in
+                print(progress)
+            }
+        }
+        
+        
     }
     
     private func saveImageToFirebase(data: Data, for message: Message, completion: @escaping ErrorCompletion) {
@@ -367,26 +381,25 @@ class PreviewMediaViewController: UIViewController {
         addCaptionButton.pop()
         // Caption Active
         if captionIsInSuperview {
-            if captionTextField.text != "" && captionCanBeDragged {
-                captionTextField.becomeFirstResponder()
+            if captionTextView.text != "" && captionCanBeDragged {
+                captionTextView.becomeFirstResponder()
                 dimView.isHidden = false
                 cancelButton.isHidden = true
                 resignCaptionEditButton.isHidden = false
-            } else if captionTextField.text == "" {
-                captionTextField.isHidden = true
+            } else if captionTextView.text == "" {
+                captionTextView.isHidden = true
                 dimView.isHidden = true
                 cancelButton.isHidden = false
                 resignCaptionEditButton.isHidden = true
                 captionIsInSuperview = false
-                captionTextField.resignFirstResponder()
+                captionTextView.resignFirstResponder()
             } else {
-                captionTextField.frame = previousCaptionFrame
-                captionTextField.setNeedsDisplay()
-                captionTextField.resignFirstResponder()
+                captionTextView.setNeedsDisplay()
+                captionTextView.resignFirstResponder()
                 UIView.animate(withDuration: 0.2) {
-                    self.captionTextField.textAlignment = .center
+                    self.captionTextView.textAlignment = .center
                 }
-                captionTextField.isHidden = false
+                captionTextView.isHidden = false
                 dimView.isHidden = true
                 cancelButton.isHidden = false
                 resignCaptionEditButton.isHidden = true
@@ -394,8 +407,8 @@ class PreviewMediaViewController: UIViewController {
         }
         // Caption Not Active
         else {
-            captionTextField.becomeFirstResponder()
-            captionTextField.isHidden = false
+            captionTextView.becomeFirstResponder()
+            captionTextView.isHidden = false
             dimView.isHidden = false
             cancelButton.isHidden = true
             resignCaptionEditButton.isHidden = false
@@ -406,12 +419,14 @@ class PreviewMediaViewController: UIViewController {
     private func sendMessage(_ message: Message) {
         
     }
+    
+
 }
 
 // MARK: - UI
 private extension PreviewMediaViewController {
     func updateView() {
-        view.addSubviews(dimView, captionTextField, cancelButton, resignCaptionEditButton, addCaptionButton, sendView)
+        view.addSubviews(dimView, captionTextView, cancelButton, resignCaptionEditButton, addCaptionButton, sendView)
         view.addGestureRecognizer(addTextTapGesture)
         setupConstraints()
         
@@ -426,7 +441,9 @@ private extension PreviewMediaViewController {
         
         dimView.anchor(view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
         
-        captionTextField.anchor(nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 36)
+        captionTextView.anchor(nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 36)
+        captionTextView.anchorCenterXToSuperview()
+        captionTextView.anchorCenterYToSuperview()
         
         addCaptionButton.anchor(view.topAnchor, left: nil, bottom: nil, right: view.rightAnchor, topConstant: 24, leftConstant: 0, bottomConstant: 0, rightConstant: 16, widthConstant: buttonSize, heightConstant: buttonSize)
         
@@ -440,22 +457,63 @@ private extension PreviewMediaViewController {
     }
 }
 
-// MARK: - UITextFieldDelegate
-extension PreviewMediaViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-
-        textField.textAlignment = .left
+extension PreviewMediaViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        handleCaptionResponder()
+        textView.textAlignment = .left
         captionCanBeDragged = false
-        captionTextField.anchorCenterXToSuperview()
-        captionTextField.anchorCenterYToSuperview()
-        captionTextField.setNeedsUpdateConstraints()
+        captionTextView.anchorCenterXToSuperview()
+        captionTextView.anchorCenterYToSuperview()
+        captionTextView.layoutIfNeeded()
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
+    func textViewDidEndEditing(_ textView: UITextView) {
+        #warning("Move textview back to it's position before editing")
         captionCanBeDragged = true
-        if textField.text?.last == " " {
-            textField.text?.removeLast()
+        if textView.text?.last == " " {
+            textView.text?.removeLast()
         }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        
+        let size = CGSize(width: view.frame.width, height: .infinity)
+        let estimatedSize = textView.sizeThatFits(size)
+        
+        textView.constraints.forEach { (constraint) in
+            if constraint.firstAttribute == .height {
+                constraint.constant = estimatedSize.height
+            }
+        }
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        if text.count > 1 {
+            #warning("Maybe warning saying pasted text is too long?")
+            return text.count <= characterLimit
+        }
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        
+        let changedText = currentText.replacingCharacters(in: stringRange, with: text)
+        
+        return changedText.count <= characterLimit
+    }
+}
+
+extension UITextInput {
+    func textRange(for range: NSRange) -> UITextRange? {
+        var result: UITextRange?
+        
+        if
+            let start = position(from: beginningOfDocument, offset: range.location),
+            let end = position(from: start, offset: range.length)
+        {
+            result = textRange(from: start, to: end)
+            
+        }
+        
+        return result
     }
 }
 

@@ -29,8 +29,9 @@ extension LoginFlowHandler {
     func handleLogout(withWindow window: UIWindow? = UIApplication.shared.keyWindow) {
         do {
             try Auth.auth().signOut()
-            UserController.shared.currentUser = nil
-            UserController.shared.blockedUids = []
+            UserController.shared.dispose()
+            
+        
         } catch let error {
             print("Error signing out of Firebase \(error)")
         }

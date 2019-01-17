@@ -19,6 +19,7 @@ class FriendsListViewController: UIViewController {
     var friendRequestListener: ListenerRegistration?
     var friendshipChangedListener: ListenerRegistration?
     var blockedUserListener: ListenerRegistration?
+    var weekLongFriendshipListener: ListenerRegistration?
     
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
@@ -69,6 +70,12 @@ class FriendsListViewController: UIViewController {
     private let profileImageButton: ProfileImageButton = {
         let button = ProfileImageButton(height: 32, width: 32)
         return button
+    }()
+    
+    private lazy var doubleTapRefresh: UITapGestureRecognizer = {
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(handleRefreshFriends))
+        gesture.numberOfTapsRequired = 2
+        return gesture
     }()
     
     deinit {
@@ -177,16 +184,17 @@ class FriendsListViewController: UIViewController {
             if UserController.shared.allChatsWithFriends.count == 0 {
                 self.noFriendsLabel.isHidden = false
                 self.tableView.isHidden = true
+                self.view.addGestureRecognizer(self.doubleTapRefresh)
                 
             } else {
                 self.noFriendsLabel.isHidden = true
                 self.tableView.isHidden = false
+                self.view.removeGestureRecognizer(self.doubleTapRefresh)
                 
                 UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
                     return chatWithFriend1.friend.username < chatWithFriend2.friend.username
                 })
 
-                print("Fetched Chat With Friends")
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
@@ -429,7 +437,7 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
                 //self.blockedUserListener?.remove()
             }
         })
-//        
+//
 //        blockedUserListener = addListenerOnUser(listeningTo: DatabaseService.Collection.blocked, completion: { (changes) in
 //            if changes {
 //                DispatchQueue.main.async {
@@ -495,8 +503,9 @@ extension FriendsListViewController {
             
             guard let userChats = userChats, userChats.count > 0 else { completion(error); return }
             
-            for i in 0..<userChats.count {
-                let chatUid = userChats[i]
+            var i = 0
+            for chatUid in userChats {
+//                let chatUid = userChats[i]
                 dbs.fetchChat(chatUid, completion: { (chat, error) in
                     if let error = error {
                         print(error)
@@ -521,12 +530,14 @@ extension FriendsListViewController {
                             UserController.shared.currentUser?.friendsUids.insert(user.uid)
                             
                             UserController.shared.allChatsWithFriends.append((friend: friend, chat: chat))
+                            i += 1
                         }
                         
                         // So fetchChatsWithFriends only completes once when all users are fetched
-                        if i == userChats.count - 1 {
+//                        if i == userChats.count - 1 {
+                            print("Fetched Chat With Friends and is now completing")
                             completion(nil)
-                        }
+//                        }
                     })
                 })
                 

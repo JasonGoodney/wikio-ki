@@ -71,4 +71,18 @@ extension Date {
         
         return false
     }
+    
+    func isWithinThePastWeek() -> Bool {
+        let calendar = Calendar.current
+        let dayAgo = calendar.date(byAdding: .day, value: -1, to: Date())!
+        
+        if dayAgo < self {
+            let diff = Calendar.current.dateComponents([.hour], from: self, to: Date()).hour ?? 0
+            if diff <= 24 * 7 {
+                return true
+            }
+        }
+        
+        return false
+    }
 }

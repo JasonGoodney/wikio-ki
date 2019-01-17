@@ -383,10 +383,10 @@
 				D73B8AFE21C885A400DD4CA4 /* ViewMessagesScene */,
 				D7591F0F21C2CD9700B3EAAD /* MessagesViewController.swift */,
 				D7591F1E21C3371B00B3EAAD /* MessagesCell.swift */,
-				D7591F2A21C56EFE00B3EAAD /* OpenedMessageViewController.swift */,
-				D7591F1121C2CE5C00B3EAAD /* ReplyFooterView.swift */,
-				D7591F2621C55A5000B3EAAD /* MessageController.swift */,
 				D7591F2821C56A3C00B3EAAD /* OpenMessageView.swift */,
+				D7591F2621C55A5000B3EAAD /* MessageController.swift */,
+				D7591F1121C2CE5C00B3EAAD /* ReplyFooterView.swift */,
+				D7591F2A21C56EFE00B3EAAD /* OpenedMessageViewController.swift */,
 			);
 			name = MessagesScene;
 			path = ConversationScene;

@@ -87,12 +87,16 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
             self.chat = chat
             
             let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
-            if chat.isNewFriendship {
+            
+            if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
+                self.detailsLabel.text = "Tap to chat" + timeAgoString
+                self.usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+                self.detailsLabel.font = UIFont.systemFont(ofSize: 14)
+            } else if chat.isNewFriendship {
                 self.usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
                 self.detailsLabel.font = UIFont.boldSystemFont(ofSize: 14)
                 self.detailsLabel.text = "New Friend" + timeAgoString
                 self.cameraButton.tintColor = WKTheme.textColor
-                
             } else if !chat.isOpened {
                 if UserController.shared.currentUser!.uid == chat.lastSenderUid {
                     self.detailsLabel.text = "Delivered" + timeAgoString

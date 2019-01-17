@@ -7,13 +7,14 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 class Chat {
     
     let uid: String
     let memberUids: [String]
     let lastMessageSent: String
-    let lastChatUpdateTimestamp: TimeInterval
+    var lastChatUpdateTimestamp: TimeInterval
     let lastSenderUid: String
     var isOpened: Bool
     var isNewFriendship: Bool

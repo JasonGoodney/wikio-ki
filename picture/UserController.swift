@@ -12,7 +12,7 @@ import Firebase
 class UserController: LoginFlowHandler {
     
     static let shared = UserController(); private init() {}
-    
+
     var currentUser: User?
     
     var blockedUids: [String] = []
@@ -90,4 +90,14 @@ class UserController: LoginFlowHandler {
         }
     }
     
+}
+
+// MARK: - Log out deinit
+extension UserController {
+    func dispose() {
+        bestFriendUids = []
+        blockedUids = []
+        allChatsWithFriends = []
+        currentUser = nil
+    }
 }

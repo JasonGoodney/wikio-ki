@@ -55,7 +55,16 @@ private extension DatabaseService {
     func changeUserChat(isActive: Bool, between currentUser: User, andFriend friend: User) {
         let chatUid = Chat.chatUid(for: currentUser, and: friend)
         
-        Firestore.firestore().collection(Collection.userChats).document(currentUser.uid).updateData([chatUid: isActive]) { (error) in
+        Firestore.firestore().collection(Collection.chats).document(chatUid).delete { (error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            print("Deleted chat \(chatUid)")
+        }
+        
+        Firestore.firestore().collection(Collection.userChats).document(currentUser.uid)
+            .updateData([chatUid: FieldValue.delete()]) { (error) in
             if let error = error {
                 print(error)
                 return
@@ -63,14 +72,33 @@ private extension DatabaseService {
             
             print("\(currentUser.username) is not active with \(friend.username)")
         }
-        Firestore.firestore().collection(Collection.userChats).document(friend.uid).updateData([chatUid: isActive]) { (error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            print("\(friend.username) is not active with \(currentUser.username)")
+        
+        Firestore.firestore().collection(Collection.userChats).document(friend.uid)
+            .updateData([chatUid: FieldValue.delete()]) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                print("\(friend.username) is not active with \(currentUser.username)")
         }
+        
+//        Firestore.firestore().collection(Collection.userChats).document(currentUser.uid).updateData([chatUid: isActive]) { (error) in
+//            if let error = error {
+//                print(error)
+//                return
+//            }
+//
+//            print("\(currentUser.username) is not active with \(friend.username)")
+//        }
+//        Firestore.firestore().collection(Collection.userChats).document(friend.uid).updateData([chatUid: isActive]) { (error) in
+//            if let error = error {
+//                print(error)
+//                return
+//            }
+//
+//            print("\(friend.username) is not active with \(currentUser.username)")
+//        }
 
     }
 }

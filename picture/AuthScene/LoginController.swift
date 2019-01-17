@@ -75,7 +75,7 @@ class LoginController: UIViewController, LoginFlowHandler {
             if let err = err {
                 let title = err._userInfo!["error_name"] as! String
                 let message = err.localizedDescription
-                self.error(title: title, message: message)
+                self.errorAlert(alertTitle: title, alertMessage: message)
                 print("Failed to log in:", err)
                 #warning("display error message to user")
                 return

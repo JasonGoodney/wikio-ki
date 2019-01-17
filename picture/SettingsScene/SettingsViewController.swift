@@ -176,6 +176,12 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             let blockUsersVC = BlockedUsersViewController()
             navigationController?.pushViewController(blockUsersVC, animated: true)
         case .resetPassword:
+            if !(Auth.auth().currentUser?.isEmailVerified)! {
+                errorAlert(alertTitle: "Your email must be verified to reset your password.", alertMessage: nil) {
+                    return
+                }
+            }
+            
             let resetPasswordVC = ResetPasswordViewController.init(navigationTitle: "Reset Password", descriptionText: "Enter the email associated with your\nWikio Ki account.", textFieldText: "", textFieldPlaceholder: "Confirm email")
             navigationController?.pushViewController(resetPasswordVC, animated: true)
         case .logout:

@@ -8,6 +8,7 @@
 
 import UIKit
 import JGProgressHUD
+import AVFoundation
 
 class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
     
@@ -63,25 +64,27 @@ class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
             bringSubviewToFront(usernameLabel)
         
             hud.show(in: self)
-            
-            imageView.sd_setImage(with: url) { (_, _, _, _) in
+            if message.messageType == .photo {
                 
-                hud.dismiss()
-                self.blurredEffectView.removeFromSuperview()
-                self.vibrancyEffectView.removeFromSuperview()
+                self.imageView.sd_setImage(with: url) { (_, _, _, _) in
+                
+                    hud.dismiss()
+                    self.blurredEffectView.removeFromSuperview()
+                    self.vibrancyEffectView.removeFromSuperview()
+                }
+            } else {
+               
             }
         }
         message.status = .opened
     }
+
 }
 
 // MARK: - UI
 private extension ViewMessageCell {
     func updateView() {
-        addSubviews(imageView, usernameLabel)
-        
-       
-        
+        addSubviews([imageView, usernameLabel])
         setupConstraints()
         setupGradientLayer()
         bringSubviewToFront(usernameLabel)
@@ -89,7 +92,6 @@ private extension ViewMessageCell {
     
     func setupConstraints() {
         imageView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
-        
         usernameLabel.anchor(topAnchor, left: leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 24, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     }
     

@@ -13,4 +13,5 @@ target 'picture' do
   pod 'SDWebImage'
   pod 'JGProgressHUD'
   pod 'SwiftyCam'
+  
 end

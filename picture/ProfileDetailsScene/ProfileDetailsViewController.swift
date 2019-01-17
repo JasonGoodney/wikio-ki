@@ -285,7 +285,18 @@ extension ProfileDetailsViewController: UITableViewDelegate {
         case .report:
             ()
         case .removeFriend:
-            ()
+            destructiveAlert(alertTitle: "Are you sure you want to remove \(user.username) as a friend?", actionTitle: "Remove") { (removed) in
+                if removed {
+                    dbs.removeFriend(self.user, completion: { (error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                        print("Removed friend")
+                        self.navigationController?.popToRootViewController(animated: true)
+                    })
+                }
+            }
         }
         
         deselectCell()

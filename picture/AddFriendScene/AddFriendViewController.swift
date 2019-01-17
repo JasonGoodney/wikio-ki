@@ -328,13 +328,22 @@ class AddFriendViewController: UITableViewController {
 
 extension AddFriendViewController: AddFriendDelegate {
     func didTapCancelReceivedRequest(cell: AddFriendCell, user: User, state: AddFriendState) {
+        searchController.isActive = false
         if state == .requested {
-            destructiveAlert(alertTitle: "Remove friend request from \(user.username)", actionTitle: "Remove") { (removed) in
+            destructiveAlert(alertTitle: "Decline friend request from \(user.username)", actionTitle: "Yes") { (removed) in
                 if removed {
                     self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
                         if let error = error {
                             print(error)
                             return
+                        }
+                        self.friendRequests.removeAll(where: { (from) -> Bool in
+                            return from == user
+                        })
+                        DispatchQueue.main.async {
+                            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
+                            //                        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                            self.tableView.reloadData()
                         }
                     }
                     
@@ -345,10 +354,7 @@ extension AddFriendViewController: AddFriendDelegate {
                         }
                     }
                     
-                    DispatchQueue.main.async {
-                        guard let indexPath = self.tableView.indexPath(for: cell) else { return }
-                        self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                    }
+                    
                 }
             }
             
@@ -452,7 +458,7 @@ extension AddFriendViewController: UISearchBarDelegate {
         } else {
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
             let dbs = DatabaseService()
-            dbs.fetchSearchedUser(with: searchText) { (searchedUser, error) in
+            dbs.fetchSearchedUser(with: searchText.lowercased()) { (searchedUser, error) in
                 if let error = error {
                     print(error)
                     return

@@ -45,7 +45,11 @@ class OpenedMessageViewController: UIViewController {
         super.viewDidLoad()
         
         if let mediaURL = message?.mediaURL {
-            configureImage(URL(string: mediaURL)!)
+            if message?.messageType == .photo {
+                configureImage(URL(string: mediaURL)!)
+            } else {
+                configure(URL(string: mediaURL)!)
+            }
         }
         
         updateView()

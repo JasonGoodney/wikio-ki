@@ -19,7 +19,7 @@ class CameraViewController: SwiftyCamViewController {
     
     private lazy var cancelButton: PopButton = {
         let button = PopButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "close"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-multiply-90"), for: .normal)
         button.addTarget(self, action: #selector(cancelButtonTapped(_:)), for: .touchUpInside)
         button.tintColor = .white
         return button
@@ -33,21 +33,12 @@ class CameraViewController: SwiftyCamViewController {
         return label
     }()
     
-//    init(user: User? = nil) {
-//        self.user = user
-//        super.init(nibName: nil, bundle: nil)
-//    }
-//
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         updateView()
         
         shouldPrompToAppSettings = true
-        maximumVideoDuration = 6.0
+        maximumVideoDuration = 10.0
         shouldUseDeviceOrientation = true
         allowAutoRotate = true
         audioEnabled = true
@@ -131,7 +122,8 @@ extension CameraViewController {
     fileprivate func hideButtons() {
         UIView.animate(withDuration: 0.25) {
             self.flashButton.alpha = 0.0
-            self.flipCameraButton.alpha = 0.0
+//            self.flipCameraButton.alpha = 0.0
+            self.cancelButton.alpha = 0.0
         }
     }
     
@@ -139,7 +131,8 @@ extension CameraViewController {
         flipCameraButton.setImage(#imageLiteral(resourceName: "icons8-switch_camera"), for: .normal)
         UIView.animate(withDuration: 0.25) {
             self.flashButton.alpha = 1.0
-            self.flipCameraButton.alpha = 1.0
+//            self.flipCameraButton.alpha = 1.0
+            self.cancelButton.alpha = 1.0
         }
     }
     
@@ -200,10 +193,13 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         print("Did finish Recording")
         captureButton.shrinkButton()
         //showButtons()
+//        swiftyCam.buttonDidEndLongPress()
+        
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
         let newVC = PreviewMediaViewController(videoURL: url)
+        newVC.friend = friend
         self.present(newVC, animated: false, completion: nil)
     }
     
