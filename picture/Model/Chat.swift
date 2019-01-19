@@ -13,13 +13,28 @@ class Chat {
     
     let uid: String
     let memberUids: [String]
-    let lastMessageSent: String
+    var lastMessageSent: String
     var lastChatUpdateTimestamp: TimeInterval
-    let lastSenderUid: String
-    var isOpened: Bool
+    var lastSenderUid: String {
+        didSet {
+            let sentToUid = memberUids.first(where: { $0 != lastSenderUid })!
+            let unreadCount = unread?[sentToUid]
+            unread?[sentToUid] = unreadCount! + 1
+        }
+    }
+    var isOpened: Bool {
+        didSet {
+            if isOpened {
+            let openedByUid = memberUids.first(where: { $0 != lastSenderUid })!
+            let unreadCount = unread?[openedByUid]
+            unread?[openedByUid] = unreadCount! > 0 ? unreadCount! - 1 : 0
+            }
+        }
+    }
     var isNewFriendship: Bool
     var areFriends: Bool
     var areMutualBestFriends: Bool
+    var unread: [String: Int]?
     
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }
@@ -36,6 +51,7 @@ class Chat {
         static let isNewFriendship = "isNewFriendship"
         static let areFriends = "areFriends"
         static let areMutualBestFriends = "areMutualBestFriends"
+        static let unread = "unread"
     }
     
     init(dictionary: [String: Any]) {
@@ -48,6 +64,7 @@ class Chat {
         self.isNewFriendship = dictionary[Keys.isNewFriendship] as? Bool ?? false
         self.areFriends = dictionary[Keys.areFriends] as? Bool ?? false
         self.areMutualBestFriends = dictionary[Keys.areMutualBestFriends] as? Bool ?? false
+        self.unread = dictionary[Keys.unread] as? [String: Int] ?? [:]
     }
     
     init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String,
@@ -74,6 +91,7 @@ class Chat {
             Keys.isNewFriendship: isNewFriendship,
             Keys.areFriends: areFriends,
             Keys.areMutualBestFriends: areMutualBestFriends,
+            Keys.unread: unread
         ]
         
         return dict

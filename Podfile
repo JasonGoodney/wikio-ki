@@ -13,5 +13,6 @@ target 'picture' do
   pod 'SDWebImage'
   pod 'JGProgressHUD'
   pod 'SwiftyCam'
-  
+  pod 'VersaPlayer'
+  pod 'MMPlayerView'
 end

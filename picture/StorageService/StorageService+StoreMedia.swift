@@ -14,8 +14,15 @@ extension StorageService {
     static func saveMediaToStorage(data: Data, for message: Message, completion: @escaping (Message?, Error?) -> Void) {
         let filename = UUID().uuidString
         let ref = Storage.storage().reference(withPath: Path.media + "\(filename)")
+        let metadata = StorageMetadata()
         
-        ref.putData(data, metadata: nil) { (_, error) in
+        if message.messageType == .photo {
+            metadata.contentType = "image/jpeg"
+        } else {
+            metadata.contentType = "video/mp4"
+        }
+        
+        ref.putData(data, metadata: metadata) { (_, error) in
             if let error = error {
                 completion(nil, error)
                 return

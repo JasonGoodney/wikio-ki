@@ -29,7 +29,7 @@ class OpenMessageView: UIView {
     
     private let statusIndicator: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "icons8-filled_circle")
+//        imageView.image = #imageLiteral(resourceName: "icons8-filled_circle")
         return imageView
     }()
     
@@ -59,27 +59,47 @@ class OpenMessageView: UIView {
     }
     
     func configure(withMessage message: Message) {
-        if message.caption != nil && message.caption != "" {
-            statusLabel.text = message.caption!
-        } else if message.messageType == .photo {
-            statusLabel.text = "New photo"
-        } else if message.messageType == .video {
-            statusLabel.text = "New video"
-        }
+        let captionText = message.caption == "" ? "" : ": \(message.caption!)"
         
         if message.senderUid == UserController.shared.currentUser?.uid {
             if message.isOpened {
                 statusIndicator.image = #imageLiteral(resourceName: "message_sent_opened")
+                statusLabel.text = "Opened\(captionText)"
             } else {
                 statusIndicator.image = #imageLiteral(resourceName: "paper_plane")
+                statusLabel.text = "Delivered\(captionText)"
             }
         } else {
             if message.isOpened {
                 statusIndicator.image = #imageLiteral(resourceName: "recieved_opened")
+                statusLabel.text = "Opened\(captionText)"
             } else {
                 statusIndicator.image = #imageLiteral(resourceName: "icons8-stop")
+                statusLabel.text = "Received\(captionText)"
             }
         }
+        
+//        if message.caption != nil && message.caption != "" {
+//            statusLabel.text = message.caption!
+//        } else if message.messageType == .photo {
+//            statusLabel.text = "New photo"
+//        } else if message.messageType == .video {
+//            statusLabel.text = "New video"
+//        }
+//
+//        if message.senderUid == UserController.shared.currentUser?.uid {
+//            if message.isOpened {
+//                statusIndicator.image = #imageLiteral(resourceName: "message_sent_opened")
+//            } else {
+//                statusIndicator.image = #imageLiteral(resourceName: "paper_plane")
+//            }
+//        } else {
+//            if message.isOpened {
+//                statusIndicator.image = #imageLiteral(resourceName: "recieved_opened")
+//            } else {
+//                statusIndicator.image = #imageLiteral(resourceName: "icons8-stop")
+//            }
+//        }
     }
 }
 

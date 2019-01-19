@@ -235,6 +235,7 @@ class AddFriendViewController: UITableViewController {
         }
         
         let chat = Chat(memberUids: [currentUser.uid, user.uid], lastMessageSent: "", lastSenderUid: "")
+        chat.unread = [currentUser.uid: 0, user.uid: 0]
         let dbs = DatabaseService()
         dbs.createInitialChat(chat) { (error) in
             hud.dismiss()

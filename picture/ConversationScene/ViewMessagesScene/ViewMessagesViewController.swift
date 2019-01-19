@@ -12,6 +12,10 @@ import AVFoundation
 class ViewMessagesViewController: UIViewController {
     private let cellId = ViewMessageCell.reuseIdentifier
     
+    var visibleIP : IndexPath?
+    
+    var aboutToBecomeInvisibleCell = -1
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -108,5 +112,74 @@ extension ViewMessagesViewController: UICollectionViewDataSource {
 }
 
 extension ViewMessagesViewController: UICollectionViewDelegate {
+    func playVideoOnTheCell(cell : ViewMessageCell, indexPath : IndexPath){
+        cell.startPlayback()
+    }
     
+    func stopPlayBack(cell : ViewMessageCell, indexPath : IndexPath){
+        cell.stopPlayback()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        print("end = \(indexPath)")
+        if let videoCell = cell as? ViewMessageCell {
+            videoCell.stopPlayback()
+        }
+    }
+}
+
+extension ViewMessagesViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let indexPaths = self.collectionView.indexPathsForVisibleItems
+        var cells = [Any]()
+        for ip in indexPaths {
+            if let videoCell = self.collectionView.cellForItem(at: ip) as? ViewMessageCell{
+                cells.append(videoCell)
+            }
+        }
+        let cellCount = cells.count
+        if cellCount == 0 {return}
+        if cellCount == 1{
+            if visibleIP != indexPaths[0]{
+                visibleIP = indexPaths[0]
+            }
+            if let videoCell = cells.last! as? ViewMessageCell{
+                self.playVideoOnTheCell(cell: videoCell, indexPath: (indexPaths.last)!)
+            }
+        }
+        if cellCount >= 2 {
+            for i in 0..<cellCount{
+                
+                let cellRect = collectionView.frame // self.collectionView.rectForRow(at: (indexPaths?[i])!)
+                let intersect = cellRect.intersection(self.collectionView.bounds)
+                //                curerntHeight is the height of the cell that
+                //                is visible
+                let currentHeight = intersect.height
+                print("\n \(currentHeight)")
+                let cellHeight = (cells[i] as AnyObject).frame.size.height
+                //                0.95 here denotes how much you want the cell to display
+                //                for it to mark itself as visible,
+                //                .95 denotes 95 percent,
+                //                you can change the values accordingly
+                if currentHeight > (cellHeight * 0.95){
+                    if visibleIP != indexPaths[i]{
+                        visibleIP = indexPaths[i]
+                        print ("visible = \(indexPaths[i])")
+                        if let videoCell = cells[i] as? ViewMessageCell{
+                            self.playVideoOnTheCell(cell: videoCell, indexPath: (indexPaths[i]))
+                        }
+                    }
+                }
+                else{
+                    if aboutToBecomeInvisibleCell != indexPaths[i].row{
+                        aboutToBecomeInvisibleCell = (indexPaths[i].row)
+                        if let videoCell = cells[i] as? ViewMessageCell{
+                            self.stopPlayBack(cell: videoCell, indexPath: (indexPaths[i]))
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
 }

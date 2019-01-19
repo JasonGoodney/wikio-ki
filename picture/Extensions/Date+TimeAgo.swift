@@ -10,6 +10,24 @@ import Foundation
 
 extension Date {
     
+    func testingTimestamp() -> String {
+        return dateTimeFormatter(dateFormat: "h:mm:ss")
+    }
+    
+    func testingIsWithinRecentTime() -> Bool {
+        let calendar = Calendar.current
+        let hourAgo = calendar.date(byAdding: .hour, value: -1, to: Date())!
+        
+        if hourAgo < self {
+            let diff = Calendar.current.dateComponents([.minute], from: self, to: Date()).minute ?? 0
+            if diff <= 10 {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     func messageDataTimestamp() -> String {
         if self.isWithinThePast24Hours() {
             return time()

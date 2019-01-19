@@ -102,6 +102,7 @@ PODS:
   - GTMSessionFetcher/Core (1.2.1)
   - JGProgressHUD (2.0.3)
   - leveldb-library (1.20)
+  - MMPlayerView (4.1.7)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -112,6 +113,7 @@ PODS:
     - SDWebImage/Core (= 4.4.3)
   - SDWebImage/Core (4.4.3)
   - SwiftyCam (3.0.0)
+  - VersaPlayer (2.2.3)
 
 DEPENDENCIES:
   - Firebase/Auth
@@ -119,8 +121,10 @@ DEPENDENCIES:
   - Firebase/Firestore
   - Firebase/Storage
   - JGProgressHUD
+  - MMPlayerView
   - SDWebImage
   - SwiftyCam
+  - VersaPlayer
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -140,10 +144,12 @@ SPEC REPOS:
     - GTMSessionFetcher
     - JGProgressHUD
     - leveldb-library
+    - MMPlayerView
     - nanopb
     - Protobuf
     - SDWebImage
     - SwiftyCam
+    - VersaPlayer
 
 SPEC CHECKSUMS:
   BoringSSL: e10f92a27043805c01071fe815a5cd98ae8212e7
@@ -162,11 +168,13 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  MMPlayerView: 07fdf42b230349a32edac680c1441d5d78e9b485
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
   SwiftyCam: 67338308e3a5a3545c2aeee17e2c964eba4cf49f
+  VersaPlayer: 105ab14111cd48ea1705cf24c66366536da86935
 
-PODFILE CHECKSUM: e6e6ad75172acf6fc6e5cf728e06daaa1bc77dc8
+PODFILE CHECKSUM: c117f7ecb846315373c997bf1045352a68eb8f87
 
 COCOAPODS: 1.5.3

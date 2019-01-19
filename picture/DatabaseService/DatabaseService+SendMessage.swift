@@ -32,6 +32,11 @@ import FirebaseFirestore
     
     func save(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
         
+//        if let sentToUid = chat.memberUids.first(where: { $0 != chat.lastSenderUid }), let unreadDict = chat.unread {
+//            let unreadCount = unreadDict[sentToUid]! + 1
+//            chat.unread?[sentToUid] = unreadCount
+//        }
+        
         saveChatsCollection(chat) { (error) in
             if let error = error {
                 print(error)
@@ -76,11 +81,32 @@ import FirebaseFirestore
     func opened(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
         let chatUid = Chat.chatUid(for: chat.memberUids[0], and: chat.memberUids[1])
         
-        // Update Chat
-        let chatField: [String: Any] = [
-                Chat.Keys.isOpened: true,
-                Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970
+        // Chat fields to update
+//        chat.isOpened = true
+        var chatField: [String: Any] = [
+            Chat.Keys.isOpened: chat.isOpened,
+            Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
+            Chat.Keys.unread: chat.unread
         ]
+        
+//        if let openedByUid = chat.memberUids.first(where: { $0 != chat.lastSenderUid }), let unreadDict = chat.unread, unreadDict[openedByUid] != nil, unreadDict[openedByUid]! > 0 {
+//            
+//            let unreadCount = unreadDict[openedByUid]! - 1
+//            chat.unread?[openedByUid] = unreadCount - 1
+//            
+//            chatField = [
+//                Chat.Keys.isOpened: true,
+//                Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
+//                Chat.Keys.unread: chat.unread
+//            ]
+//        } else {
+//            chatField = [
+//                Chat.Keys.isOpened: true,
+//                Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
+//            ]
+//        }
+        
+        // Update Chat
         Firestore.firestore().collection(Collection.chats).document(chatUid).updateData(chatField) { (error) in
             if let error = error {
                 print(error)

@@ -12,6 +12,7 @@ import FirebaseFirestore
 
 class MessagesViewController: UIViewController {
     
+    private var newMessageListener: ListenerRegistration?
     var chat: Chat?
     var friend: Friend? {
         didSet {
@@ -28,7 +29,7 @@ class MessagesViewController: UIViewController {
             }
         }
     }
-    var selectedFriendListIndexPath: IndexPath?
+    
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -58,8 +59,6 @@ class MessagesViewController: UIViewController {
         return button
     }()
     
-    lazy var detailsButton = UIBarButtonItem(title: "•••", style: .plain, target: self, action: #selector(detailsButtonTapped(_:)))
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -74,13 +73,40 @@ class MessagesViewController: UIViewController {
         }
 
         updateView()
+        
+        if let chatUid = chat?.chatUid {
+            newMessageListener = Firestore.firestore().collection(DatabaseService.Collection.messages).document(chatUid).addSnapshotListener({ (snapshot, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                guard let document = snapshot else {
+                    print("Error fetching document: \(error!)")
+                    return
+                }
+                let source = document.metadata.hasPendingWrites ? "Local" : "Server"
+                print(source)
+                if let _ = snapshot?.data() {
+                    DispatchQueue.main.async {
+                        let dbs = DatabaseService()
+                        dbs.fetchMessages(withFriend: self.friend!) { (messages, error)  in
+                            if let error = error {
+                                print(error)
+                                return
+                            }
+                            guard let messages = messages else { return }
+                            self.messages = messages
+                            self.collectionView.reloadData()
+                        }
+                    }
+                }
+            })
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
         
         if let urlString = friend?.profilePhotoUrl, let url = URL(string: urlString) {
             DispatchQueue.main.async {
@@ -89,11 +115,18 @@ class MessagesViewController: UIViewController {
                 })
             }
         }
+        
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    
+        
+        if isMovingFromParent {
+            newMessageListener?.remove()
+        }
     }
     
     @objc func detailsButtonTapped(_ sender: UIBarButtonItem) {
@@ -211,12 +244,12 @@ extension MessagesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let message = messages[indexPath.row]
         
-        let viewMessagesVC = ViewMessagesViewController()
-        viewMessagesVC.indexPath = indexPath
+        let viewMessagesVC = OpenedMessageViewController(message: message)
+//        viewMessagesVC.indexPath = indexPath
         present(viewMessagesVC, animated: false) {
             DispatchQueue.main.async {
                 guard let currentUser = UserController.shared.currentUser, let friend = self.friend else { return }
-                if message.senderUid != currentUser.uid {
+                if message.senderUid != currentUser.uid, !message.isOpened {
                     message.isOpened = true
                     self.chat?.isOpened = true
                     let dbs = DatabaseService()
@@ -258,6 +291,7 @@ extension MessagesViewController: OpenCameraToolbarDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
         cameraViewController.friend = friend
+        cameraViewController.chat = chat
         present(cameraViewController, animated: true, completion: nil)
     }
 }

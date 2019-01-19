@@ -89,6 +89,10 @@
 		D7F6A35621EE4487002DDB6D /* PopButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35521EE4487002DDB6D /* PopButton.swift */; };
 		D7F6A35821EE4D43002DDB6D /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35721EE4D43002DDB6D /* Compression.swift */; };
 		D7F6A35A21EE6A04002DDB6D /* BestFriendDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35921EE6A04002DDB6D /* BestFriendDetailCell.swift */; };
+		D7F8992621F12F8600020A68 /* JGProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F8992521F12F8600020A68 /* JGProgressHUD.swift */; };
+		D7F8992821F18D2E00020A68 /* CALayer+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F8992721F18D2E00020A68 /* CALayer+Shadow.swift */; };
+		D7F8992A21F250BE00020A68 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F8992921F250BE00020A68 /* UIViewController.swift */; };
+		D7F8992C21F250E500020A68 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F8992B21F250E500020A68 /* LoadingViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -178,6 +182,10 @@
 		D7F6A35521EE4487002DDB6D /* PopButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopButton.swift; sourceTree = "<group>"; };
 		D7F6A35721EE4D43002DDB6D /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
 		D7F6A35921EE6A04002DDB6D /* BestFriendDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BestFriendDetailCell.swift; sourceTree = "<group>"; };
+		D7F8992521F12F8600020A68 /* JGProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JGProgressHUD.swift; sourceTree = "<group>"; };
+		D7F8992721F18D2E00020A68 /* CALayer+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CALayer+Shadow.swift"; sourceTree = "<group>"; };
+		D7F8992921F250BE00020A68 /* UIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
+		D7F8992B21F250E500020A68 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
 		E68CC50FADF6920AEFED52C8 /* Pods-picture.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-picture.debug.xcconfig"; path = "Pods/Target Support Files/Pods-picture/Pods-picture.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -324,6 +332,7 @@
 				D74F7E2221D0682900B5EF28 /* SettingsScene */,
 				D74890F121BC86DC005AAF6B /* Main.storyboard */,
 				D7591F1321C2D6D900B3EAAD /* NavigationController.swift */,
+				D7F8992B21F250E500020A68 /* LoadingViewController.swift */,
 				D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */,
 				D7591F0D21C2C27C00B3EAAD /* Extensions */,
 				D7591F0821C2C23800B3EAAD /* Protocols */,
@@ -368,11 +377,14 @@
 		D7591F0D21C2C27C00B3EAAD /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				D7F8992921F250BE00020A68 /* UIViewController.swift */,
 				D7591F0B21C2C27300B3EAAD /* UIView+Anchors.swift */,
 				D778E69521CDE2EC005C6C96 /* Extensions+UIView.swift */,
 				D738322E21DFFAF2006DC2EA /* Date+TimeAgo.swift */,
 				D726383221E13E7E00FDA242 /* UIColor.swift */,
 				D7D0007D21ED6BFE003C3A80 /* UIButton.swift */,
+				D7F8992521F12F8600020A68 /* JGProgressHUD.swift */,
+				D7F8992721F18D2E00020A68 /* CALayer+Shadow.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -380,11 +392,11 @@
 		D7591F0E21C2CD7A00B3EAAD /* MessagesScene */ = {
 			isa = PBXGroup;
 			children = (
+				D7591F2621C55A5000B3EAAD /* MessageController.swift */,
 				D73B8AFE21C885A400DD4CA4 /* ViewMessagesScene */,
 				D7591F0F21C2CD9700B3EAAD /* MessagesViewController.swift */,
 				D7591F1E21C3371B00B3EAAD /* MessagesCell.swift */,
 				D7591F2821C56A3C00B3EAAD /* OpenMessageView.swift */,
-				D7591F2621C55A5000B3EAAD /* MessageController.swift */,
 				D7591F1121C2CE5C00B3EAAD /* ReplyFooterView.swift */,
 				D7591F2A21C56EFE00B3EAAD /* OpenedMessageViewController.swift */,
 			);
@@ -601,9 +613,11 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/JGProgressHUD/JGProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/MMPlayerView/MMPlayerView.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyCam/SwiftyCam.framework",
+				"${BUILT_PRODUCTS_DIR}/VersaPlayer/VersaPlayer.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -617,9 +631,11 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JGProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMPlayerView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyCam.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/VersaPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -642,6 +658,7 @@
 				D726383321E13E7E00FDA242 /* UIColor.swift in Sources */,
 				D778E69121CDD79B005C6C96 /* RegisterViewModel.swift in Sources */,
 				D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */,
+				D7F8992621F12F8600020A68 /* JGProgressHUD.swift in Sources */,
 				D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */,
 				D7643B5221DD52DA00ACE26F /* DatabaseService+Fetch.swift in Sources */,
 				D72F166421D4720F0009D43D /* AddFriendButton.swift in Sources */,
@@ -656,6 +673,7 @@
 				D7643B4721DD0EAC00ACE26F /* DatabaseService+BlockUser.swift in Sources */,
 				D715B51F21E84F29008A5E80 /* AuthValidation.swift in Sources */,
 				D73B8AF921C8117100DD4CA4 /* MediaProcessable.swift in Sources */,
+				D7F8992A21F250BE00020A68 /* UIViewController.swift in Sources */,
 				D7643B4E21DD110C00ACE26F /* StorageService.swift in Sources */,
 				D7591F2B21C56EFE00B3EAAD /* OpenedMessageViewController.swift in Sources */,
 				D7591F0C21C2C27300B3EAAD /* UIView+Anchors.swift in Sources */,
@@ -695,6 +713,7 @@
 				D7869FBA21DE6A5700A1B863 /* ProfileImageButton.swift in Sources */,
 				D72D793521D14A9200FB5327 /* AddFriendCell.swift in Sources */,
 				D72D793321D14A4A00FB5327 /* AddFriendViewController.swift in Sources */,
+				D7F8992821F18D2E00020A68 /* CALayer+Shadow.swift in Sources */,
 				D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */,
 				D7591F1921C2DFCA00B3EAAD /* SwiftyRecordButton.swift in Sources */,
 				D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */,
@@ -709,6 +728,7 @@
 				D73B8AF721C8114600DD4CA4 /* VideoProcessor.swift in Sources */,
 				D726383121E13D8C00FDA242 /* Theme.swift in Sources */,
 				D7643B5021DD112C00ACE26F /* StorageService+StoreMedia.swift in Sources */,
+				D7F8992C21F250E500020A68 /* LoadingViewController.swift in Sources */,
 				D7591F1D21C3141E00B3EAAD /* PhotoViewController.swift in Sources */,
 				D7D0008321ED7518003C3A80 /* ProfileDetailsViewController.swift in Sources */,
 				D7F6A35621EE4487002DDB6D /* PopButton.swift in Sources */,

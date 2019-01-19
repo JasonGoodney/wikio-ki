@@ -86,7 +86,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
             guard let chat = chat else { return }
             self.chat = chat
             
-            let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
+            let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay()) · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).testingTimestamp())"
             
             if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
                 self.detailsLabel.text = "Tap to chat" + timeAgoString
@@ -106,7 +106,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
                 } else {
                     self.usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
                     self.detailsLabel.font = UIFont.boldSystemFont(ofSize: 14)
-                    self.detailsLabel.text = "New Photo" + timeAgoString
+                    self.detailsLabel.text = "New Message" + timeAgoString
                     self.cameraButton.tintColor = .black
                     self.statusImageView.image = #imageLiteral(resourceName: "icons8-filled_circle")
                     

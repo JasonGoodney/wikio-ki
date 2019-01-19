@@ -15,6 +15,7 @@ class CameraViewController: SwiftyCamViewController {
     @IBOutlet weak var flashButton: PopButton!
     @IBOutlet weak var flipCameraButton: PopButton!
     
+    var chat: Chat?
     var friend: User?
     
     private lazy var cancelButton: PopButton = {
@@ -45,6 +46,12 @@ class CameraViewController: SwiftyCamViewController {
         swipeToZoomInverted = true
         cameraDelegate = self
         captureButton.buttonEnabled = false
+        
+        sendToLabel.addShadow()
+        cancelButton.addShadow()
+        captureButton.addShadow()
+        flashButton.addShadow()
+        flipCameraButton.addShadow()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -180,6 +187,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
         let newVC = PreviewMediaViewController(image: photo)
         newVC.friend = friend
+        newVC.chat = chat
         self.present(newVC, animated: false, completion: nil)
     }
     
@@ -200,6 +208,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
         let newVC = PreviewMediaViewController(videoURL: url)
         newVC.friend = friend
+        newVC.chat = chat
         self.present(newVC, animated: false, completion: nil)
     }
     

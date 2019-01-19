@@ -10,6 +10,7 @@ let buttonSize: CGFloat = 36
 
 class PreviewMediaViewController: UIViewController {
     
+    var chat: Chat?
     var friend: User? {
         didSet {
             configure()
@@ -139,6 +140,10 @@ class PreviewMediaViewController: UIViewController {
         }
         
         updateView()
+        
+        cancelButton.addShadow()
+        addCaptionButton.addShadow()
+        resignCaptionEditButton.addShadow()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -207,31 +212,56 @@ class PreviewMediaViewController: UIViewController {
     }
     
     fileprivate func sendMessage(_ currentUser: User, _ messageCaption: String?, _ messageType: MessageType, _ friend: User, _ messageImageData: Data?) {
+        
+        let loadingViewController = LoadingViewController(hudText: "Sending")
+        let hud = loadingViewController.hud
+        add(loadingViewController)
+        
         let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
+        message.status = .sending
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
         print("chatUID: \(chatUid)")
-        let chat = Chat(uid: chatUid, memberUids: [currentUser.uid, friend.uid], lastMessageSent: message.uid, lastSenderUid: currentUser.uid, isNewFriendship: false)
         
+        
+        
+        //let chat = Chat(uid: chatUid, memberUids: [currentUser.uid, friend.uid], lastMessageSent: message.uid, lastSenderUid: currentUser.uid, isNewFriendship: false)
+        
+        chat?.lastMessageSent = message.uid
+        chat?.lastSenderUid = currentUser.uid
+        chat?.isNewFriendship = false
+        chat?.lastChatUpdateTimestamp = Date().timeIntervalSince1970
+        
+//        let sentToUid = chat?.memberUids.first(where: { $0 != chat?.lastSenderUid })!
+//        let unreadCount = chat?.unread?[sentToUid!]
+//        chat?.unread?[sentToUid!] = unreadCount! + 1
+//        
         if let data = messageImageData {
-            let hud = JGProgressHUD(style: .dark)
-            hud.textLabel.text = "Sending"
-            hud.vibrancyEnabled = true
-            hud.show(in: view)
+            
             StorageService.saveMediaToStorage(data: data, for: message) { (messageWithMedia, error) in
                 if let error = error {
                     print(error)
+                    message.status = .failed
+                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                    hud.textLabel.text = error.localizedDescription
+                    hud.show(in: self.view)
                     return
                 }
                 
                 guard let message = messageWithMedia else { return }
                 let databaseService = DatabaseService()
-                databaseService.save(message, in: chat, completion: { (error) in
+                databaseService.save(message, in: self.chat!, completion: { (error) in
                     if let error = error {
                         print(error)
+                        message.status = .failed
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.localizedDescription
                         return
                     }
                     print("Sent message from \(currentUser.username) to \(self.friend!.username)")
-                    hud.dismiss()
+                    message.status = .delivered
+                    
+                    loadingViewController.remove()
+                    
                     MessageController.shared.messages.append(message)
                     self.dismiss(animated: false, completion: nil)
                     self.presentingViewController?.dismiss(animated: false) {
@@ -242,21 +272,12 @@ class PreviewMediaViewController: UIViewController {
                     }
                 })
             }
+            
         }
     }
     
     @objc func sendButtonTapped(_ sender: UIButton) {
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = view.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(blurEffectView)
         
-        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
-        let vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
-        vibrancyEffectView.frame = view.bounds
-        
-        blurEffectView.contentView.addSubview(vibrancyEffectView)
         
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
@@ -267,7 +288,6 @@ class PreviewMediaViewController: UIViewController {
         
         if captionTextView.text != "", let caption = captionTextView.text, let image = image {
             messageCaption = caption
-//            message.image = UIImage.createImageWithLabelOverlay(textField: captionTextField, imageSize: backgroundImageView.frame.size, image: image)
             let processor = ImageProcessor()
             let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
             messageImageData = image.jpegData(compressionQuality: Compression.quality)
@@ -289,7 +309,7 @@ class PreviewMediaViewController: UIViewController {
             merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
                 guard let url = url else { return }
                 messageVideoURL = url.absoluteString
-                do {
+                do { 
                     try messageImageData = Data(contentsOf: url)
                     self.sendMessage(currentUser, self.captionTextView.text ?? "", .video, friend, messageImageData)
                 } catch let error {

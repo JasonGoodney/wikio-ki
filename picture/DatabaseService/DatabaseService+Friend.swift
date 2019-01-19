@@ -35,7 +35,7 @@ extension DatabaseService {
     // MARK: - Actions
     func removeFriend(_ friend: User, completion: @escaping ErrorCompletion) {
         guard let currentUser = UserController.shared.currentUser else { return }
-        
+        UserController.shared.currentUser?.friendsUids.remove(friend.uid)
         Firestore.firestore().collection(Collection.users).document(currentUser.uid).collection(Collection.friends).document(friend.uid).delete { (error) in
             if let error = error {
                 print(error)

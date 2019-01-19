@@ -19,7 +19,7 @@ class FriendsListViewController: UIViewController {
     var friendRequestListener: ListenerRegistration?
     var friendshipChangedListener: ListenerRegistration?
     var blockedUserListener: ListenerRegistration?
-    var weekLongFriendshipListener: ListenerRegistration?
+    var chatUpdateListener: ListenerRegistration?
     
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
@@ -117,6 +117,48 @@ class FriendsListViewController: UIViewController {
                             }
                         })
                 }
+                
+                let value = UserController.shared.currentUser?.uid as Any
+                
+//                Firestore.firestore().collection(DatabaseService.Collection.chats)
+//                    .whereField(Chat.Keys.memberUids, arrayContains: value).getDocuments(completion: { (snapshot, error) in
+//                        if let docs = snapshot?.documents {
+//                            docs.forEach({
+//                                print($0.data())
+//                                print("\n")
+//                            })
+//                        }
+//                    })
+                
+                self.chatUpdateListener = Firestore.firestore().collection(DatabaseService.Collection.chats)
+                    .whereField(Chat.Keys.memberUids, arrayContains: value)
+                    .addSnapshotListener({ (querySnapshot, error) in
+                    
+                        guard let snapshot = querySnapshot else {
+                            print("Error fetching documents: \(error!)")
+                            return
+                        }
+                        
+                        if snapshot.documentChanges.contains(where: { $0.type == .modified }) {
+                            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                            self.fetchChatsWithFriends(completion: { (error) in
+                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                                if let error = error {
+                                    print(error)
+                                    
+                                    return
+                                }
+                                
+                                self.reloadData()
+                                
+                            })
+                        }
+                        
+                        if snapshot.documentChanges.count > 0 {
+                            
+                            
+                        }
+                })
             }
         }
 
@@ -125,6 +167,8 @@ class FriendsListViewController: UIViewController {
         } else {
             tableView.addSubview(refreshControl)
         }
+        
+       
     }
  
     override func viewWillAppear(_ animated: Bool) {
@@ -180,26 +224,31 @@ class FriendsListViewController: UIViewController {
                 
                 return
             }
-  
-            if UserController.shared.allChatsWithFriends.count == 0 {
-                self.noFriendsLabel.isHidden = false
-                self.tableView.isHidden = true
-                self.view.addGestureRecognizer(self.doubleTapRefresh)
-                
-            } else {
-                self.noFriendsLabel.isHidden = true
-                self.tableView.isHidden = false
-                self.view.removeGestureRecognizer(self.doubleTapRefresh)
-                
-                UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
-                    return chatWithFriend1.friend.username < chatWithFriend2.friend.username
-                })
-
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
+            
+            self.reloadData()
+            
         })
+    }
+    
+    private func reloadData() {
+        if UserController.shared.allChatsWithFriends.count == 0 {
+            self.noFriendsLabel.isHidden = false
+            self.tableView.isHidden = true
+            self.view.addGestureRecognizer(self.doubleTapRefresh)
+            
+        } else {
+            self.noFriendsLabel.isHidden = true
+            self.tableView.isHidden = false
+            self.view.removeGestureRecognizer(self.doubleTapRefresh)
+            
+            UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+                return chatWithFriend1.friend.username < chatWithFriend2.friend.username
+            })
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
     }
     
     private func addListenerOnUser(listeningTo collection: String, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
@@ -210,6 +259,31 @@ class FriendsListViewController: UIViewController {
                 return
             }
             if let changes = querySnapshot?.documentChanges, changes.count > 0 {
+                completion(true)
+            }
+        }
+    }
+    
+    private func addListener(listeningTo collection: CollectionReference, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
+        return collection.addSnapshotListener { (querySnapshot, error) in
+            if let error = error {
+                print(error)
+                completion(false)
+                return
+            }
+            if let changes = querySnapshot?.documentChanges, changes.count > 0 {
+                completion(true)
+            }
+        }
+    }
+    private func addListener(listeningTo document: DocumentReference, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
+        return document.addSnapshotListener { (snapshot, error) in
+            if let error = error {
+                print(error)
+                completion(false)
+                return
+            }
+            if let _ = snapshot {
                 completion(true)
             }
         }
@@ -476,17 +550,19 @@ extension FriendsListViewController: FriendsListCellDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
         cameraViewController.friend = friend
+        cameraViewController.chat = chat
         present(cameraViewController, animated: true, completion: nil)
     }
 }
 
-extension FriendsListViewController: OpenCameraToolbarDelegate {
-    func didTapOpenCameraButton() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
-        present(cameraViewController, animated: false, completion: nil)
-    }
-}
+//extension FriendsListViewController: OpenCameraToolbarDelegate {
+//    func didTapOpenCameraButton() {
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
+//
+//        present(cameraViewController, animated: false, completion: nil)
+//    }
+//}
 
 // MARK: - Fetch Chats With Friends
 extension FriendsListViewController {
@@ -506,6 +582,7 @@ extension FriendsListViewController {
             var i = 0
             for chatUid in userChats {
 //                let chatUid = userChats[i]
+                
                 dbs.fetchChat(chatUid, completion: { (chat, error) in
                     if let error = error {
                         print(error)

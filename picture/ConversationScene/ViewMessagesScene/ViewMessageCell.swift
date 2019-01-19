@@ -9,9 +9,14 @@
 import UIKit
 import JGProgressHUD
 import AVFoundation
+import VersaPlayer
+import MMPlayerView
 
 class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
     
+    private let hud = JGProgressHUD(style: .dark)
+    let blurEffect = UIBlurEffect(style: .dark)
+    lazy var vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
     private let gradientLayer = CAGradientLayer()
     
     private let usernameLabel: UILabel = {
@@ -30,6 +35,21 @@ class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
         view.contentMode = .scaleAspectFit
         return view
     }()
+    private let videoPlayerView = UIView()
+    var videoPlayer: AVPlayer?
+    var videoPlayerLayer: AVPlayerLayer?
+    var paused: Bool = false
+    
+    //This will be called everytime a new value is set on the videoplayer item
+    var videoPlayerItem: AVPlayerItem? = nil {
+        didSet {
+            /*
+             If needed, configure player item here before associating it with a player.
+             (example: adding outputs, setting text style rules, selecting media options)
+             */
+            videoPlayer?.replaceCurrentItem(with: self.videoPlayerItem)
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,42 +69,56 @@ class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
     func configureProperties(with message: Message) {
         usernameLabel.text = message.user?.username
         if let url = URL(string: message.mediaURL ?? "") {
-            let hud = JGProgressHUD(style: .dark)
+//            let hud = JGProgressHUD(style: .dark)
             
-            let blurEffect = UIBlurEffect(style: .dark)
-            blurredEffectView = UIVisualEffectView(effect: blurEffect)
-            blurredEffectView.frame = imageView.bounds
+//            let blurEffect = UIBlurEffect(style: .dark)
+//            blurredEffectView = UIVisualEffectView(effect: blurEffect)
+            //            let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
+            
+            
+            blurredEffectView.frame = self.bounds
             addSubview(blurredEffectView)
-            let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
             vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
-            vibrancyEffectView.frame = imageView.bounds
+            vibrancyEffectView.frame = self.bounds
             
-            //        vibrancyEffectView.contentView.addSubview(hud)
             blurredEffectView.contentView.addSubview(vibrancyEffectView)
             bringSubviewToFront(usernameLabel)
-        
+            
             hud.show(in: self)
+            
             if message.messageType == .photo {
-                
+
                 self.imageView.sd_setImage(with: url) { (_, _, _, _) in
                 
-                    hud.dismiss()
+                    self.hud.dismiss()
                     self.blurredEffectView.removeFromSuperview()
                     self.vibrancyEffectView.removeFromSuperview()
                 }
             } else {
-               
+                videoPlayerItem = AVPlayerItem(url: url)
+                setupMoviePlayer()
+                self.hud.dismiss()
+                self.blurredEffectView.removeFromSuperview()
+                self.vibrancyEffectView.removeFromSuperview()
+                startPlayback()
             }
         }
         message.status = .opened
     }
 
+    func stopPlayback(){
+        self.videoPlayer?.pause()
+    }
+    
+    func startPlayback(){
+        self.videoPlayer?.play()
+    }
 }
 
 // MARK: - UI
 private extension ViewMessageCell {
     func updateView() {
-        addSubviews([imageView, usernameLabel])
+        addSubviews([imageView, usernameLabel, videoPlayerView])
         setupConstraints()
         setupGradientLayer()
         bringSubviewToFront(usernameLabel)
@@ -92,6 +126,8 @@ private extension ViewMessageCell {
     
     func setupConstraints() {
         imageView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
+        videoPlayerView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
+        
         usernameLabel.anchor(topAnchor, left: leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 24, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     }
     
@@ -101,5 +137,42 @@ private extension ViewMessageCell {
         layer.addSublayer(gradientLayer)
     }
     
+    func setupMoviePlayer(){
+        self.videoPlayer = AVPlayer.init(playerItem: self.videoPlayerItem)
+        videoPlayerLayer = AVPlayerLayer(player: videoPlayer)
+        videoPlayerLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        videoPlayer?.volume = 3
+        videoPlayer?.actionAtItemEnd = .none
+//        
+//        //        You need to have different variations
+//        //        according to the device so as the avplayer fits well
+//        if UIScreen.main.bounds.width == 375 {
+//            let widthRequired = self.frame.size.width - 20
+//            videoPlayerLayer?.frame = CGRect.init(x: 0, y: 0, width: widthRequired, height: widthRequired/1.78)
+//        }else if UIScreen.main.bounds.width == 320 {
+//            videoPlayerLayer?.frame = CGRect.init(x: 0, y: 0, width: (self.frame.size.height - 120) * 1.78, height: self.frame.size.height - 120)
+//        }else{
+//            let widthRequired = self.frame.size.width
+//            videoPlayerLayer?.frame = CGRect.init(x: 0, y: 0, width: widthRequired, height: widthRequired/1.78)
+//        }
+        videoPlayerLayer?.frame = UIScreen.main.bounds
+        self.backgroundColor = .clear
+        self.videoPlayerView.layer.insertSublayer(videoPlayerLayer!, at: 0)
+        
+        // This notification is fired when the video ends, you can handle it in the method.
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.playerItemDidReachEnd(notification:)),
+                                               name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+                                               object: videoPlayer?.currentItem)
+    }
     
+    // A notification is fired and seeker is sent to the beginning to loop the video again
+    @objc func playerItemDidReachEnd(notification: Notification) {
+        let p: AVPlayerItem = notification.object as! AVPlayerItem
+        p.seek(to: .zero) { (success) in
+            if success {
+                print("🤶\(#function)")
+            }
+        }
+    }
 }
