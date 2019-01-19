@@ -18,8 +18,8 @@ class Chat {
     var lastSenderUid: String {
         didSet {
             let sentToUid = memberUids.first(where: { $0 != lastSenderUid })!
-            let unreadCount = unread?[sentToUid]
-            unread?[sentToUid] = unreadCount! + 1
+            let unreadCount = unread?[sentToUid] ?? 0
+            unread?[sentToUid] = unreadCount + 1
         }
     }
     var isOpened: Bool {

@@ -23,7 +23,6 @@
 		D738322F21DFFAF2006DC2EA /* Date+TimeAgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D738322E21DFFAF2006DC2EA /* Date+TimeAgo.swift */; };
 		D73B8AF221C72A4300DD4CA4 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73B8AF121C72A4300DD4CA4 /* RegisterViewController.swift */; };
 		D73B8AF521C80E6600DD4CA4 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73B8AF421C80E6600DD4CA4 /* ImageProcessor.swift */; };
-		D73B8AF721C8114600DD4CA4 /* VideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73B8AF621C8114600DD4CA4 /* VideoProcessor.swift */; };
 		D73B8AF921C8117100DD4CA4 /* MediaProcessable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73B8AF821C8117100DD4CA4 /* MediaProcessable.swift */; };
 		D73B8AFB21C86B1200DD4CA4 /* Merge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73B8AFA21C86B1200DD4CA4 /* Merge.swift */; };
 		D73B8AFD21C86DA100DD4CA4 /* CaptionProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73B8AFC21C86DA100DD4CA4 /* CaptionProcessor.swift */; };
@@ -114,7 +113,6 @@
 		D738322E21DFFAF2006DC2EA /* Date+TimeAgo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+TimeAgo.swift"; sourceTree = "<group>"; };
 		D73B8AF121C72A4300DD4CA4 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		D73B8AF421C80E6600DD4CA4 /* ImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProcessor.swift; sourceTree = "<group>"; };
-		D73B8AF621C8114600DD4CA4 /* VideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessor.swift; sourceTree = "<group>"; };
 		D73B8AF821C8117100DD4CA4 /* MediaProcessable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaProcessable.swift; sourceTree = "<group>"; };
 		D73B8AFA21C86B1200DD4CA4 /* Merge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Merge.swift; sourceTree = "<group>"; };
 		D73B8AFC21C86DA100DD4CA4 /* CaptionProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionProcessor.swift; sourceTree = "<group>"; };
@@ -276,7 +274,6 @@
 			children = (
 				D73B8AFA21C86B1200DD4CA4 /* Merge.swift */,
 				D73B8AF421C80E6600DD4CA4 /* ImageProcessor.swift */,
-				D73B8AF621C8114600DD4CA4 /* VideoProcessor.swift */,
 				D73B8AF821C8117100DD4CA4 /* MediaProcessable.swift */,
 				D73B8AFC21C86DA100DD4CA4 /* CaptionProcessor.swift */,
 			);
@@ -729,7 +726,6 @@
 				D7F6A35A21EE6A04002DDB6D /* BestFriendDetailCell.swift in Sources */,
 				D7643B4921DD0EE100ACE26F /* DatabaseService+SendMessage.swift in Sources */,
 				D7869FBE21DEA8E500A1B863 /* BlockedUsersViewController.swift in Sources */,
-				D73B8AF721C8114600DD4CA4 /* VideoProcessor.swift in Sources */,
 				D726383121E13D8C00FDA242 /* Theme.swift in Sources */,
 				D7643B5021DD112C00ACE26F /* StorageService+StoreMedia.swift in Sources */,
 				D7F8992C21F250E500020A68 /* LoadingViewController.swift in Sources */,

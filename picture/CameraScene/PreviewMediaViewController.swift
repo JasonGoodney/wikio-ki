@@ -215,27 +215,21 @@ class PreviewMediaViewController: UIViewController {
         
         let loadingViewController = LoadingViewController(hudText: "Sending")
         let hud = loadingViewController.hud
-        add(loadingViewController)
+        DispatchQueue.main.async {
+            self.add(loadingViewController)
+        }
         
         let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
         message.status = .sending
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
         print("chatUID: \(chatUid)")
         
-        
-        
-        //let chat = Chat(uid: chatUid, memberUids: [currentUser.uid, friend.uid], lastMessageSent: message.uid, lastSenderUid: currentUser.uid, isNewFriendship: false)
-        
         chat?.isOpened = false
         chat?.lastMessageSent = message.uid
         chat?.lastSenderUid = currentUser.uid
         chat?.isNewFriendship = false
         chat?.lastChatUpdateTimestamp = Date().timeIntervalSince1970
-        
-//        let sentToUid = chat?.memberUids.first(where: { $0 != chat?.lastSenderUid })!
-//        let unreadCount = chat?.unread?[sentToUid!]
-//        chat?.unread?[sentToUid!] = unreadCount! + 1
-//        
+
         if let data = messageImageData {
             
             StorageService.saveMediaToStorage(data: data, for: message) { (messageWithMedia, error) in
@@ -297,20 +291,25 @@ class PreviewMediaViewController: UIViewController {
             messageImageData = image.jpegData(compressionQuality: Compression.quality)
             sendMessage(currentUser, messageCaption, messageType, friend, messageImageData)
         } else if let videoURL = videoURL {
-            let processor = VideoProcessor()
-            let captionProcessor = CaptionProcessor()
-            let captionImage = captionProcessor.imageFromView(captionTextView)
-            let captionAsImage = captionTextView.asImage()
-           // message.videoURL = processor.addOverlay(captionTextField, to: videoURL, size: view.frame.size)
-        
-            let config = MergeConfiguration.customPlacement(captionTextView.frame)
+            let videoWidth: CGFloat = 1080
+            let videoHeight: CGFloat = 1920
+            
+            let height: CGFloat = 36 * (videoHeight / view.frame.height)
+            let width = videoWidth
+            let y: CGFloat = videoHeight - (captionTextView.center.y * (videoHeight / view.frame.height))
+
+            let size = CGSize(width: width, height: height)
+            let placement = Placement.custom(x: 0, y: y, size: size)
+            
+            let config = MergeConfiguration.init(frameRate: 30, directory: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0], quality: .high, placement: placement)
+            
             let merge = Merge(config: config)
             let asset = AVAsset(url: videoURL)
-            
+
             merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
                 guard let url = url else { return }
                 messageVideoURL = url.absoluteString
-                do { 
+                do {
                     try messageImageData = Data(contentsOf: url)
                     self.sendMessage(currentUser, self.captionTextView.text ?? "", .video, friend, messageImageData)
                 } catch let error {
@@ -320,7 +319,6 @@ class PreviewMediaViewController: UIViewController {
                 print(progress)
             }
         }
-        
         
     }
     

@@ -31,8 +31,8 @@ class UserController: LoginFlowHandler {
     var recentChatsWithFriends: [ChatWithFriend] {
         get {
             let recents = allChatsWithFriends.filter {
-//                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).isWithinThePast24Hours()
-                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).testingIsWithinRecentTime()
+                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).isWithinThePast24Hours()
+//                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).testingIsWithinRecentTime()
                 && !bestFriendUids.contains($0.friend.uid)
             }
             
