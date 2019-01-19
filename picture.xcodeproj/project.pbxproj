@@ -85,6 +85,7 @@
 		D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */; };
 		D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007D21ED6BFE003C3A80 /* UIButton.swift */; };
 		D7D0008321ED7518003C3A80 /* ProfileDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */; };
+		D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DF9B9B21F390500087031B /* UnreadView.swift */; };
 		D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */; };
 		D7F6A35621EE4487002DDB6D /* PopButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35521EE4487002DDB6D /* PopButton.swift */; };
 		D7F6A35821EE4D43002DDB6D /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35721EE4D43002DDB6D /* Compression.swift */; };
@@ -178,6 +179,7 @@
 		D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatWithFriend.swift; sourceTree = "<group>"; };
 		D7D0007D21ED6BFE003C3A80 /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailsViewController.swift; sourceTree = "<group>"; };
+		D7DF9B9B21F390500087031B /* UnreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadView.swift; sourceTree = "<group>"; };
 		D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDestructionType.swift; sourceTree = "<group>"; };
 		D7F6A35521EE4487002DDB6D /* PopButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopButton.swift; sourceTree = "<group>"; };
 		D7F6A35721EE4D43002DDB6D /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
@@ -361,6 +363,7 @@
 			children = (
 				D7591F0321C2C1B700B3EAAD /* FriendsListViewController.swift */,
 				D7591F0621C2C23300B3EAAD /* FriendsListCell.swift */,
+				D7DF9B9B21F390500087031B /* UnreadView.swift */,
 			);
 			path = FriendsScene;
 			sourceTree = "<group>";
@@ -706,6 +709,7 @@
 				D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */,
 				D7869FC121DEAA0800A1B863 /* BlockedUserCell.swift in Sources */,
 				D74890EE21BC86DC005AAF6B /* AppDelegate.swift in Sources */,
+				D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */,
 				D7591F1221C2CE5C00B3EAAD /* ReplyFooterView.swift in Sources */,
 				D72D792C21D0913900FB5327 /* LoginViewModel.swift in Sources */,
 				D72F166621D556BD0009D43D /* AddFriendState.swift in Sources */,

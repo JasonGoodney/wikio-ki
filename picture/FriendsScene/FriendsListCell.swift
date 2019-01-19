@@ -50,6 +50,8 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         button.addTarget(self, action: #selector(handleCameraButton), for: .touchUpInside)
         return button
     }()
+    
+    private let unreadView = UnreadView()
 
     let profileImageView = ProfileImageButton(height: 44, width: 44, enabled: true)
     
@@ -118,6 +120,11 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
                 self.usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
                 self.detailsLabel.font = UIFont.systemFont(ofSize: 14)
             }
+            
+            if let unread = self.chat?.unread, let uid = UserController.shared.currentUser?.uid {
+                let unreadCount = unread[uid]
+                self.unreadView.unreadCount = unreadCount ?? 0
+            }
         }
     }
     
@@ -140,12 +147,16 @@ private extension FriendsListCell {
         overallStackView.distribution = .fillProportionally
         overallStackView.spacing = 16
         
-        addSubviews(overallStackView)
+        addSubviews([overallStackView, unreadView])
         
         separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         overallStackView.anchorCenterYToSuperview()
         overallStackView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 16))
-
+        
+        
+        unreadView.anchor(top: profileImageView.topAnchor, leading: profileImageView.leadingAnchor, bottom: profileImageView.bottomAnchor, trailing: profileImageView.trailingAnchor, padding: .init(top: -6, left: 0, bottom: 0, right: -6))
+        
+        bringSubviewToFront(unreadView)
     }
 }

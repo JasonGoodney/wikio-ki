@@ -226,6 +226,7 @@ class PreviewMediaViewController: UIViewController {
         
         //let chat = Chat(uid: chatUid, memberUids: [currentUser.uid, friend.uid], lastMessageSent: message.uid, lastSenderUid: currentUser.uid, isNewFriendship: false)
         
+        chat?.isOpened = false
         chat?.lastMessageSent = message.uid
         chat?.lastSenderUid = currentUser.uid
         chat?.isNewFriendship = false
