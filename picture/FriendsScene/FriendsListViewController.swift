@@ -24,7 +24,7 @@ class FriendsListViewController: UIViewController {
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
     
-    private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "MY FRIENDS"]
+    private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "FRIENDS"]
     private let sectionHeaderHeight: CGFloat = 50
 
     
@@ -89,9 +89,12 @@ class FriendsListViewController: UIViewController {
         
         UserController.shared.fetchCurrentUser { (success) in
             if success {
-                if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
+                if let image = UserController.shared.currentUser?.profilePhoto {
+                    self.profileImageButton.setImage(image, for: .normal)
+                    self.profileImageButton.isUserInteractionEnabled = true
+                } else if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
                     DispatchQueue.main.async {
-                        self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
+                        self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
                             self.profileImageButton.isUserInteractionEnabled = true
                         })
                     }
@@ -177,7 +180,7 @@ class FriendsListViewController: UIViewController {
         
         if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
             DispatchQueue.main.async {
-                self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
+                self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
                     self.profileImageButton.isUserInteractionEnabled = true
                 })
             }

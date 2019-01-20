@@ -15,11 +15,7 @@ class User {
     let username: String
     let email: String
     let score: Int
-    var profilePhotoUrl: String {
-        didSet {
-            cacheImage(for: URL(string: self.profilePhotoUrl)!)
-        }
-    }
+    var profilePhotoUrl: String
     let uid: String
     
     var friendsUids: Set<String> = []
@@ -43,8 +39,10 @@ class User {
         self.username = username
         self.email = email
         self.score = score
-        self.profilePhotoUrl = profilePhotoUrl
         self.uid = uid
+        self.profilePhotoUrl = profilePhotoUrl
+        
+        cacheImage(for: URL(string: self.profilePhotoUrl)!)
     }
 }
 

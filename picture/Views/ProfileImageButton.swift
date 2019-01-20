@@ -12,6 +12,8 @@ protocol ProfileImageButtonDelegate: class {
     func didTapProfileImageButton(_ sender: ProfileImageButton)
 }
 
+let placeholderProfileImage = UIImage(named: "placeholderProfileImage")?.withRenderingMode(.alwaysTemplate)
+
 class ProfileImageButton: PopButton {
 
     weak var delegate: ProfileImageButtonDelegate?
@@ -24,8 +26,10 @@ class ProfileImageButton: PopButton {
         widthAnchor.constraint(equalToConstant: width).isActive = true
         layer.cornerRadius = min(width, height) / 2
         clipsToBounds = true
-        backgroundColor = .lightGray
+//        backgroundColor = .lightGray
         imageView?.contentMode = .scaleAspectFill
+        setImage(placeholderProfileImage, for: .normal)
+        tintColor = WKTheme.textColor
 
         addTarget(self, action: #selector(handleTap), for: .touchUpInside)
     }

@@ -211,13 +211,11 @@ class PreviewMediaViewController: UIViewController {
         return image!
     }
     
+    let loadingViewController = LoadingViewController(hudText: "Sending")
     fileprivate func sendMessage(_ currentUser: User, _ messageCaption: String?, _ messageType: MessageType, _ friend: User, _ messageImageData: Data?) {
         
-        let loadingViewController = LoadingViewController(hudText: "Sending")
+        
         let hud = loadingViewController.hud
-        DispatchQueue.main.async {
-            self.add(loadingViewController)
-        }
         
         let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
         message.status = .sending
@@ -255,7 +253,7 @@ class PreviewMediaViewController: UIViewController {
                     print("Sent message from \(currentUser.username) to \(self.friend!.username)")
                     message.status = .delivered
                     
-                    loadingViewController.remove()
+                    self.loadingViewController.remove()
                     
                     MessageController.shared.messages.append(message)
                     self.dismiss(animated: false, completion: nil)
@@ -273,6 +271,7 @@ class PreviewMediaViewController: UIViewController {
     
     @objc func sendButtonTapped(_ sender: UIButton) {
         
+        self.add(loadingViewController)
         
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
@@ -305,16 +304,46 @@ class PreviewMediaViewController: UIViewController {
             
             let merge = Merge(config: config)
             let asset = AVAsset(url: videoURL)
-
+            let caption = self.captionTextView.text ?? ""
             merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
                 guard let url = url else { return }
                 messageVideoURL = url.absoluteString
-                do {
-                    try messageImageData = Data(contentsOf: url)
-                    self.sendMessage(currentUser, self.captionTextView.text ?? "", .video, friend, messageImageData)
-                } catch let error {
-                    print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-                }
+                
+                    // Get source video
+                    let videoToCompress = url
+                    
+                    // Declare destination path and remove anything exists in it
+                    let destinationPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("compressed.mp4")
+                    try? FileManager.default.removeItem(at: destinationPath)
+                    
+                    // Compress
+                    let cancelable = compressh264VideoInBackground(
+                        videoToCompress: videoToCompress,
+                        destinationPath: destinationPath,
+                        size: nil, // nil preserves original,
+    
+                        compressionTransform: .keepSame,
+                        compressionConfig: .defaultConfig,
+                        completionHandler: { [weak self] path in
+                            do {
+                                try messageImageData = Data(contentsOf: url)
+                                self?.sendMessage(currentUser, caption, .video, friend, messageImageData)
+                            } catch let error {
+                                print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                            }
+                        },
+                        errorHandler: { e in
+                            print("Error: ", e)
+                        },
+                        cancelHandler: {
+                            print("Canceled.")
+                        }
+                    )
+                    
+                    // To cancel compression, set cancel flag to true and wait for handler invoke
+                
+                    
+                    
             }) { (progress) in
                 print(progress)
             }

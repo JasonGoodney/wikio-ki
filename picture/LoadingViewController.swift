@@ -39,7 +39,10 @@ class LoadingViewController: UIViewController {
 
         blurEffectView.contentView.addSubview(vibrancyEffectView)
         
-        hud.show(in: view)
+        DispatchQueue.main.async {
+            self.hud.show(in: self.view)
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
