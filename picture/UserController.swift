@@ -19,29 +19,50 @@ class UserController: LoginFlowHandler {
     
     var bestFriendUids: [String] = []
     
-    var bestFriendsChats: [ChatWithFriend] {
-        get {
+    var bestFriendsChats: [ChatWithFriend] = []
+//    {
+//        get {
+//            let bestFriends = allChatsWithFriends.filter { bestFriendUids.contains($0.friend.uid) }
+//
+//            return bestFriends.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+//                return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
+//            })
+//        }
+//    }
+    var recentChatsWithFriends: [ChatWithFriend] = []
+//    {
+//        get {
+//            let recents = allChatsWithFriends.filter {
+//                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).isWithinThePast24Hours()
+////                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).testingIsWithinRecentTime()
+//                && !bestFriendUids.contains($0.friend.uid)
+//            }
+//
+//            return recents.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+//                return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
+//            })
+//        }
+//    }
+    
+    var allChatsWithFriends: [ChatWithFriend] = [] {
+        didSet {
             let bestFriends = allChatsWithFriends.filter { bestFriendUids.contains($0.friend.uid) }
             
-            return bestFriends.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+            bestFriendsChats = bestFriends.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
                 return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
             })
-        }
-    }
-    var recentChatsWithFriends: [ChatWithFriend] {
-        get {
+            
             let recents = allChatsWithFriends.filter {
-                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).isWithinThePast24Hours()
-//                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).testingIsWithinRecentTime()
-                && !bestFriendUids.contains($0.friend.uid)
+//                Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).isWithinThePast24Hours()
+                                    Date(timeIntervalSince1970: $0.chat.lastChatUpdateTimestamp).testingIsWithinRecentTime()
+                    && !bestFriendUids.contains($0.friend.uid)
             }
             
-            return recents.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+            recentChatsWithFriends = recents.sorted(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
                 return chatWithFriend1.chat.lastChatUpdateTimestamp > chatWithFriend2.chat.lastChatUpdateTimestamp
             })
         }
     }
-    var allChatsWithFriends: [ChatWithFriend] = []
     
     func fetchCurrentUser(completion: @escaping (Bool) -> Void = { _ in }) {
         guard let uid = Auth.auth().currentUser?.uid else { return }

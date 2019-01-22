@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyCam
 import FirebaseFirestore
+import AVKit
 
 class MessagesViewController: UIViewController {
     
@@ -63,7 +64,7 @@ class MessagesViewController: UIViewController {
         super.viewDidLoad()
         
         let databaseService = DatabaseService()
-        databaseService.fetchMessages(withFriend: friend!) { (messages, error)  in
+        databaseService.fetchMessagesInChat(withFriend: friend!) { (messages, error)  in
             if let error = error {
                 print(error)
                 return
@@ -75,28 +76,50 @@ class MessagesViewController: UIViewController {
         updateView()
         
         if let chatUid = chat?.chatUid {
-            newMessageListener = Firestore.firestore().collection(DatabaseService.Collection.messages).document(chatUid).addSnapshotListener({ (snapshot, error) in
+            newMessageListener = DatabaseService.messagesReference(forPath: chatUid).addSnapshotListener({ (querySnapshot, error) in
                 if let error = error {
                     print(error)
                     return
                 }
-                guard let document = snapshot else {
-                    print("Error fetching document: \(error!)")
-                    return
-                }
-                let source = document.metadata.hasPendingWrites ? "Local" : "Server"
-                print(source)
-                if let _ = snapshot?.data() {
-                    DispatchQueue.main.async {
-                        let dbs = DatabaseService()
-                        dbs.fetchMessages(withFriend: self.friend!) { (messages, error)  in
-                            if let error = error {
-                                print(error)
-                                return
+                guard let changes = querySnapshot?.documentChanges else { return }
+                
+                let pendingWrites = changes.filter({
+                    $0.document.metadata.hasPendingWrites
+                })
+
+                if pendingWrites.count > 0 {
+                    pendingWrites.forEach({ (change) in
+                        let pendingMessage = Message(dictionary: change.document.data())
+
+                        self.collectionView.performBatchUpdates({
+                            let reloadIndexPath = IndexPath(row: self.messages.count-1, section: 0)
+                            let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
+                            
+                            if pendingMessage == self.messages[reloadIndexPath.row] {
+                                self.messages[reloadIndexPath.row] = pendingMessage
+                                let animationsEnabled = UIView.areAnimationsEnabled
+                                UIView.setAnimationsEnabled(false)
+                                self.collectionView.reloadItems(at: [reloadIndexPath])
+                                UIView.setAnimationsEnabled(animationsEnabled)
+                            } else {
+                                self.messages.append(pendingMessage)
+                                self.collectionView.insertItems(at: [insertIndexPath])
                             }
-                            guard let messages = messages else { return }
-                            self.messages = messages
-                            self.collectionView.reloadData()
+                        
+                        }, completion: nil)
+                    })
+                } else if changes.count > 0 {
+                    for change in changes {
+                        let newMessage = Message(dictionary: change.document.data())
+                        if newMessage.status == .delivered {
+                            self.collectionView.performBatchUpdates({
+                                let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
+                                
+                                self.messages.append(newMessage)
+                                self.collectionView.insertItems(at: [insertIndexPath])
+                                
+                                
+                            }, completion: nil)
                         }
                     }
                 }
@@ -235,17 +258,32 @@ extension MessagesViewController: UICollectionViewDataSource {
         }
         
         cell.configure(with: message, from: sender)
-            
+        
+        cell.delegate = self
+        
         return cell
     }
 }
 
 extension MessagesViewController: UICollectionViewDelegate {
+    
+    func loadMedia(url: URL, completion: @escaping(Bool) -> Void) {
+        
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? MessagesCell else { return }
+        
         let message = messages[indexPath.row]
+
+        if message.status == .sending {
+            cell.messageIsSendingWarning()
+            return
+        }
         
         let viewMessagesVC = OpenedMessageViewController(message: message)
-//        viewMessagesVC.indexPath = indexPath
+ 
+        guard let url = URL(string: message.mediaURL!) else { return }
         present(viewMessagesVC, animated: false) {
             DispatchQueue.main.async {
                 guard let currentUser = UserController.shared.currentUser, let friend = self.friend else { return }
@@ -253,15 +291,9 @@ extension MessagesViewController: UICollectionViewDelegate {
                     message.isOpened = true
                     self.chat?.isOpened = true
                     let dbs = DatabaseService()
-                    
+
                     let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
-                    dbs.update(message, in: chatUid, withFields: ["\(message.uid).\(Message.Keys.isOpened)": message.isOpened], completion: { (error) in
-                        if let error = error {
-                            print(error)
-                            return
-                        }
-                    })
-                    #warning("update chat last updated")
+
                     if let chat = self.chat {
                         dbs.opened(message, in: chat, completion: { (error) in
                             if let error = error {
@@ -293,5 +325,11 @@ extension MessagesViewController: OpenCameraToolbarDelegate {
         cameraViewController.friend = friend
         cameraViewController.chat = chat
         present(cameraViewController, animated: true, completion: nil)
+    }
+}
+
+extension MessagesViewController: MessageCellDelegate {
+    func loadMedia(for cell: MessagesCell, message: Message) {
+        
     }
 }

@@ -11,6 +11,18 @@ import FirebaseFirestore
 
 class DatabaseService {
     
+    static func messagesReference(forPath path: String) -> CollectionReference {
+        return Firestore.firestore().collection(Collection.chats).document(path).collection(Collection.messages)
+    }
+    
+    static func friendRequestsReference(forPath path: String) -> CollectionReference {
+        return Firestore.firestore().collection(Collection.users).document(path).collection(Collection.friendRequests)
+    }
+    
+    static func sentRequestsReference(forPath path: String) -> CollectionReference {
+        return Firestore.firestore().collection(Collection.users).document(path).collection(Collection.sentRequests)
+    }
+    
     enum Collection {
         static let chats = "chats"
         static let messages = "messages"

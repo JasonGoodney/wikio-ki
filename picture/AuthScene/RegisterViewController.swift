@@ -354,6 +354,7 @@ extension RegisterViewController: UITextFieldDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        self.errorLabel.text = ""
         if textField == usernameTextField && textField.isFirstResponder {
             let validString = CharacterSet(charactersIn: " !@#$€%^&*()-_+{}[]|\"<>,.~`/:;?=\\¥'£•¢")
             

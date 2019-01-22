@@ -1,0 +1,6 @@
+framework module Digger {
+  umbrella header "Digger-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -41,6 +41,7 @@ class LoadingViewController: UIViewController {
         
         DispatchQueue.main.async {
             self.hud.show(in: self.view)
+//            UIApplication.shared.isNetworkActivityIndicatorVisible = true
         }
         
     }
@@ -53,7 +54,10 @@ class LoadingViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        hud.dismiss()
+        DispatchQueue.main.async {
+            self.hud.dismiss()
+//            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        }
     }
 }
 

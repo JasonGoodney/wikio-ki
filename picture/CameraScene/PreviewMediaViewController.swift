@@ -212,37 +212,31 @@ class PreviewMediaViewController: UIViewController {
     }
     
     let loadingViewController = LoadingViewController(hudText: "Sending")
-    fileprivate func sendMessage(_ currentUser: User, _ messageCaption: String?, _ messageType: MessageType, _ friend: User, _ messageImageData: Data?) {
+    
+    fileprivate func sendMessage(_ currentUser: User, _ messageCaption: String?, _ messageType: MessageType, _ friend: User, _ messageImageData: Data?, _ messageThumbnailData: Data?) {
         
-        
-        let hud = loadingViewController.hud
+        let hud = self.loadingViewController.hud
         
         let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
         message.status = .sending
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
         print("chatUID: \(chatUid)")
         
-        chat?.isOpened = false
-        chat?.lastMessageSent = message.uid
-        chat?.lastSenderUid = currentUser.uid
-        chat?.isNewFriendship = false
-        chat?.lastChatUpdateTimestamp = Date().timeIntervalSince1970
-
-        if let data = messageImageData {
+        self.chat?.isOpened = false
+        self.chat?.lastMessageSent = message.uid
+        self.chat?.lastSenderUid = currentUser.uid
+        self.chat?.isNewFriendship = false
+        self.chat?.isSending = true
+        self.chat?.lastChatUpdateTimestamp = Date().timeIntervalSince1970
+        
+        dismiss(animated: false)
+        self.presentingViewController?.dismiss(animated: false) {
             
-            StorageService.saveMediaToStorage(data: data, for: message) { (messageWithMedia, error) in
-                if let error = error {
-                    print(error)
-                    message.status = .failed
-                    hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                    hud.textLabel.text = error.localizedDescription
-                    hud.show(in: self.view)
-                    return
-                }
-                
-                guard let message = messageWithMedia else { return }
-                let databaseService = DatabaseService()
-                databaseService.save(message, in: self.chat!, completion: { (error) in
+            // Completion Begin
+            if let data = messageImageData, let thumbnailData = messageThumbnailData {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                let dbs = DatabaseService()
+                dbs.save(message, in: self.chat!, completion: { (error) in
                     if let error = error {
                         print(error)
                         message.status = .failed
@@ -251,21 +245,153 @@ class PreviewMediaViewController: UIViewController {
                         return
                     }
                     print("Sent message from \(currentUser.username) to \(self.friend!.username)")
-                    message.status = .delivered
-                    
-                    self.loadingViewController.remove()
-                    
+
                     MessageController.shared.messages.append(message)
-                    self.dismiss(animated: false, completion: nil)
-                    self.presentingViewController?.dismiss(animated: false) {
-                        DispatchQueue.main.async {
-                            
-                            message.status = .delivered
+                    
+                    StorageService.saveMediaToStorage(data: data, thumbnailData: thumbnailData, for: message) { (messageWithMedia, error) in
+                        if let error = error {
+                            print(error)
+                            message.status = .failed
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = error.localizedDescription
+                            hud.show(in: self.view)
+                            return
                         }
+                        
+                        guard let message = messageWithMedia else { return }
+                        
+                        let fields: [String: Any] = [
+                            Message.Keys.status: message.status.databaseValue(),
+                            Message.Keys.mediaURL: message.mediaURL,
+                            Message.Keys.mediaThumbnailURL: message.mediaThumbnailURL,
+                            Message.Keys.timestamp: Date().timeIntervalSince1970
+                        ]
+                        
+                        dbs.update(message, in: chatUid, withFields: fields, completion: { (error) in
+                            if let error = error {
+                                print(error)
+                                return
+                            }
+                            
+                            dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: [
+                                Chat.Keys.isSending: false,
+                                Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970
+                                ], completion: { (error) in
+                                if let error = error {
+                                    print(error)
+                                    return
+                                }
+                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                                print("Everything uploaded and set")
+                            })
+
+                        })
+                        
                     }
                 })
+                
+                
+                
             }
             
+//            if let data = messageImageData, let thumbnailData = messageThumbnailData {
+//                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+//                StorageService.saveMediaToStorage(data: data, thumbnailData: thumbnailData, for: message) { (messageWithMedia, error) in
+//                    if let error = error {
+//                        print(error)
+//                        message.status = .failed
+//                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                        hud.textLabel.text = error.localizedDescription
+//                        hud.show(in: self.view)
+//                        return
+//                    }
+//
+//                    guard let message = messageWithMedia else { return }
+//                    let databaseService = DatabaseService()
+//                    databaseService.save(message, in: self.chat!, completion: { (error) in
+//                        if let error = error {
+//                            print(error)
+//                            message.status = .failed
+//                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                            hud.textLabel.text = error.localizedDescription
+//                            return
+//                        }
+//                        print("Sent message from \(currentUser.username) to \(self.friend!.username)")
+//                        message.status = .delivered
+//
+//                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//
+//                        MessageController.shared.messages.append(message)
+//                    })
+//                }
+//
+//            }
+        } // Completion End
+    }
+    
+    fileprivate func compressVideo(_ url: URL, completion: @escaping (URL) -> ()) {
+        //messageVideoURL = url.absoluteString
+        
+        // Get source video
+        let videoToCompress = url
+        
+        // Declare destination path and remove anything exists in it
+        let destinationPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("compressed.mp4")
+        try? FileManager.default.removeItem(at: destinationPath)
+        
+        // Compress
+        let cancelable = compressh264VideoInBackground(
+            videoToCompress: videoToCompress,
+            destinationPath: destinationPath,
+            size: nil, // nil preserves original,
+            
+            compressionTransform: .keepSame,
+            compressionConfig: .defaultConfig,
+            completionHandler: completion,
+            errorHandler: { e in
+                print("Error: ", e)
+            },
+            cancelHandler: {
+                print("Canceled.")
+            }
+            // To cancel compression, set cancel flag to true and wait for handler invoke
+        )
+    }
+    
+    func generateThumbnail(for asset: AVAsset) -> UIImage? {
+        
+//        let vidURL = NSURL(fileURLWithPath:filePathLocal as String)
+//        let asset = AVURLAsset(url: vidURL as URL)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        
+        let timestamp = CMTime(seconds: 0, preferredTimescale: 60)
+        
+        do {
+            let imageRef = try generator.copyCGImage(at: timestamp, actualTime: nil)
+            return UIImage(cgImage: imageRef)
+        }
+        catch let error as NSError
+        {
+            print("Image generation failed with error \(error)")
+            return nil
+        }
+        
+    }
+    
+    func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
+        let urlAsset = AVURLAsset(url: inputURL, options: nil)
+        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetLowQuality) else {
+            handler(nil)
+            
+            return
+        }
+        
+        exportSession.outputURL = outputURL
+        exportSession.outputFileType = AVFileType.mov
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.exportAsynchronously { () -> Void in
+            handler(exportSession)
         }
     }
     
@@ -275,23 +401,29 @@ class PreviewMediaViewController: UIViewController {
         
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
+        
         var messageCaption: String? = nil
-        var messageImageData: Data? = nil
-        var messageVideoURL: String? = nil
-        var messageType: MessageType = .photo
+        var mediaData: Data? = nil
+        var messageThumbnailData: Data? = nil
+        
+        
         
         if captionTextView.text != "", let caption = captionTextView.text, let image = image {
             messageCaption = caption
             let processor = ImageProcessor()
             let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
-            messageImageData = image.jpegData(compressionQuality: Compression.quality)
-            sendMessage(currentUser, messageCaption, messageType, friend, messageImageData)
+            mediaData = image.jpegData(compressionQuality: Compression.quality)
+            messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+            sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
+            
         } else if let image = image {
-            messageImageData = image.jpegData(compressionQuality: Compression.quality)
-            sendMessage(currentUser, messageCaption, messageType, friend, messageImageData)
+            mediaData = image.jpegData(compressionQuality: Compression.quality)
+            messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+            sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
+            
         } else if let videoURL = videoURL {
-            let videoWidth: CGFloat = 1080
-            let videoHeight: CGFloat = 1920
+            let videoWidth: CGFloat = VideoResolution.width
+            let videoHeight: CGFloat = VideoResolution.height
             
             let height: CGFloat = 36 * (videoHeight / view.frame.height)
             let width = videoWidth
@@ -304,45 +436,65 @@ class PreviewMediaViewController: UIViewController {
             
             let merge = Merge(config: config)
             let asset = AVAsset(url: videoURL)
+            
+            
+            let thumbnail = generateThumbnail(for: asset)
+            let processor = ImageProcessor()
+            let image = processor.addOverlay(captionTextView, to: thumbnail!, size: view.frame.size)
+            messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+            
             let caption = self.captionTextView.text ?? ""
+            
             merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
                 guard let url = url else { return }
-                messageVideoURL = url.absoluteString
-                
-                    // Get source video
-                    let videoToCompress = url
+                self.compressVideo(inputURL: url, outputURL: url, handler: { (exportSession) in
+                    guard let session = exportSession else {
+                        return
+                    }
                     
-                    // Declare destination path and remove anything exists in it
-                    let destinationPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("compressed.mp4")
-                    try? FileManager.default.removeItem(at: destinationPath)
-                    
-                    // Compress
-                    let cancelable = compressh264VideoInBackground(
-                        videoToCompress: videoToCompress,
-                        destinationPath: destinationPath,
-                        size: nil, // nil preserves original,
-    
-                        compressionTransform: .keepSame,
-                        compressionConfig: .defaultConfig,
-                        completionHandler: { [weak self] path in
-                            do {
-                                try messageImageData = Data(contentsOf: url)
-                                self?.sendMessage(currentUser, caption, .video, friend, messageImageData)
-                            } catch let error {
-                                print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-                            }
-                        },
-                        errorHandler: { e in
-                            print("Error: ", e)
-                        },
-                        cancelHandler: {
-                            print("Canceled.")
+                    switch session.status {
+                    case .unknown:
+                        break
+                    case .waiting:
+                        break
+                    case .exporting:
+                        break
+                    case .completed:
+                        do {
+                            guard let mediaData = try? Data(contentsOf: url) else { return }
+                            self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
+                        } catch let error {
+                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
                         }
-                    )
-                    
-                    // To cancel compression, set cancel flag to true and wait for handler invoke
+                        
+                        
+                        
+                    case .failed:
+                        break
+                    case .cancelled:
+                        break
+                    }
+//                    do {
+//                        guard let data = exportSession.da
+//                        try mediaData = Data(contentsOf: url)
+//                        self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+//                        print(mediaData)
+//                    } catch let error {
+//                        print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+//                    }
+                })
+
                 
-                    
+                
+                do {
+                    try mediaData = Data(contentsOf: url)
+                    self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+                    print(mediaData)
+                } catch let error {
+                    print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                }
+                
                     
             }) { (progress) in
                 print(progress)

@@ -28,11 +28,13 @@ extension Date {
         return false
     }
     
-    func messageDataTimestamp() -> String {
-        if self.isWithinThePast24Hours() {
+    func messageDateTimestamp() -> String {
+        if isToday() {
             return time()
-        } else {
-            return dateTimeFormatter(dateFormat: "MMM d, h:mm a")
+        } else if self.isWithinThePastWeek() {
+            return dateTimeFormatter(dateFormat: "E h:mm a")
+        }  else {
+            return dateTimeFormatter(dateFormat: "MMM d")
         }
     }
     
@@ -92,15 +94,19 @@ extension Date {
     
     func isWithinThePastWeek() -> Bool {
         let calendar = Calendar.current
-        let dayAgo = calendar.date(byAdding: .day, value: -1, to: Date())!
+        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date())!
         
-        if dayAgo < self {
-            let diff = Calendar.current.dateComponents([.hour], from: self, to: Date()).hour ?? 0
-            if diff <= 24 * 7 {
+        if weekAgo < self {
+            let diff = Calendar.current.dateComponents([.day], from: self, to: Date()).day ?? 0
+            if diff <= 7 {
                 return true
             }
         }
         
         return false
+    }
+    
+    func isToday() -> Bool {
+        return Calendar.current.isDateInToday(self)
     }
 }

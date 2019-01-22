@@ -20,6 +20,7 @@ class FriendsListViewController: UIViewController {
     var friendshipChangedListener: ListenerRegistration?
     var blockedUserListener: ListenerRegistration?
     var chatUpdateListener: ListenerRegistration?
+    var userChatsListener: ListenerRegistration?
     
     var indexPathToReload: IndexPath?
     private let cellId = FriendsListCell.reuseIdentifier
@@ -100,8 +101,6 @@ class FriendsListViewController: UIViewController {
                     }
                 }
                 
-                self.handleRefreshFriends()
-                
                 self.friendRequestListener = Firestore.firestore()
                     .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
                     .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
@@ -121,17 +120,26 @@ class FriendsListViewController: UIViewController {
                         })
                 }
                 
-                let value = UserController.shared.currentUser?.uid as Any
+                self.userChatsListener = Firestore.firestore().collection(DatabaseService.Collection.userChats).document(UserController.shared.currentUser!.uid).addSnapshotListener({ (snapshot, error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    guard let doc = snapshot else {
+                        print("No userchats doc")
+                        return
+                    }
+                    let source = doc.metadata.hasPendingWrites ? "Local" : "Server"
+                    if doc.metadata.hasPendingWrites {
+                        print(source)
+                        self.reloadData()
+                    } else {
+                        print(source)
+                        self.handleRefreshFriends()
+                    }
+                })
                 
-//                Firestore.firestore().collection(DatabaseService.Collection.chats)
-//                    .whereField(Chat.Keys.memberUids, arrayContains: value).getDocuments(completion: { (snapshot, error) in
-//                        if let docs = snapshot?.documents {
-//                            docs.forEach({
-//                                print($0.data())
-//                                print("\n")
-//                            })
-//                        }
-//                    })
+                let value = UserController.shared.currentUser?.uid as Any
                 
                 self.chatUpdateListener = Firestore.firestore().collection(DatabaseService.Collection.chats)
                     .whereField(Chat.Keys.memberUids, arrayContains: value)
@@ -144,17 +152,42 @@ class FriendsListViewController: UIViewController {
                         
                         if snapshot.documentChanges.contains(where: { $0.type == .modified }) {
                             UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                            self.fetchChatsWithFriends(completion: { (error) in
-                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                                if let error = error {
-                                    print(error)
-                                    
-                                    return
-                                }
-                                
-                                self.reloadData()
-                                
+                            
+                            let pendingWrites = snapshot.documentChanges.filter({
+                                $0.document.metadata.hasPendingWrites
                             })
+                            
+                            if pendingWrites.count > 0 {
+                                pendingWrites.forEach({ (change) in
+                                    let pendingChat = Chat(dictionary: change.document.data())
+                                    
+                                    self.tableView.performBatchUpdates({
+                                        if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
+                                            let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                            UserController.shared.allChatsWithFriends[index].chat = pendingChat
+                                            let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                            
+                                            if beforeRecentsCount < afterRecentsCount {
+                                                self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
+                                            }
+                                            
+                                            self.tableView.reloadData()
+                                        }
+                                    }, completion: nil)
+                                })
+                            }
+                            
+//                            self.fetchChatsWithFriends(completion: { (error) in
+//                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//                                if let error = error {
+//                                    print(error)
+//
+//                                    return
+//                                }
+//
+//                                self.reloadData()
+//
+//                            })
                         }
                         
                         if snapshot.documentChanges.count > 0 {
@@ -163,6 +196,8 @@ class FriendsListViewController: UIViewController {
                         }
                 })
             }
+            
+
         }
 
         if #available(iOS 10.0, *) {
@@ -211,15 +246,20 @@ class FriendsListViewController: UIViewController {
             self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math-1"), for: .normal)
         }
         
-        friendshipChangedListener = addListenerOnUser(listeningTo: DatabaseService.Collection.friends)
+        friendshipChangedListener = addListenerOnUser(listeningTo: DatabaseService.Collection.friends, completion: { (changes) in
+            if changes {
+                DispatchQueue.main.async {
+                    self.handleRefreshFriends()
+                }
+                //self.blockedUserListener?.remove()
+            }
+        })
         
         navigationController?.pushViewController(addFriendVC, animated: true)
     }
     
     @objc private func handleRefreshFriends() {
-        
         beginRefresh()
-        
         self.fetchChatsWithFriends(completion: { (error) in
             self.endRefresh()
             if let error = error {
@@ -289,6 +329,18 @@ class FriendsListViewController: UIViewController {
             if let _ = snapshot {
                 completion(true)
             }
+        }
+    }
+    
+    func newChatListener(chatUid: String, chat: Chat, index: Int) {
+        Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid).addSnapshotListener { (snapshot, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            guard let doc = snapshot else { return }
+            
+            doc.metadata.hasPendingWrites
         }
     }
 }
@@ -378,13 +430,19 @@ extension FriendsListViewController: UITableViewDataSource {
         switch indexPath.section {
         case 0 where !UserController.shared.bestFriendsChats.isEmpty:
             friend = UserController.shared.bestFriendsChats[indexPath.row].friend
-            cell.configure(with: friend)
+            let chatWithFriend = UserController.shared.bestFriendsChats[indexPath.row]
+            cell.configure(with: chatWithFriend)
+        
         case 1 where !UserController.shared.recentChatsWithFriends.isEmpty:
             friend = UserController.shared.recentChatsWithFriends[indexPath.row].friend
-            cell.configure(with: friend)
+            let chatWithFriend = UserController.shared.recentChatsWithFriends[indexPath.row]
+            cell.configure(with: chatWithFriend)
+        
         case 2 where !UserController.shared.allChatsWithFriends.isEmpty:
             friend = UserController.shared.allChatsWithFriends[indexPath.row].friend
-            cell.configure(with: friend)
+            let chatWithFriend = UserController.shared.allChatsWithFriends[indexPath.row]
+            cell.configure(with: chatWithFriend)
+        
         default:
             print("SECTION ERROR 🤶\(#function)")
         }

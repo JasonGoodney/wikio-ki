@@ -52,6 +52,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
     }()
     
     private let unreadView = UnreadView()
+    private let statusIndicatorView = StatusIndicatorView(subviewSize: 14)
 
     let profileImageView = ProfileImageButton(height: 44, width: 44, enabled: true)
     
@@ -69,28 +70,34 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         usernameLabel.text = name
     }
     
-    func configure(with user: User) {
-        self.friend = user
+    func configure(with chatWithFriend: ChatWithFriend) {
+        let user = chatWithFriend.friend
+        let chat = chatWithFriend.chat
         
         usernameLabel.text = user.username
         if let url = URL(string: user.profilePhotoUrl) {
             profileImageView.sd_setImage(with: url, for: .normal)
         }
         
-        let dbs = DatabaseService()
+//        let dbs = DatabaseService()
+//
+//        dbs.fetchChat(withFriend: user) { (chat, error) in
+//            if let error = error {
+//                print(error)
+//                return
+//            }
+//
+//            guard let chat = chat else { return }
+//            self.chat = chat
         
-        dbs.fetchChat(withFriend: user) { (chat, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            guard let chat = chat else { return }
-            self.chat = chat
-            
-            let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay()) · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).testingTimestamp())"
-            
-            if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
+            let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
+        if chat.isSending && chat.lastSenderUid == UserController.shared.currentUser?.uid {
+            self.detailsLabel.text = "Sending..."
+            self.cameraButton.tintColor = WKTheme.textColor
+            self.usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+            self.detailsLabel.font = UIFont.systemFont(ofSize: 14)
+        }
+            else if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
                 self.detailsLabel.text = "Tap to chat" + timeAgoString
                 self.usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
                 self.detailsLabel.font = UIFont.systemFont(ofSize: 14)
@@ -125,7 +132,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
                 let unreadCount = unread[uid]
                 self.unreadView.unreadCount = unreadCount ?? 0
             }
-        }
+//        }
     }
     
     @objc private func handleCameraButton() {
@@ -138,9 +145,17 @@ private extension FriendsListCell {
     func updateView() {
         backgroundColor = .white
         
-        let textStackView = UIStackView(arrangedSubviews: [usernameLabel, detailsLabel])
+//        statusIndicatorView.heightAnchor.constraint(equalToConstant: 14).isActive = true
+//        statusIndicatorView.widthAnchor.constraint(equalToConstant: 14).isActive = true
+        
+        statusIndicatorView.configure(forStatus: .delivered, isOpened: false, type: .photo)
+        
+        let detailsStackView = UIStackView(arrangedSubviews: [detailsLabel])
+        detailsStackView.spacing = 8
+        detailsStackView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        let textStackView = UIStackView(arrangedSubviews: [usernameLabel, detailsStackView])
         textStackView.axis = .vertical
-        textStackView.backgroundColor = .orange
         textStackView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
         let overallStackView = UIStackView(arrangedSubviews: [profileImageView, textStackView, cameraButton])

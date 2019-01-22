@@ -117,6 +117,40 @@ extension DatabaseService {
         }
     }
     
+    func fetchMessagesInChat(withFriend friend: User, completion: @escaping ([Message]?, Error?) -> Void) {
+        guard let currentUser = UserController.shared.currentUser else { return }
+        let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
+        
+        Firestore.firestore().collection(Collection.chats).document(chatUid).collection(Collection.messages).getDocuments(completion: { (querySnapshot, error) in
+            if let error = error {
+                print(error)
+                completion(nil, error)
+                return
+            }
+            
+            guard let docs = querySnapshot?.documents else { return }
+            MessageController.shared.messages = []
+            docs.forEach({ (doc) in
+                let message = Message(dictionary: doc.data())
+                let index = MessageController.shared.messages.insertionIndexOf(elem: message, isOrderedBefore: { (a, b) -> Bool in
+                    return a.timestamp < b.timestamp
+                })
+                MessageController.shared.messages.insert(message, at: index)
+            })
+            
+//            MessageController.shared.messages = querySnapshot?.documents.map({ (snapshot) -> Message in
+//                return Message(dictionary: snapshot.data())
+//            }) ?? []
+//
+//
+//            MessageController.shared.messages.sort(by: { (a, b) -> Bool in
+//                return a.timestamp < b.timestamp
+//            })
+            
+            completion(MessageController.shared.messages, nil)
+        })
+    }
+    
     func fetchMessages(withFriend friend: User, completion: @escaping ([Message]?, Error?) -> Void) {
         guard let currentUser = UserController.shared.currentUser else { return }
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
@@ -164,9 +198,11 @@ extension DatabaseService {
     }
     
     func fetchTakenUsername(username: String, completion: @escaping (_ isTaken: Bool) -> Void) {
-        let takenUsernameListener = Firestore.firestore().collection(Collection.takenUsernames).whereField("username", isEqualTo: username).addSnapshotListener { (snapshot, error) in
+        var takenUsernameListener: ListenerRegistration?
+        takenUsernameListener = Firestore.firestore().collection(Collection.takenUsernames).whereField("username", isEqualTo: username).addSnapshotListener { (snapshot, error) in
             if let error = error {
                 print(error)
+                takenUsernameListener?.remove()
                 completion(false)
                 return
             }
@@ -174,11 +210,14 @@ extension DatabaseService {
             
             if usernamesCount > 0 {
                 print("\(username) count = \(usernamesCount)")
+                takenUsernameListener?.remove()
                 completion(true)
+                
             } else {
+                takenUsernameListener?.remove()
                 completion(false)
             }
         }
-        takenUsernameListener.remove()
+        
     }
 }

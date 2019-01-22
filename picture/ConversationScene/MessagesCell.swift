@@ -9,8 +9,14 @@
 import UIKit
 import SDWebImage
 
+protocol MessageCellDelegate: class {
+    func loadMedia(for cell: MessagesCell, message: Message)
+}
+
 class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
 
+    weak var delegate: MessageCellDelegate?
+    
     let usernameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
@@ -66,13 +72,21 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
   
         if sender.uid == UserController.shared.currentUser?.uid {
             usernameLabel.text = "ME"
+            usernameLabel.textColor = WKTheme.meColor
+            separatorView.backgroundColor = WKTheme.meColor
             
         } else {
             usernameLabel.text = sender.username.uppercased()
+            usernameLabel.textColor = WKTheme.friendColor
+            separatorView.backgroundColor = WKTheme.friendColor
         }
         
         openMessageView.configure(withMessage: message)
-        timestampLabel.text = Date(timeIntervalSince1970: message.timestamp).messageDataTimestamp()
+        timestampLabel.text = Date(timeIntervalSince1970: message.timestamp).messageDateTimestamp()
+    }
+    
+    func messageIsSendingWarning() {
+        openMessageView.shake()
     }
 }
 

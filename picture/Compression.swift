@@ -8,10 +8,26 @@
 
 import UIKit
 
-struct Compression {
-    static let quality: CGFloat = 0.5
+struct MB {
+    static let binarySize: Double = 1048576
 }
 
+struct Compression {
+    static let quality: CGFloat = 0.5
+    static let thumbnailQuality: CGFloat = 0.1
+}
+
+struct VideoResolution {
+    
+    static var size = CGSize()
+    
+    static var width: CGFloat {
+        return size.width
+    }
+    static var height: CGFloat {
+        return size.height
+    }
+}
 
 //  Created by Diego Perini, TestFairy
 //  License: Public Domain

@@ -35,6 +35,7 @@ class Chat {
     var areFriends: Bool
     var areMutualBestFriends: Bool
     var unread: [String: Int]?
+    var isSending: Bool
     
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }
@@ -52,6 +53,7 @@ class Chat {
         static let areFriends = "areFriends"
         static let areMutualBestFriends = "areMutualBestFriends"
         static let unread = "unread"
+        static let isSending = "isSending"
     }
     
     init(dictionary: [String: Any]) {
@@ -65,10 +67,11 @@ class Chat {
         self.areFriends = dictionary[Keys.areFriends] as? Bool ?? false
         self.areMutualBestFriends = dictionary[Keys.areMutualBestFriends] as? Bool ?? false
         self.unread = dictionary[Keys.unread] as? [String: Int] ?? [:]
+        self.isSending = dictionary[Keys.isSending] as? Bool ?? false
     }
     
     init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String,
-         lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true, areMutualBestFriends: Bool = false) {
+         lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true, areMutualBestFriends: Bool = false, isSending: Bool = false) {
         self.uid = uid
         self.memberUids = memberUids
         self.lastMessageSent = lastMessageSent
@@ -78,6 +81,7 @@ class Chat {
         self.isNewFriendship = isNewFriendship
         self.areFriends = areFriends
         self.areMutualBestFriends = areMutualBestFriends
+        self.isSending = isSending
     }
     
     func dictionary() -> [String: Any] {
@@ -91,7 +95,8 @@ class Chat {
             Keys.isNewFriendship: isNewFriendship,
             Keys.areFriends: areFriends,
             Keys.areMutualBestFriends: areMutualBestFriends,
-            Keys.unread: unread
+            Keys.unread: unread,
+            Keys.isSending: isSending
         ]
         
         return dict

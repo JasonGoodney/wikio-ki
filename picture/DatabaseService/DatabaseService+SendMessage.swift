@@ -43,20 +43,20 @@ import FirebaseFirestore
                 completion(error)
                 return
             }
-            self.saveUserChatsCollection(forChatMembersIn: chat) { (error) in
-                if let error = error {
-                    print(error)
-                    completion(error)
-                    return
-                }
-                self.saveMessagesCollection(message, in: chat) { (error) in
+//            self.saveUserChatsCollection(forChatMembersIn: chat) { (error) in
+//                if let error = error {
+//                    print(error)
+//                    completion(error)
+//                    return
+//                }
+                self.saveMessagesCollectionInChats(message, in: chat) { (error) in
                     if let error = error {
                         print(error)
                         completion(error)
                         return
                     }
                     print("Saved Message")
-                    Firestore.firestore().collection(Collection.users).document(UserController.shared.currentUser!.uid).collection(Collection.sentMessages).document(message.uid).setData([message.uid: true], merge: true, completion: { (error) in
+                    Firestore.firestore().collection(Collection.users).document(UserController.shared.currentUser!.uid).collection(Collection.sentMessages).addDocument(data: message.dictionary(), completion: { (error) in
                         if let error = error {
                             print(error)
                             completion(error)
@@ -65,17 +65,25 @@ import FirebaseFirestore
                         completion(nil)
                     })
                 }
-            }
+//            }
         }
     }
     
     func update(_ messsage: Message, in chatUid: String, withFields fields: [String: Any], completion: @escaping ErrorCompletion) {
-        Firestore.firestore().collection(Collection.messages).document(chatUid).updateData(fields) { (error) in
+        DatabaseService.messagesReference(forPath: chatUid).document(messsage.uid).updateData(fields) { (error) in
             if let error = error {
                 print(error)
+                completion(error)
                 return
             }
-        }
+            completion(nil)
+    }
+//        Firestore.firestore().collection(Collection.messages).document(chatUid).updateData(fields) { (error) in
+//            if let error = error {
+//                print(error)
+//                return
+//            }
+//        }
     }
     
     func opened(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
@@ -92,22 +100,25 @@ import FirebaseFirestore
         Firestore.firestore().collection(Collection.chats).document(chatUid).updateData(chatField) { (error) in
             if let error = error {
                 print(error)
+                completion(error)
                 return
             }
-            
             print("Updated chat recent message to opened")
+            
+            // Update message
+            let messageField = [Message.Keys.isOpened: true]
+            DatabaseService.messagesReference(forPath: chatUid).document(message.uid).updateData(messageField) { (error) in
+                if let error = error {
+                    print(error)
+                    completion(error)
+                    return
+                }
+                print("Updated message to opened")
+                completion(nil)
+            }
         }
         
-        // Update message
-        let messageField = ["\(message.uid).\(Message.Keys.isOpened)": true]
-        Firestore.firestore().collection(Collection.messages).document(chatUid).updateData(messageField) { (error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            print("Updated message to opened")
-        }
+       
     }
 }
 
@@ -121,6 +132,18 @@ private extension DatabaseService {
             }
             
             print("Saved chat \(chat.chatUid) to collection")
+            completion(nil)
+        }
+    }
+    
+    private func saveMessagesCollectionInChats(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
+        Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(Collection.messages).document(message.uid).setData(message.dictionary(), merge: true) { (error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print("Added message \(message.uid) to chat collection \(chat.chatUid)")
             completion(nil)
         }
     }

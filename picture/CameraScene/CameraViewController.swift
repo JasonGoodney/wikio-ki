@@ -44,7 +44,11 @@ class CameraViewController: SwiftyCamViewController {
         allowAutoRotate = true
         audioEnabled = true
         swipeToZoomInverted = true
+//        videoQuality = .resolution1280x720
         cameraDelegate = self
+        
+        VideoResolution.size = CGSize(width: 1080, height: 1920)
+        
         captureButton.buttonEnabled = false
         
         sendToLabel.addShadow()

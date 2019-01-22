@@ -6,6 +6,8 @@
 //  Copyright © 2018 Jason Goodney. All rights reserved.
 //
 
+// <div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/"                 title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"                 title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
 import UIKit
 
 protocol OpenMessageViewDelegate: class {
@@ -27,9 +29,24 @@ class OpenMessageView: UIView {
         return label
     }()
     
+    private let deliveredUnopened = #imageLiteral(resourceName: "forward_unopened").withRenderingMode(.alwaysTemplate)
+    private let deliveredOpened = #imageLiteral(resourceName: "forward_opened").withRenderingMode(.alwaysTemplate)
+    private let receivedUnopened = #imageLiteral(resourceName: "rounded-black-square-shape").withRenderingMode(.alwaysTemplate)
+    private let receivedOpened = #imageLiteral(resourceName: "check-box-empty").withRenderingMode(.alwaysTemplate)
+    
+    private lazy var statusStackView = UIStackView(arrangedSubviews: [statusIndicator, sendingIndicatorView])
+    
+    private let sendingIndicatorView: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView()
+        view.hidesWhenStopped = true
+        view.color = WKTheme.textColor
+        view.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        view.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        return view
+    }()
+    
     private let statusIndicator: UIImageView = {
         let imageView = UIImageView()
-//        imageView.image = #imageLiteral(resourceName: "icons8-filled_circle")
         return imageView
     }()
     
@@ -38,6 +55,8 @@ class OpenMessageView: UIView {
         gesture.addTarget(self, action: #selector(openMessageGestureTapped))
         return gesture
     }()
+    
+    private let statusIndicatorView = StatusIndicatorView(subviewSize: 20)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -60,46 +79,46 @@ class OpenMessageView: UIView {
     
     func configure(withMessage message: Message) {
         let captionText = message.caption == "" ? "" : ": \(message.caption!)"
+        if message.status == .sending {
+            statusLabel.text = "Sending..."
+//            sendingIndicatorView.startAnimating()
+//            sendingIndicatorView.isHidden = false
+//            statusIndicator.isHidden = true
+            statusIndicatorView.configure(forStatus: .sending, isOpened: message.isOpened, type: message.messageType)
+        } else if message.status == .delivered || message.status == .none {
         
-        if message.senderUid == UserController.shared.currentUser?.uid {
-            if message.isOpened {
-                statusIndicator.image = #imageLiteral(resourceName: "message_sent_opened")
-                statusLabel.text = "Opened\(captionText)"
+//            sendingIndicatorView.stopAnimating()
+//            statusIndicator.isHidden = false
+            
+            if message.senderUid == UserController.shared.currentUser?.uid {
+                if message.isOpened {
+//                    statusIndicator.image = deliveredOpened
+                    statusIndicatorView.configure(forStatus: .delivered, isOpened: message.isOpened, type: message.messageType)
+                    statusLabel.text = "Opened\(captionText)"
+                } else {
+//                    statusIndicator.image = deliveredUnopened
+                    statusIndicatorView.configure(forStatus: .delivered, isOpened: message.isOpened, type: message.messageType)
+                    statusLabel.text = "Delivered\(captionText)"
+                }
             } else {
-                statusIndicator.image = #imageLiteral(resourceName: "paper_plane")
-                statusLabel.text = "Delivered\(captionText)"
-            }
-        } else {
-            if message.isOpened {
-                statusIndicator.image = #imageLiteral(resourceName: "recieved_opened")
-                statusLabel.text = "Opened\(captionText)"
-            } else {
-                statusIndicator.image = #imageLiteral(resourceName: "icons8-stop")
-                statusLabel.text = "Received\(captionText)"
+                if message.isOpened {
+//                    statusIndicator.image = receivedOpened
+                    statusIndicatorView.configure(forStatus: .received, isOpened: message.isOpened, type: message.messageType)
+                    statusLabel.text = "Opened\(captionText)"
+                } else {
+//                    statusIndicator.image = receivedUnopened
+                    statusIndicatorView.configure(forStatus: .received, isOpened: message.isOpened, type: message.messageType)
+                    statusLabel.text = "Received\(captionText)"
+                }
             }
         }
         
-//        if message.caption != nil && message.caption != "" {
-//            statusLabel.text = message.caption!
-//        } else if message.messageType == .photo {
-//            statusLabel.text = "New photo"
-//        } else if message.messageType == .video {
-//            statusLabel.text = "New video"
-//        }
-//
-//        if message.senderUid == UserController.shared.currentUser?.uid {
-//            if message.isOpened {
-//                statusIndicator.image = #imageLiteral(resourceName: "message_sent_opened")
-//            } else {
-//                statusIndicator.image = #imageLiteral(resourceName: "paper_plane")
-//            }
+//        if message.messageType == .photo {
+//            statusIndicator.tintColor = WKTheme.photo
 //        } else {
-//            if message.isOpened {
-//                statusIndicator.image = #imageLiteral(resourceName: "recieved_opened")
-//            } else {
-//                statusIndicator.image = #imageLiteral(resourceName: "icons8-stop")
-//            }
+//            statusIndicator.tintColor = WKTheme.video
 //        }
+    
     }
 }
 
@@ -107,13 +126,13 @@ class OpenMessageView: UIView {
 private extension OpenMessageView {
     
     func updateView() {
-        addSubviews(statusLabel, statusIndicator)
+        addSubviews([statusLabel, statusIndicatorView])
     
-        statusIndicator.anchorCenterYToSuperview()
-        statusIndicator.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 8, bottom: 0, right: 0), size: .init(width: 24, height: 24))
+        statusIndicatorView.anchorCenterYToSuperview()
+        statusIndicatorView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 8, bottom: 0, right: 0), size: .init(width: 20, height: 20))
         
         statusLabel.anchorCenterYToSuperview()
-        statusLabel.anchor(top: nil, leading: statusIndicator.trailingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 16))
+        statusLabel.anchor(top: nil, leading: statusIndicatorView.trailingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 16))
 
     }
 }

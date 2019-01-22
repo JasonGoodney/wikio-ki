@@ -11,12 +11,14 @@ import FirebaseAuth
 import FirebaseStorage
 import JGProgressHUD
 import SDWebImage
+import Digger
 
 enum SettingsType: String {
     case username
     case email
     case profilePhoto
     case password
+    case clearCache
     case resetPassword
     case logout
     case deleteAccount
@@ -25,6 +27,14 @@ enum SettingsType: String {
 }
 
 class SettingsViewController: UITableViewController, LoginFlowHandler {
+    
+    private var cacheSizeInMB: Double {
+        return (Double(DiggerCache.downloadedFilesSize()) / MB.binarySize).rounded()
+    }
+    
+    private var sdCacheSizeInMB: Double {
+        return Double(SDImageCache.shared().getSize()) / MB.binarySize
+    }
     
     private var didChangeProfilePhoto = false
     private let totalHeaderVerticalPadding: CGFloat = 16 + 16 + 16 + 8
@@ -43,6 +53,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             (title: "Password", value: "", type: .password),
         ],
         [
+            (title: "Clear Cache", value: "\(cacheSizeInMB) MB + \(sdCacheSizeInMB) MB", type: .clearCache),
             (title: "Reset Password", value: "", type: .resetPassword),
             (title: "Blocked", value: "", type: .blocked),
             (title: "Log Out", value: "", type: .logout),

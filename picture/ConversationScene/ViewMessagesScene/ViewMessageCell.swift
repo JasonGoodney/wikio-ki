@@ -9,8 +9,6 @@
 import UIKit
 import JGProgressHUD
 import AVFoundation
-import VersaPlayer
-import MMPlayerView
 
 class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
     

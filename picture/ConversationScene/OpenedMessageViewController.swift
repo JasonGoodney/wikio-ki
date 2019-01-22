@@ -10,23 +10,14 @@ import UIKit
 import AVFoundation
 import AVKit
 import JGProgressHUD
+import FirebaseStorage
+import Digger
 
 class OpenedMessageViewController: UIViewController {
 
-    private var message: Message? {
-        didSet {
-            configureProperties()
-        }
-    }
+    private var message: Message?
     
     private let loadingViewController = LoadingViewController()
-    
-    private let hud = JGProgressHUD(style: .dark)
-    
-    var blurredEffectView = UIVisualEffectView()
-    var vibrancyEffectView = UIVisualEffectView()
-    let blurEffect = UIBlurEffect(style: .dark)
-    lazy var vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
     
     private let gradientLayer = CAGradientLayer()
     
@@ -37,14 +28,17 @@ class OpenedMessageViewController: UIViewController {
         return label
     }()
     
-    var player: AVPlayer?
-    var playerController : AVPlayerViewController?
+    var photo: UIImage?
+    private var player: AVPlayer?
+    private var playerController : AVPlayerViewController?
     
-    private let imageView: UIImageView = {
+    let imageView: UIImageView = {
         let view = UIImageView()
+        view.contentMode = .scaleAspectFit
         return view
     }()
     
+
     private lazy var dismissGesture: UITapGestureRecognizer = {
         let gesture = UITapGestureRecognizer()
         gesture.addTarget(self, action: #selector(dismissGestureTapped(_:)))
@@ -60,28 +54,81 @@ class OpenedMessageViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateView()
         
-//        blurredEffectView.frame = view.bounds
-//        view.addSubview(blurredEffectView)
-//        vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
-//        vibrancyEffectView.frame = view.bounds
-//
-//        blurredEffectView.contentView.addSubview(vibrancyEffectView)
-//
-//
-//        hud.show(in: view)
-        add(loadingViewController)
-        if let mediaURL = message?.mediaURL {
-            if message?.messageType == .photo {
-                configureImage(URL(string: mediaURL)!)
+        updateView()
+ 
+        guard let mediaURL = message?.mediaURL else { return }
+        let storagePrefix = "https://firebasestorage.googleapis.com/v0/b/picture-e4799.appspot.com/o/media%2F"
+        let uuidLength = UUID().uuidString.count
+        
+        let temp = String(mediaURL.dropFirst(storagePrefix.count))
+        let filename = message?.mediaFilename ?? String(temp.prefix(uuidLength))
+        
+        let path = DiggerCache.pathsOfDownloadedfiles().filter { (file) -> Bool in
+            return file.contains(message?.mediaFilename ?? filename)
+        }.first ?? ""
+        
+        if path != "" && DiggerCache.isFileExist(atPath: path) {
+
+            if self.message?.messageType == .photo {
+                self.configureImage(URL(fileURLWithPath: path))
+
             } else {
-                configure(URL(string: mediaURL)!)
+                self.configureVideo(URL(fileURLWithPath: path))
+            }
+            loadingViewController.view.removeGestureRecognizer(dismissGesture)
+        }
+
+        else {
+            if let thumbnailString = message?.mediaThumbnailURL, let thumbnailURL = URL(string: thumbnailString) {
+                imageView.sd_setImage(with: thumbnailURL, completed: nil)
+            }
+
+            add(loadingViewController)
+            
+            Digger.download(mediaURL)
+                .progress({ (progresss) in
+                    print(progresss.fractionCompleted)
+                    
+                })
+                .speed({ (speed) in
+                    print(speed)
+                })
+                .completion { (result) in
+                    
+                    switch result {
+                    case .success(let url):
+                        print(url)
+                        if self.message?.messageType == .photo {
+                            self.configureImage(url)
+                        } else {
+                            self.configureVideo(url)
+                            
+                        }
+                        self.loadingViewController.remove()
+                        
+                    case .failure(let error):
+                        print(error)
+                        if error._code == 9982 {
+                            if self.message?.messageType == .photo {
+                                self.configureImage(URL(fileURLWithPath: path))
+                            } else {
+                                self.configureVideo(URL(string: mediaURL)!)
+                                
+                            }
+                        }
+                        self.loadingViewController.hud.dismiss()
+                    }
             }
         }
-        
+
         usernameLabel.addShadow()
 
     }
@@ -89,15 +136,16 @@ class OpenedMessageViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        player?.play()
-        
         setupGradientLayer()
         usernameLabel.text = message?.user?.username
-        view.bringSubviewToFront(usernameLabel)
+        
     }
     
-    func configure(_ videoURL: URL) {
-        player = AVPlayer(url: videoURL)
+    func configureVideo(_ videoURL: URL) {
+        let playerItem = CachingPlayerItem(url: videoURL, customFileExtension: "mp4")
+        player = AVPlayer(playerItem: playerItem)
+        player?.automaticallyWaitsToMinimizeStalling = false
+        
         playerController = AVPlayerViewController()
         
         guard player != nil && playerController != nil else {
@@ -105,9 +153,12 @@ class OpenedMessageViewController: UIViewController {
         }
         playerController!.showsPlaybackControls = false
         
-        playerController!.player = player!
-        self.addChild(playerController!)
-        self.view.addSubview(playerController!.view)
+        playerController!.player = player
+        addChild(playerController!)
+        
+        view.addSubview(playerController!.view)
+        view.bringSubviewToFront(usernameLabel)
+        
         playerController!.view.frame = view.frame
         NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player!.currentItem)
         
@@ -127,30 +178,16 @@ class OpenedMessageViewController: UIViewController {
             print(error)
         }
         
-        loadingViewController.remove()
-//        self.hud.dismiss()
-//        self.blurredEffectView.removeFromSuperview()
-//        self.vibrancyEffectView.removeFromSuperview()
-    }
-    
-    func configureImage(_ imageURL: URL) {
-        imageView.contentMode = UIView.ContentMode.scaleAspectFit
-        imageView.sd_setImage(with: imageURL) { (_, _, _, _) in
-//            self.hud.dismiss()
-//            self.blurredEffectView.removeFromSuperview()
-//            self.vibrancyEffectView.removeFromSuperview()
-            self.loadingViewController.remove()
-        }
+        player?.play()
         
     }
     
+    func configureImage(_ imageURL: URL) {
+        imageView.sd_setImage(with: imageURL)
+    }
+    
     @objc func dismissGestureTapped(_ recognizer: UITapGestureRecognizer) {
-        dismiss(animated: false) {
-            DispatchQueue.main.async {
-                
-                self.message?.status = .opened
-            }
-        }
+        dismiss(animated: false)
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -168,14 +205,9 @@ class OpenedMessageViewController: UIViewController {
 
 // MARK: - UI
 private extension OpenedMessageViewController {
-    func configureProperties() {
-        guard let message = message, let imageURL = URL(string: message.mediaURL!) else { return }
-        imageView.sd_setImage(with: imageURL)
-        message.isOpened = true
-    }
     
     func updateView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.addSubviews([imageView, usernameLabel])
         view.addGestureRecognizer(dismissGesture)
         setupConstraints()
@@ -184,6 +216,7 @@ private extension OpenedMessageViewController {
     
     func setupConstraints() {
         imageView.anchor(view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+
         usernameLabel.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 24, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     }
     
@@ -193,3 +226,4 @@ private extension OpenedMessageViewController {
         view.layer.addSublayer(gradientLayer)
     }
 }
+

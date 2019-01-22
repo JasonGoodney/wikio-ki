@@ -12,6 +12,7 @@ import FirebaseFirestore
 enum MessageStatus: String {
     case opened
     case delivered
+    case received
     case failed
     case sending
     case none
@@ -39,10 +40,12 @@ class Message {
     var user: User?
     let senderUid: String
     var isOpened: Bool
-    var status: MessageStatus = .none
+    var status: MessageStatus
     let messageType: MessageType
     let caption: String?
     var mediaURL: String?
+    var mediaFilename: String?
+    var mediaThumbnailURL: String?
     let timestamp: TimeInterval
     
     enum Keys {
@@ -51,8 +54,11 @@ class Message {
         static let isOpened = "isOpened"
         static let caption = "caption"
         static let mediaURL = "mediaURL"
+        static let mediaFilename = "mediaFilename"
         static let timestamp = "timestamp"
         static let messageType = "messageType"
+        static let mediaThumbnailURL = "mediaThumbnailURL"
+        static let status = "status"
     }
     
     init(dictionary: [String: Any]) {
@@ -61,12 +67,28 @@ class Message {
         self.isOpened = dictionary[Keys.isOpened] as! Bool
         self.caption = dictionary[Keys.caption] as? String ?? ""
         self.mediaURL = dictionary[Keys.mediaURL] as? String ?? ""
+        self.mediaFilename = dictionary[Keys.mediaFilename] as? String ?? ""
+        self.mediaThumbnailURL = dictionary[Keys.mediaThumbnailURL] as? String ?? ""
         self.timestamp = dictionary[Keys.timestamp] as? TimeInterval ?? 0
         
         if dictionary[Keys.messageType] as? String == MessageType.photo.databaseValue() {
             self.messageType = .photo
         } else {
             self.messageType = .video
+        }
+        
+        self.status = .none
+        
+        if let statusString = dictionary[Keys.status] as? String {
+            if statusString == MessageStatus.sending.databaseValue() {
+                self.status = .sending
+            } else if statusString == MessageStatus.delivered.databaseValue() {
+                self.status = .delivered
+            } else if statusString == MessageStatus.failed.databaseValue() {
+                self.status = .failed
+            } else if statusString == MessageStatus.opened.databaseValue() {
+                self.status = .opened
+            }
         }
         
         Firestore.firestore().collection(DatabaseService.Collection.users).document(senderUid).getDocument { (snapshot, error) in
@@ -81,7 +103,7 @@ class Message {
     }
     
     init(uid: String = UUID().uuidString, senderUid: String, user: User,
-         caption: String? = nil, mediaURL: String? = nil, timestamp: TimeInterval = Date().timeIntervalSince1970,
+         caption: String? = nil, mediaURL: String? = nil, mediaFilename: String? = UUID().uuidString, mediaThumbnailURL: String? = nil, timestamp: TimeInterval = Date().timeIntervalSince1970,
          isOpened: Bool = false, status: MessageStatus = .none, messageType: MessageType) {
         self.uid = uid
         self.senderUid = senderUid
@@ -90,8 +112,10 @@ class Message {
         self.status = status
         self.caption = caption
         self.mediaURL = mediaURL
+        self.mediaFilename = mediaFilename
         self.timestamp = timestamp
         self.messageType = messageType
+        self.mediaThumbnailURL = mediaThumbnailURL
     }
     
     func dictionary() -> [String: Any] {
@@ -100,6 +124,7 @@ class Message {
             Keys.senderUid: senderUid,
             Keys.isOpened: isOpened,
             Keys.timestamp: timestamp,
+            Keys.status: status.databaseValue(),
             Keys.messageType: messageType.databaseValue()
         ]
         
@@ -111,6 +136,24 @@ class Message {
             dict[Keys.mediaURL] = mediaURL
         }
         
+        if mediaThumbnailURL != nil {
+            dict[Keys.mediaThumbnailURL] = mediaThumbnailURL
+        }
+        
+        if mediaFilename != nil {
+            dict[Keys.mediaFilename] = mediaFilename
+        }
+        
         return dict
+    }
+}
+
+extension Message: Equatable, Hashable {
+    static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.uid == rhs.uid
+    }
+    
+    var hashValue: Int {
+        return uid.hashValue ^ senderUid.hashValue
     }
 }

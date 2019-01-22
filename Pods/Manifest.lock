@@ -5,6 +5,7 @@ PODS:
   - BoringSSL/Implementation (10.0.6):
     - BoringSSL/Interface (= 10.0.6)
   - BoringSSL/Interface (10.0.6)
+  - Digger (0.0.5)
   - Firebase/Auth (5.15.0):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.2.0)
@@ -102,7 +103,6 @@ PODS:
   - GTMSessionFetcher/Core (1.2.1)
   - JGProgressHUD (2.0.3)
   - leveldb-library (1.20)
-  - MMPlayerView (4.1.7)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -113,22 +113,21 @@ PODS:
     - SDWebImage/Core (= 4.4.3)
   - SDWebImage/Core (4.4.3)
   - SwiftyCam (3.0.0)
-  - VersaPlayer (2.2.3)
 
 DEPENDENCIES:
+  - Digger
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Firestore
   - Firebase/Storage
   - JGProgressHUD
-  - MMPlayerView
   - SDWebImage
   - SwiftyCam
-  - VersaPlayer
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - BoringSSL
+    - Digger
     - Firebase
     - FirebaseAnalytics
     - FirebaseAuth
@@ -144,15 +143,14 @@ SPEC REPOS:
     - GTMSessionFetcher
     - JGProgressHUD
     - leveldb-library
-    - MMPlayerView
     - nanopb
     - Protobuf
     - SDWebImage
     - SwiftyCam
-    - VersaPlayer
 
 SPEC CHECKSUMS:
   BoringSSL: e10f92a27043805c01071fe815a5cd98ae8212e7
+  Digger: c474bde76a91e0a36f12101c5dfe7e86774b15d3
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
   FirebaseAuth: 02e969ff430e156d99d4cb842d77b806b71ad7bb
@@ -168,13 +166,11 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  MMPlayerView: 07fdf42b230349a32edac680c1441d5d78e9b485
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
   SwiftyCam: 67338308e3a5a3545c2aeee17e2c964eba4cf49f
-  VersaPlayer: 105ab14111cd48ea1705cf24c66366536da86935
 
-PODFILE CHECKSUM: c117f7ecb846315373c997bf1045352a68eb8f87
+PODFILE CHECKSUM: 91f82c7257efb4c918151edcde68c408d807349c
 
 COCOAPODS: 1.5.3

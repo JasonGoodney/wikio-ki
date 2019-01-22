@@ -13,6 +13,8 @@ extension DatabaseService {
     
     func block(user: User, completion: @escaping ErrorCompletion) {
         guard let currentUser = UserController.shared.currentUser else { return }
+        UserController.shared.allChatsWithFriends.removeAll(where: { $0.friend == user })
+        changeUserChat(isActive: false, between: currentUser, andFriend: user)
         
         let blockData: [String: Any] = [user.uid: true]
         
@@ -25,7 +27,9 @@ extension DatabaseService {
                 }
                 
                 print("\(currentUser.username) blocked \(user.username)")
+                
                 let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(user.uid)
+                
                 self.updateDocument(document, withFields: ["isBestFriend": false], completion: { (error) in
                     if let error = error {
                         print(error)
@@ -40,7 +44,9 @@ extension DatabaseService {
     
     func unblock(user: User, completion: @escaping ErrorCompletion) {
         guard let currentUser = UserController.shared.currentUser else { return }
-
+        
+        changeUserChat(isActive: true, between: currentUser, andFriend: user)
+        
         Firestore.firestore().collection(Collection.users).document(currentUser.uid)
             .collection(Collection.blocked).document(user.uid).delete { (error) in
                 if let error = error {
@@ -54,6 +60,7 @@ extension DatabaseService {
                 UserController.shared.blockedUids.removeAll(where: { (uid) -> Bool in
                     return uid == user.uid
                 })
+    
                 
                 completion(nil)
         }
