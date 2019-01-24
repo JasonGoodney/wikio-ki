@@ -210,29 +210,6 @@ class AddFriendViewController: UITableViewController {
         hud.textLabel.text = "Accepting"
         hud.show(in: view)
         guard let currentUser = UserController.shared.currentUser else { return }
-
-        currentUser.addFriend(user)
-        user.addFriend(currentUser)
-        
-        removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
-            if let error = error {
-                print(error)
-                completion(error)
-                return
-            }
-            
-            completion(nil)
-        }
-        
-        removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
-            if let error = error {
-                print(error)
-                completion(error)
-                return
-            }
-            
-            completion(nil)
-        }
         
         let chat = Chat(memberUids: [currentUser.uid, user.uid], lastMessageSent: "", lastSenderUid: "")
         chat.unread = [currentUser.uid: 0, user.uid: 0]
@@ -242,6 +219,28 @@ class AddFriendViewController: UITableViewController {
             if let error = error {
                 print(error)
                 return
+            }
+            currentUser.addFriend(user)
+            user.addFriend(currentUser)
+            
+            self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
+                if let error = error {
+                    print(error)
+                    completion(error)
+                    return
+                }
+                
+                completion(nil)
+            }
+            
+            self.removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
+                if let error = error {
+                    print(error)
+                    completion(error)
+                    return
+                }
+                
+                completion(nil)
             }
         }
     }
@@ -398,7 +397,7 @@ extension AddFriendViewController: AddFriendDelegate {
                 cell.updateView(forAddFriendState: .add)
             }
         case .requested:
-            acceptFriendRequest(from: user) { (error) in
+            dbs.acceptFriendRequest(from: user) { (error) in
                 if let error = error {
                     print(error)
                     return

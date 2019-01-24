@@ -133,7 +133,7 @@ extension CameraViewController {
     fileprivate func hideButtons() {
         UIView.animate(withDuration: 0.25) {
             self.flashButton.alpha = 0.0
-//            self.flipCameraButton.alpha = 0.0
+            self.flipCameraButton.alpha = 0.0
             self.cancelButton.alpha = 0.0
         }
     }
@@ -142,7 +142,7 @@ extension CameraViewController {
         flipCameraButton.setImage(#imageLiteral(resourceName: "icons8-switch_camera"), for: .normal)
         UIView.animate(withDuration: 0.25) {
             self.flashButton.alpha = 1.0
-//            self.flipCameraButton.alpha = 1.0
+            self.flipCameraButton.alpha = 1.0
             self.cancelButton.alpha = 1.0
         }
     }

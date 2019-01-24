@@ -99,7 +99,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
             detailsLabel.font = UIFont.boldSystemFont(ofSize: 14)
             detailsLabel.text = "New friend" + timeAgoString
             cameraButton.tintColor = WKTheme.textColor
-            statusIndicatorView.configure(forStatus: .none, isOpened: false, type: .none)
+            statusIndicatorView.configure(forStatus: .none, isOpened: false, type: .none, isNewFriendship: true)
             
         } else if !chat.isOpened {
             if UserController.shared.currentUser!.uid == chat.lastSenderUid {

@@ -210,7 +210,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
             guard let isFormValid = isFormValid else { return }
             self.registerButton.isEnabled = isFormValid
             if isFormValid {
-                self.registerButton.backgroundColor = #colorLiteral(red: 0.7865832448, green: 0.09652689844, blue: 0.2869956195, alpha: 1)
+                self.registerButton.backgroundColor = WKTheme.buttonBlue
                 self.registerButton.setTitleColor(.white, for: .normal)
             } else {
                 self.registerButton.backgroundColor = .lightGray

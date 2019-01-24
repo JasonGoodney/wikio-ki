@@ -10,6 +10,96 @@ import Foundation
 import FirebaseFirestore
 
 extension DatabaseService {
+    // MARK: - Accept Request
+    func acceptFriendRequest(from user: User, completion: @escaping ErrorCompletion) {
+//        let hud = JGProgressHUD(style: .dark)
+//        hud.textLabel.text = "Accepting"
+//        hud.show(in: view)
+        guard let currentUser = UserController.shared.currentUser else { return }
+        
+        let chat = Chat(memberUids: [currentUser.uid, user.uid], lastMessageSent: "", lastSenderUid: "")
+        chat.unread = [currentUser.uid: 0, user.uid: 0]
+        let dbs = DatabaseService()
+        dbs.createInitialChat(chat) { (error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            
+            currentUser.addFriend(user)
+            user.addFriend(currentUser)
+            
+            let currentUserUserChat = Firestore.firestore().collection(Collection.userChats).document(currentUser.uid)
+            let friendUserChat = Firestore.firestore().collection(Collection.userChats).document(user.uid)
+            self.changeUserChat(isActive: true, between: currentUser, andFriend: user)
+//            dbs.updateDocument(currentUserUserChat, withFields: [chat.chatUid : true], completion: { (error) in
+//                if let error = error {
+//                    print(error)
+//                    completion(error)
+//                    return
+//                }
+//                print("\(currentUser.username)'s userChat is")
+//                dbs.updateDocument(friendUserChat, withFields: [chat.chatUid : true], completion: { (error) in
+//                    if let error = error {
+//                        print(error)
+//                        completion(error)
+//                        return
+//                    }
+                    self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
+                        if let error = error {
+                            print(error)
+                            completion(error)
+                            return
+                        }
+                        
+                        self.removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
+                            if let error = error {
+                                print(error)
+                                completion(error)
+                                return
+                            }
+                            
+                            completion(nil)
+                        }
+                    }
+                    
+//                })
+//
+//            })
+        
+            
+            
+            
+        }
+    }
+    
+    private func removeFriendRequest(to: User, from: User, completion: @escaping ErrorCompletion) {
+        Firestore.firestore().collection(DatabaseService.Collection.users).document(to.uid).collection(DatabaseService.Collection.friendRequests).document(from.uid).delete { (error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            print("Removed request to \(to.uid)")
+            completion(nil)
+        }
+    }
+    
+    private func removeSentRequest(from: User, to: User, completion: @escaping ErrorCompletion) {
+        Firestore.firestore()
+            .collection(DatabaseService.Collection.users).document(from.uid)
+            .collection(DatabaseService.Collection.sentRequests).document(to.uid).delete { (error) in
+                if let error = error {
+                    print(error)
+                    completion(error)
+                    return
+                }
+                print("removed sent request from \(from.uid)")
+                completion(nil)
+        }
+    }
+    
     // MARK: - Fetches
     func fetchBestFriends(for userUid: String = (UserController.shared.currentUser?.uid)!, completion: @escaping ([String]?, Error?) -> Void) {
         Firestore.firestore()
@@ -36,9 +126,11 @@ extension DatabaseService {
     func removeFriend(_ friend: User, completion: @escaping ErrorCompletion) {
         guard let currentUser = UserController.shared.currentUser else { return }
         UserController.shared.currentUser?.friendsUids.remove(friend.uid)
+        UserController.shared.allChatsWithFriends.removeAll(where: { $0.friend.uid == friend.uid })
         
         let chatUid = Chat.chatUid(for: UserController.shared.currentUser!, and: friend)
         
+        // Delete the userChat references
         Firestore.firestore().collection(Collection.userChats).document(currentUser.uid)
             .updateData([chatUid: FieldValue.delete()]) { (error) in
                 if let error = error {
@@ -47,29 +139,50 @@ extension DatabaseService {
                 }
                 
                 print("\(chatUid) is removed from \(currentUser.username)'s userchats")
-        }
-        
-        Firestore.firestore().collection(Collection.userChats).document(friend.uid)
-            .updateData([chatUid: FieldValue.delete()]) { (error) in
-                if let error = error {
-                    print(error)
-                    return
-                }
                 
-                print("\(chatUid) is removed from \(friend.username)'s userchats")
+                Firestore.firestore().collection(Collection.userChats).document(friend.uid)
+                    .updateData([chatUid: FieldValue.delete()]) { (error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                        
+                        print("\(chatUid) is removed from \(friend.username)'s userchats")
+                        
+                        // Delete the friend from the current users friends list
+                        Firestore.firestore().collection(Collection.users).document(currentUser.uid).collection(Collection.friends).document(friend.uid).delete { (error) in
+                            if let error = error {
+                                print(error)
+                                completion(error)
+                                return
+                            }
+                            print("removed \(friend.username) from \(currentUser.username)'s friend list")
+                            
+                            // Delete the current user from the friends friends list
+                            Firestore.firestore().collection(Collection.users).document(friend.uid).collection(Collection.friends).document(currentUser.uid).delete { (error) in
+                                if let error = error {
+                                    print(error)
+                                    completion(error)
+                                    return
+                                }
+                                print("removed \(currentUser.username) from \(friend.username)'s friend list")
+                                
+                                // Delete the chat between the two users
+                                Firestore.firestore().collection(Collection.chats).document(chatUid).delete { (error) in
+                                    if let error = error {
+                                        print(error)
+                                        completion(error)
+                                        return
+                                    }
+                                    print("removed \(chatUid) chat")
+                                    
+                                    completion(nil)
+                                }
+                            }
+                        }
+                }
         }
-//        Firestore.firestore().collection(Collection.users).document(currentUser.uid).collection(Collection.friends).document(friend.uid).delete { (error) in
-//            if let error = error {
-//                print(error)
-//                completion(error)
-//                return
-//            }
-//            print("removed \(friend.username) from \(currentUser.username)'s friend list")
-//
-//            completion(nil)
-//        }
-//
-//        changeUserChat(isActive: false, between: currentUser, andFriend: friend)
+
     }
 
     func changeUserChat(isActive: Bool, between currentUser: User, andFriend friend: User) {
@@ -81,7 +194,7 @@ extension DatabaseService {
                 return
             }
 
-            print("\(friend.username) is not active with \(currentUser.username)")
+            print("\(friend.username) is\(isActive ? "" : " not ")active with \(currentUser.username)")
         }
         
         Firestore.firestore().collection(Collection.userChats).document(currentUser.uid).updateData([chatUid: isActive]) { (error) in
@@ -90,7 +203,7 @@ extension DatabaseService {
                 return
             }
             
-            print("\(currentUser.username) is not active with \(friend.username)")
+            print("\(currentUser.username) is\(isActive ? "" : " not ")active with \(friend.username)")
         }
 
     }

@@ -29,11 +29,11 @@ enum SettingsType: String {
 class SettingsViewController: UITableViewController, LoginFlowHandler {
     
     private var cacheSizeInMB: Double {
-        return (Double(DiggerCache.downloadedFilesSize()) / MB.binarySize).rounded()
+        return Double(DiggerCache.downloadedFilesSize()) / MB.binarySize
     }
     
     private var sdCacheSizeInMB: Double {
-        return (Double(SDImageCache.shared().getSize()) / MB.binarySize).rounded()
+        return Double(SDImageCache.shared().getSize()) / MB.binarySize
     }
     
     private var didChangeProfilePhoto = false
@@ -53,7 +53,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             (title: "Password", value: "", type: .password),
         ],
         [
-            (title: "Clear Cache", value: "\(cacheSizeInMB) MB + \(sdCacheSizeInMB) MB", type: .clearCache),
+            (title: "Clear Cache", value: "\(cacheSizeInMB + sdCacheSizeInMB) MB", type: .clearCache),
             (title: "Reset Password", value: "", type: .resetPassword),
             (title: "Blocked", value: "", type: .blocked),
             (title: "Log Out", value: "", type: .logout),

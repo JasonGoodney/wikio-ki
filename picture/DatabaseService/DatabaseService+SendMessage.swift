@@ -12,20 +12,22 @@ import FirebaseFirestore
  extension DatabaseService {
     
     func createInitialChat(_ chat: Chat,  completion: @escaping ErrorCompletion) {
-        saveChatsCollection(chat) { (error) in
-            if let error = error {
-                print(error)
-                completion(error)
-                return
-            }
-            self.saveUserChatsCollection(forChatMembersIn: chat) { (error) in
+        
+            saveUserChatsCollection(forChatMembersIn: chat) { (error) in
                 if let error = error {
                     print(error)
                     completion(error)
                     return
                 }
-                print("Created initial chat")
-                completion(nil)
+                
+                self.saveChatsCollection(chat) { (error) in
+                    if let error = error {
+                        print(error)
+                        completion(error)
+                        return
+                    }
+                    print("Created initial chat")
+                    completion(nil)
             }
         }
     }
@@ -161,7 +163,7 @@ private extension DatabaseService {
     }
     
     private func saveUserChatsCollection(forChatMembersIn chat: Chat, completion: @escaping ErrorCompletion) {
-        let docData = [chat.chatUid: true]
+        let docData = [chat.chatUid: false]
         
         chat.memberUids.forEach { (memberUid) in
             Firestore.firestore().collection(Collection.userChats).document(memberUid).setData(docData, merge: true, completion: { (error) in
@@ -170,7 +172,7 @@ private extension DatabaseService {
                     return
                 }
                 
-                print("Save chatUid to \(memberUid)'s chats")
+                print("Save chatUid to \(memberUid)'s chats, but not yet friends")
                 completion(nil)
             })
         }
