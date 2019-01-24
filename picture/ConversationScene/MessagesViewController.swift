@@ -22,14 +22,15 @@ class MessagesViewController: UIViewController {
     }
     private let spacing: CGFloat = 5
     private let cellId = MessagesCell.reuseIdentifier
-    private var messages: [Message] = [] {
-        didSet {
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                self.collectionView.scrollToItem(at: IndexPath(item: self.messages.count-1, section: 0), at: UICollectionView.ScrollPosition.bottom, animated: false)
-            }
-        }
-    }
+    private var messages: [Message] = []
+//    {
+//        didSet {
+//            DispatchQueue.main.async {
+//                self.collectionView.reloadData()
+//                self.collectionView.scrollToItem(at: IndexPath(item: self.messages.count-1, section: 0), at: UICollectionView.ScrollPosition.bottom, animated: false)
+//            }
+//        }
+//    }
     
     
     lazy var collectionView: UICollectionView = {
@@ -52,6 +53,9 @@ class MessagesViewController: UIViewController {
     private lazy var openCameraToolbar: OpenCameraToolbar = {
         let toolbar = OpenCameraToolbar()
         toolbar.openCameraDelegate = self
+        let scrollDoubleTap = UITapGestureRecognizer(target: self, action: #selector(scrollToBottom))
+        scrollDoubleTap.numberOfTapsRequired = 2
+        toolbar.addGestureRecognizer(scrollDoubleTap)
         return toolbar
     }()
     
@@ -59,6 +63,40 @@ class MessagesViewController: UIViewController {
         let button = ProfileImageButton(height: 32, width: 32)
         return button
     }()
+    
+    private lazy var sendPhotoButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(title: "Test", style: .plain, target: self, action: #selector(sendPhoto))
+        return button
+    }()
+    
+    @objc private func sendPhoto() {
+        let photo = UIImage(named: "IMG_1536")
+        let dbs = DatabaseService()
+
+        let data = photo?.jpegData(compressionQuality: Compression.quality)
+        let thumbnailData = photo?.jpegData(compressionQuality: Compression.thumbnailQuality)
+        dbs.sendMessage(from: UserController.shared.currentUser!, to: friend!, chat: chat!, caption: nil, messageType: .photo, mediaData: data, thumbnailData: thumbnailData) { (error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print("Sent photo for testing")
+        }
+    }
+    
+    private func fetchReloadMessages() {
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+            self.collectionView.scrollToItem(at: IndexPath(item: self.messages.count-1, section: 0), at: UICollectionView.ScrollPosition.bottom, animated: false)
+        }
+    }
+    
+    @objc private func scrollToBottom() {
+        DispatchQueue.main.async {
+            self.collectionView.scrollToItem(at: IndexPath(item: self.messages.count-1, section: 0), at: UICollectionView.ScrollPosition.bottom, animated: false)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,6 +109,7 @@ class MessagesViewController: UIViewController {
             }
             guard let messages = messages else { return }
             self.messages = messages
+            self.fetchReloadMessages()
         }
 
         updateView()
@@ -86,41 +125,98 @@ class MessagesViewController: UIViewController {
                 let pendingWrites = changes.filter({
                     $0.document.metadata.hasPendingWrites
                 })
-
+                
+                let modifiedDocs = changes.filter({
+                    $0.type == .modified
+                })
+                
+                // Sending user local updates
                 if pendingWrites.count > 0 {
                     pendingWrites.forEach({ (change) in
                         let pendingMessage = Message(dictionary: change.document.data())
-
                         self.collectionView.performBatchUpdates({
-                            let reloadIndexPath = IndexPath(row: self.messages.count-1, section: 0)
+                            
                             let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
                             
-                            if pendingMessage == self.messages[reloadIndexPath.row] {
-                                self.messages[reloadIndexPath.row] = pendingMessage
-                                let animationsEnabled = UIView.areAnimationsEnabled
-                                UIView.setAnimationsEnabled(false)
-                                self.collectionView.reloadItems(at: [reloadIndexPath])
-                                UIView.setAnimationsEnabled(animationsEnabled)
-                            } else {
-                                self.messages.append(pendingMessage)
-                                self.collectionView.insertItems(at: [insertIndexPath])
+                            let isSender = pendingMessage.senderUid == UserController.shared.currentUser?.uid
+                            
+                            if isSender {
+                                if let reloadIndex = self.messages.firstIndex(where: { $0 == pendingMessage }),
+                                    pendingMessage.status == .delivered {
+                                    
+                                    let reloadIndexPath = IndexPath(row: reloadIndex, section: 0)
+                                    self.messages[reloadIndexPath.row] = pendingMessage
+                                    let animationsEnabled = UIView.areAnimationsEnabled
+                                    UIView.setAnimationsEnabled(false)
+                                    self.collectionView.reloadItems(at: [reloadIndexPath])
+                                    UIView.setAnimationsEnabled(animationsEnabled)
+                                    
+                                } else if pendingMessage.status == .sending {
+                                    self.messages.append(pendingMessage)
+                                    self.collectionView.insertItems(at: [insertIndexPath])
+                                    
+                                }
+                            } else if !isSender && pendingMessage.status == .delivered {
+                                if change.type == .modified {
+//                                    self.messages.append(pendingMessage)
+//                                    self.collectionView.insertItems(at: [insertIndexPath])
+                                    guard let reloadIndex = self.messages.firstIndex(where: { $0 == pendingMessage }) else {
+                                        print("Index does not exists on pending write 🤷‍♂️")
+                                        return
+                                    }
+                                    let reloadIndexPath = IndexPath(row: reloadIndex, section: 0)
+                                    self.messages[reloadIndexPath.row] = pendingMessage
+                                    let animationsEnabled = UIView.areAnimationsEnabled
+                                    UIView.setAnimationsEnabled(false)
+                                    self.collectionView.reloadItems(at: [reloadIndexPath])
+                                    UIView.setAnimationsEnabled(animationsEnabled)
+                                    
+                                } else if change.type == .added {
+                                    
+                                }
+                                
                             }
-                        
                         }, completion: nil)
+
                     })
-                } else if changes.count > 0 {
-                    for change in changes {
-                        let newMessage = Message(dictionary: change.document.data())
-                        if newMessage.status == .delivered {
-                            self.collectionView.performBatchUpdates({
-                                let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
-                                
-                                self.messages.append(newMessage)
-                                self.collectionView.insertItems(at: [insertIndexPath])
-                                
-                                
-                            }, completion: nil)
-                        }
+                  
+                    
+                }
+                // Receiving user updates and sender user updates when receiver opens
+                else if modifiedDocs.count > 0 {
+                    for change in modifiedDocs {
+                        let modifiedMessage = Message(dictionary: change.document.data())
+                        self.collectionView.performBatchUpdates({
+                            
+                            let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
+                            
+                            let isSender = modifiedMessage.senderUid == UserController.shared.currentUser?.uid
+
+                            if isSender {
+                                if let reloadIndex = self.messages.firstIndex(where: { $0 == modifiedMessage }),
+                                    modifiedMessage.status == .delivered {
+                                    
+//                                    self.messages[reloadIndex] = modifiedMessage
+//                                    self.collectionView.reloadData()
+                                     let reloadIndexPath = IndexPath(row: reloadIndex, section: 0)
+
+                                    self.messages[reloadIndexPath.row] = modifiedMessage
+                                    let animationsEnabled = UIView.areAnimationsEnabled
+                                    UIView.setAnimationsEnabled(false)
+                                    self.collectionView.reloadItems(at: [reloadIndexPath])
+                                    UIView.setAnimationsEnabled(animationsEnabled)
+
+                                } else if modifiedMessage.status == .sending {
+                                    self.messages.append(modifiedMessage)
+                                    self.collectionView.insertItems(at: [insertIndexPath])
+
+                                }
+                            } else if !isSender && modifiedMessage.status == .delivered {
+                                    self.messages.append(modifiedMessage)
+                                    self.collectionView.insertItems(at: [insertIndexPath])
+                            }
+                        }, completion: nil)
+
                     }
                 }
             })
@@ -233,9 +329,9 @@ private extension MessagesViewController {
         navigationItem.titleView = titleLabel
         navigationController?.navigationBar.tintColor = .black
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: profileImageButton)
+        navigationItem.rightBarButtonItems = [sendPhotoButton, UIBarButtonItem(customView: profileImageButton)]
         
-        navigationItem.rightBarButtonItem?.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
+        navigationItem.rightBarButtonItems?[1].customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
     }
 }
 
@@ -303,7 +399,7 @@ extension MessagesViewController: UICollectionViewDelegate {
                             print("Message was opened and firebase was updated")
                         })
                     }
-                    self.collectionView.reloadItems(at: [indexPath])
+                    //self.collectionView.reloadItems(at: [indexPath])
                 }
             }
         }

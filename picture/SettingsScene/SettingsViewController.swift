@@ -33,7 +33,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
     }
     
     private var sdCacheSizeInMB: Double {
-        return Double(SDImageCache.shared().getSize()) / MB.binarySize
+        return (Double(SDImageCache.shared().getSize()) / MB.binarySize).rounded()
     }
     
     private var didChangeProfilePhoto = false
@@ -149,7 +149,8 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             switch sectionInfoDetail.type {
             case .email where Auth.auth().currentUser != nil && !(Auth.auth().currentUser?.isEmailVerified)!:
                 let warningView = UIImageView(frame: .init(x: 0, y: 0, width: 16, height: 16))
-                warningView.image = #imageLiteral(resourceName: "icons8-error")
+                warningView.image = #imageLiteral(resourceName: "icons8-error").withRenderingMode(.alwaysTemplate)
+                warningView.tintColor = WKTheme.errorRed
                 cell.accessoryView = warningView
             case .username:
                 cell.accessoryType = .none

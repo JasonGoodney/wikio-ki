@@ -19,6 +19,7 @@ enum WKTheme {
     static let buttonBlue = #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)
     static let gainsboro = #colorLiteral(red: 0.8431372549, green: 0.8549019608, blue: 0.862745098, alpha: 1) // 0xd7dadc
     static let seashell = #colorLiteral(red: 0.9764705882, green: 0.9647058824, blue: 0.937254902, alpha: 1) // 0xf9f6ef
+    static let errorRed = #colorLiteral(red: 0.8, green: 0, blue: 0, alpha: 1)
     
     static let video = #colorLiteral(red: 0.6784313725, green: 0.3803921569, blue: 1, alpha: 1)
     static let photo = #colorLiteral(red: 0.9333333333, green: 0.137254902, blue: 0.3294117647, alpha: 1)

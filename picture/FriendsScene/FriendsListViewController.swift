@@ -82,11 +82,14 @@ class FriendsListViewController: UIViewController {
     deinit {
         self.friendRequestListener?.remove()
         friendshipChangedListener?.remove()
+        chatUpdateListener?.remove()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         updateView()
+        
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
         UserController.shared.fetchCurrentUser { (success) in
             if success {
@@ -150,8 +153,11 @@ class FriendsListViewController: UIViewController {
                             return
                         }
                         
-                        if snapshot.documentChanges.contains(where: { $0.type == .modified }) {
-                            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                        //if snapshot.documentChanges.contains(where: { $0.type == .modified }) {
+                            
+                            let modifiedDocs = snapshot.documentChanges.filter({
+                                $0.type == .modified
+                            })
                             
                             let pendingWrites = snapshot.documentChanges.filter({
                                 $0.document.metadata.hasPendingWrites
@@ -170,30 +176,81 @@ class FriendsListViewController: UIViewController {
                                             if beforeRecentsCount < afterRecentsCount {
                                                 self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
                                             }
-                                            
+                                            //
                                             self.tableView.reloadData()
+                                            //
                                         }
-                                    }, completion: nil)
+                                    }, completion: { (_) in
+                                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                                    })
                                 })
                             }
-                            
-//                            self.fetchChatsWithFriends(completion: { (error) in
-//                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-//                                if let error = error {
-//                                    print(error)
-//
-//                                    return
-//                                }
-//
-//                                self.reloadData()
-//
-//                            })
-                        }
                         
-                        if snapshot.documentChanges.count > 0 {
-                            
-                            
+                                // Receiving user updates and sender user updates when receiver opens
+                            else if modifiedDocs.count > 0 {
+                                for change in modifiedDocs {
+                                    let pendingChat = Chat(dictionary: change.document.data())
+                                    self.tableView.performBatchUpdates({
+
+//                                        let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
+
+                                        let isSender = pendingChat.lastSenderUid == UserController.shared.currentUser?.uid
+
+                                        if isSender {
+                                            if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
+                                                let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                                UserController.shared.allChatsWithFriends[index].chat = pendingChat
+                                                let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                                
+                                                if beforeRecentsCount < afterRecentsCount {
+                                                    self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
+                                                }
+                                                //
+                                                self.tableView.reloadData()
+                                                //
+                                            }
+                                        } else if !isSender && !pendingChat.isSending {
+                                            if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
+                                                let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                                UserController.shared.allChatsWithFriends[index].chat = pendingChat
+                                                let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                                
+                                                if beforeRecentsCount < afterRecentsCount {
+                                                    self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
+                                                }
+                                                //
+                                                self.tableView.reloadData()
+                                                //
+                                            }
+                                        }
+                                        
+//                                        if isSender {
+//                                            if let reloadIndex = self.messages.firstIndex(where: { $0 == pendingMessage }),
+//                                                pendingMessage.status == .delivered {
+//
+//                                                let reloadIndexPath = IndexPath(row: reloadIndex, section: 0)
+//                                                self.messages[reloadIndexPath.row] = pendingMessage
+//                                                let animationsEnabled = UIView.areAnimationsEnabled
+//                                                UIView.setAnimationsEnabled(false)
+//                                                self.tableView.reloadRows(at: [reloadIndexPath], with: .none)
+//                                                UIView.setAnimationsEnabled(animationsEnabled)
+//
+//                                            } else if pendingMessage.status == .sending {
+//                                                self.messages.append(pendingMessage)
+//                                                self.collectionView.insertItems(at: [insertIndexPath])
+//
+//                                            }
+//                                        } else if !isSender && pendingMessage.status == .delivered {
+//                                            self.messages.append(pendingMessage)
+//                                            self.collectionView.insertItems(at: [insertIndexPath])
+//                                        }
+                                    }, completion: nil)
+
+                                }
                         }
+
+                        
+
                 })
             }
             

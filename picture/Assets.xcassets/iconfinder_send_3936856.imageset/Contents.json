@@ -6,16 +6,20 @@
     },
     {
       "idiom" : "universal",
+      "filename" : "iconfinder_send_3936856 (1)@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icons8-give_way-1.png",
+      "filename" : "iconfinder_send_3936856 (2)@3x.png",
       "scale" : "3x"
     }
   ],
   "info" : {
     "version" : 1,
     "author" : "xcode"
+  },
+  "properties" : {
+    "template-rendering-intent" : "template"
   }
 }

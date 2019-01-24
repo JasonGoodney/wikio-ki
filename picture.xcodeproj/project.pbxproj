@@ -66,6 +66,7 @@
 		D778E69121CDD79B005C6C96 /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D778E69021CDD79B005C6C96 /* RegisterViewModel.swift */; };
 		D778E69421CDDC71005C6C96 /* RoundRectTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D778E69321CDDC71005C6C96 /* RoundRectTextField.swift */; };
 		D778E69621CDE2EC005C6C96 /* Extensions+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D778E69521CDE2EC005C6C96 /* Extensions+UIView.swift */; };
+		D779408321F97A2100A69C0A /* SendMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779408221F97A2100A69C0A /* SendMessage.swift */; };
 		D7869FBA21DE6A5700A1B863 /* ProfileImageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */; };
 		D7869FBE21DEA8E500A1B863 /* BlockedUsersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FBD21DEA8E500A1B863 /* BlockedUsersViewController.swift */; };
 		D7869FC121DEAA0800A1B863 /* BlockedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7869FC021DEAA0800A1B863 /* BlockedUserCell.swift */; };
@@ -163,6 +164,7 @@
 		D778E69021CDD79B005C6C96 /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		D778E69321CDDC71005C6C96 /* RoundRectTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundRectTextField.swift; sourceTree = "<group>"; };
 		D778E69521CDE2EC005C6C96 /* Extensions+UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Extensions+UIView.swift"; sourceTree = "<group>"; };
+		D779408221F97A2100A69C0A /* SendMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessage.swift; sourceTree = "<group>"; };
 		D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageButton.swift; sourceTree = "<group>"; };
 		D7869FBD21DEA8E500A1B863 /* BlockedUsersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersViewController.swift; sourceTree = "<group>"; };
 		D7869FC021DEAA0800A1B863 /* BlockedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserCell.swift; sourceTree = "<group>"; };
@@ -437,6 +439,7 @@
 				D7643B5121DD52DA00ACE26F /* DatabaseService+Fetch.swift */,
 				D7643B4621DD0EAC00ACE26F /* DatabaseService+BlockUser.swift */,
 				D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */,
+				D779408221F97A2100A69C0A /* SendMessage.swift */,
 			);
 			path = DatabaseService;
 			sourceTree = "<group>";
@@ -718,6 +721,7 @@
 				D74890EE21BC86DC005AAF6B /* AppDelegate.swift in Sources */,
 				D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */,
 				D7591F1221C2CE5C00B3EAAD /* ReplyFooterView.swift in Sources */,
+				D779408321F97A2100A69C0A /* SendMessage.swift in Sources */,
 				D72D792C21D0913900FB5327 /* LoginViewModel.swift in Sources */,
 				D72F166621D556BD0009D43D /* AddFriendState.swift in Sources */,
 				D7F6A35821EE4D43002DDB6D /* Compression.swift in Sources */,

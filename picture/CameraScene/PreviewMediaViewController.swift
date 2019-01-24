@@ -398,6 +398,7 @@ class PreviewMediaViewController: UIViewController {
     @objc func sendButtonTapped(_ sender: UIButton) {
         
         self.add(loadingViewController)
+        let hud = self.loadingViewController.hud
         
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
@@ -414,12 +415,38 @@ class PreviewMediaViewController: UIViewController {
             let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
             mediaData = image.jpegData(compressionQuality: Compression.quality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-            sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
+            //sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
+            self.dismiss(animated: false)
+            self.presentingViewController?.dismiss(animated: false) {
+                let dbs = DatabaseService()
+                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .photo, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.localizedDescription
+                        hud.show(in: self.view)
+                    }
+                    print("Sent from DataBaseService")
+                })
+            }
             
         } else if let image = image {
             mediaData = image.jpegData(compressionQuality: Compression.quality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-            sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
+            //sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
+            self.dismiss(animated: false)
+            self.presentingViewController?.dismiss(animated: false) {
+                let dbs = DatabaseService()
+                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: nil, messageType: .photo, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.localizedDescription
+                        hud.show(in: self.view)
+                    }
+                    print("Sent from DataBaseService")
+                })
+            }
             
         } else if let videoURL = videoURL {
             let videoWidth: CGFloat = VideoResolution.width
@@ -462,7 +489,20 @@ class PreviewMediaViewController: UIViewController {
                     case .completed:
                         do {
                             guard let mediaData = try? Data(contentsOf: url) else { return }
-                            self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+                            //self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+                            self.dismiss(animated: false)
+                            self.presentingViewController?.dismiss(animated: false) {
+                                let dbs = DatabaseService()
+                                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                                    if let error = error {
+                                        print(error)
+                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                        hud.textLabel.text = error.localizedDescription
+                                        hud.show(in: self.view)
+                                    }
+                                    print("Sent from DataBaseService")
+                                })
+                            }
                             print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
                         } catch let error {
                             print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")

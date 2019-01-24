@@ -29,6 +29,7 @@ enum MessageStatus: String {
 enum MessageType: String {
     case photo
     case video
+    case none
     
     func databaseValue() -> String {
         return self.rawValue.uppercased()

@@ -10,10 +10,12 @@ import UIKit
 
 class StatusIndicatorView: UIView {
 
-    private let deliveredUnopened = #imageLiteral(resourceName: "forward_unopened").withRenderingMode(.alwaysTemplate)
-    private let deliveredOpened = #imageLiteral(resourceName: "forward_opened").withRenderingMode(.alwaysTemplate)
+    private let deliveredUnopened = #imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate)
+    private let deliveredOpened = #imageLiteral(resourceName: "iconfinder_send_3936856").withRenderingMode(.alwaysTemplate)
     private let receivedUnopened = #imageLiteral(resourceName: "rounded-black-square-shape").withRenderingMode(.alwaysTemplate)
     private let receivedOpened = #imageLiteral(resourceName: "check-box-empty").withRenderingMode(.alwaysTemplate)
+    private let tapToChat = #imageLiteral(resourceName: "icons8-topic").withRenderingMode(.alwaysTemplate)
+    private let newFriendship = #imageLiteral(resourceName: "icons8-speech_bubble").withRenderingMode(.alwaysTemplate)
     
     private lazy var statusStackView = UIStackView(arrangedSubviews: [statusIndicator, sendingIndicatorView])
     
@@ -44,7 +46,7 @@ class StatusIndicatorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(forStatus status: MessageStatus, isOpened: Bool, type: MessageType) {
+    func configure(forStatus status: MessageStatus, isOpened: Bool = false, type: MessageType = .none, isNewFriendship: Bool = false) {
 
         if status == .sending {
             sendingIndicatorView.startAnimating()
@@ -54,29 +56,24 @@ class StatusIndicatorView: UIView {
             
             sendingIndicatorView.stopAnimating()
             statusIndicator.isHidden = false
+            statusIndicator.image = isOpened ? deliveredOpened : deliveredUnopened
 
-                if isOpened {
-                    statusIndicator.image = deliveredOpened
-                } else {
-                    statusIndicator.image = deliveredUnopened
-                }
         } else if status == .received {
             
             sendingIndicatorView.stopAnimating()
             statusIndicator.isHidden = false
-            
-            if isOpened {
-                statusIndicator.image = receivedOpened
-            } else {
-                statusIndicator.image = receivedUnopened
-                
-            }
+            statusIndicator.image = isOpened ? receivedOpened : receivedUnopened
+
+        } else if status == .none {
+            statusIndicator.image = isNewFriendship ? newFriendship : tapToChat
         }
         
         if type == .photo {
             statusIndicator.tintColor = WKTheme.photo
-        } else {
+        } else if type == .video {
             statusIndicator.tintColor = WKTheme.video
+        } else {
+            statusIndicator.tintColor = WKTheme.textColor
         }
     }
     
