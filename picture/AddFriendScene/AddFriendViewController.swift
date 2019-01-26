@@ -48,9 +48,19 @@ class AddFriendViewController: UITableViewController {
         super.viewDidAppear(animated)
         
         searchController.isActive = true
-        DispatchQueue.main.async{
-            self.searchController.searchBar.becomeFirstResponder()
+        searchController.definesPresentationContext = true
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak searchController] timer in
+            guard let searchController = searchController else {
+                timer.invalidate()
+                return
+            }
+            
+            if searchController.searchBar.canBecomeFirstResponder {
+                searchController.searchBar.becomeFirstResponder()
+                timer.invalidate()
+            }
         }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,6 +77,7 @@ class AddFriendViewController: UITableViewController {
         
         fetchSentRequests()
     }
+
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -440,7 +451,7 @@ extension AddFriendViewController: ProfileImageButtonDelegate {
 }
 
 extension AddFriendViewController: UISearchControllerDelegate {
-    func didPresentSearchController(_ searchController: UISearchController) {
+    func presentSearchController(_ searchController: UISearchController) {
         searchController.searchBar.becomeFirstResponder()
     }
 }

@@ -29,11 +29,11 @@ enum SettingsType: String {
 class SettingsViewController: UITableViewController, LoginFlowHandler {
     
     private var cacheSizeInMB: Double {
-        return Double(DiggerCache.downloadedFilesSize()) / MB.binarySize
+        return (Double(DiggerCache.downloadedFilesSize()) / MB.binarySize).rounded(.down)
     }
     
     private var sdCacheSizeInMB: Double {
-        return Double(SDImageCache.shared().getSize()) / MB.binarySize
+        return (Double(SDImageCache.shared().getSize()) / MB.binarySize).rounded(.down)
     }
     
     private var didChangeProfilePhoto = false
@@ -150,7 +150,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             case .email where Auth.auth().currentUser != nil && !(Auth.auth().currentUser?.isEmailVerified)!:
                 let warningView = UIImageView(frame: .init(x: 0, y: 0, width: 16, height: 16))
                 warningView.image = #imageLiteral(resourceName: "icons8-error").withRenderingMode(.alwaysTemplate)
-                warningView.tintColor = WKTheme.errorRed
+                warningView.tintColor = WKTheme.warningYellow
                 cell.accessoryView = warningView
             case .username:
                 cell.accessoryType = .none

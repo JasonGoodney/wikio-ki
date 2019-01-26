@@ -6,12 +6,18 @@ target 'picture' do
   use_frameworks!
 
   # Pods for picture
+  
+  # Firebase
   pod 'Firebase/Firestore'
   pod 'Firebase/Auth'
   pod 'Firebase/Storage'
   pod 'Firebase/Core'
+  
+  # Other
   pod 'SDWebImage'
   pod 'JGProgressHUD'
   pod 'SwiftyCam'
   pod 'Digger'
+  pod 'NVActivityIndicatorView'
+  
 end

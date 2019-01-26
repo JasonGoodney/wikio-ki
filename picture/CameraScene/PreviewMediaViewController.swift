@@ -213,122 +213,6 @@ class PreviewMediaViewController: UIViewController {
     
     let loadingViewController = LoadingViewController(hudText: "Sending")
     
-    fileprivate func sendMessage(_ currentUser: User, _ messageCaption: String?, _ messageType: MessageType, _ friend: User, _ messageImageData: Data?, _ messageThumbnailData: Data?) {
-        
-        let hud = self.loadingViewController.hud
-        
-        let message = Message(senderUid: currentUser.uid, user: currentUser, caption: messageCaption, messageType: messageType)
-        message.status = .sending
-        let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
-        print("chatUID: \(chatUid)")
-        
-        self.chat?.isOpened = false
-        self.chat?.lastMessageSent = message.uid
-        self.chat?.lastSenderUid = currentUser.uid
-        self.chat?.isNewFriendship = false
-        self.chat?.isSending = true
-        self.chat?.lastChatUpdateTimestamp = Date().timeIntervalSince1970
-        
-        dismiss(animated: false)
-        self.presentingViewController?.dismiss(animated: false) {
-            
-            // Completion Begin
-            if let data = messageImageData, let thumbnailData = messageThumbnailData {
-                UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                let dbs = DatabaseService()
-                dbs.save(message, in: self.chat!, completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        message.status = .failed
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = error.localizedDescription
-                        return
-                    }
-                    print("Sent message from \(currentUser.username) to \(self.friend!.username)")
-
-                    MessageController.shared.messages.append(message)
-                    
-                    StorageService.saveMediaToStorage(data: data, thumbnailData: thumbnailData, for: message) { (messageWithMedia, error) in
-                        if let error = error {
-                            print(error)
-                            message.status = .failed
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.localizedDescription
-                            hud.show(in: self.view)
-                            return
-                        }
-                        
-                        guard let message = messageWithMedia else { return }
-                        
-                        let fields: [String: Any] = [
-                            Message.Keys.status: message.status.databaseValue(),
-                            Message.Keys.mediaURL: message.mediaURL,
-                            Message.Keys.mediaThumbnailURL: message.mediaThumbnailURL,
-                            Message.Keys.timestamp: Date().timeIntervalSince1970
-                        ]
-                        
-                        dbs.update(message, in: chatUid, withFields: fields, completion: { (error) in
-                            if let error = error {
-                                print(error)
-                                return
-                            }
-                            
-                            dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: [
-                                Chat.Keys.isSending: false,
-                                Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970
-                                ], completion: { (error) in
-                                if let error = error {
-                                    print(error)
-                                    return
-                                }
-                                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                                print("Everything uploaded and set")
-                            })
-
-                        })
-                        
-                    }
-                })
-                
-                
-                
-            }
-            
-//            if let data = messageImageData, let thumbnailData = messageThumbnailData {
-//                UIApplication.shared.isNetworkActivityIndicatorVisible = true
-//                StorageService.saveMediaToStorage(data: data, thumbnailData: thumbnailData, for: message) { (messageWithMedia, error) in
-//                    if let error = error {
-//                        print(error)
-//                        message.status = .failed
-//                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                        hud.textLabel.text = error.localizedDescription
-//                        hud.show(in: self.view)
-//                        return
-//                    }
-//
-//                    guard let message = messageWithMedia else { return }
-//                    let databaseService = DatabaseService()
-//                    databaseService.save(message, in: self.chat!, completion: { (error) in
-//                        if let error = error {
-//                            print(error)
-//                            message.status = .failed
-//                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                            hud.textLabel.text = error.localizedDescription
-//                            return
-//                        }
-//                        print("Sent message from \(currentUser.username) to \(self.friend!.username)")
-//                        message.status = .delivered
-//
-//                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-//
-//                        MessageController.shared.messages.append(message)
-//                    })
-//                }
-//
-//            }
-        } // Completion End
-    }
-    
     fileprivate func compressVideo(_ url: URL, completion: @escaping (URL) -> ()) {
         //messageVideoURL = url.absoluteString
         
@@ -474,67 +358,70 @@ class PreviewMediaViewController: UIViewController {
             
             merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
                 guard let url = url else { return }
-                self.compressVideo(inputURL: url, outputURL: url, handler: { (exportSession) in
-                    guard let session = exportSession else {
-                        return
-                    }
-                    
-                    switch session.status {
-                    case .unknown:
-                        break
-                    case .waiting:
-                        break
-                    case .exporting:
-                        break
-                    case .completed:
-                        do {
-                            guard let mediaData = try? Data(contentsOf: url) else { return }
-                            //self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
-                            self.dismiss(animated: false)
-                            self.presentingViewController?.dismiss(animated: false) {
-                                let dbs = DatabaseService()
-                                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
-                                    if let error = error {
-                                        print(error)
-                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                        hud.textLabel.text = error.localizedDescription
-                                        hud.show(in: self.view)
-                                    }
-                                    print("Sent from DataBaseService")
-                                })
-                            }
-                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
-                        } catch let error {
-                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-                        }
-                        
-                        
-                        
-                    case .failed:
-                        break
-                    case .cancelled:
-                        break
-                    }
-//                    do {
-//                        guard let data = exportSession.da
-//                        try mediaData = Data(contentsOf: url)
-//                        self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
-//                        print(mediaData)
-//                    } catch let error {
-//                        print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-//                    }
-                })
-
-                
                 
                 do {
-                    try mediaData = Data(contentsOf: url)
-                    self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
-                    print(mediaData)
+                    guard let mediaData = try? Data(contentsOf: url) else { return }
+                    //self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+                    self.dismiss(animated: false)
+                    self.presentingViewController?.dismiss(animated: false) {
+                        let dbs = DatabaseService()
+                        dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                            if let error = error {
+                                print(error)
+                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                hud.textLabel.text = error.localizedDescription
+                                hud.show(in: self.view)
+                            }
+                            print("Sent from DataBaseService")
+                        })
+                    }
+                    print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
                 } catch let error {
                     print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
                 }
                 
+                
+//                self.compressVideo(inputURL: url, outputURL: url, handler: { (exportSession) in
+//                    guard let session = exportSession else {
+//                        return
+//                    }
+//                    
+//                    switch session.status {
+//                    case .unknown:
+//                        break
+//                    case .waiting:
+//                        break
+//                    case .exporting:
+//                        break
+//                    case .completed:
+//                        do {
+//                            guard let mediaData = try? Data(contentsOf: url) else { return }
+//                            //self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
+//                            self.dismiss(animated: false)
+//                            self.presentingViewController?.dismiss(animated: false) {
+//                                let dbs = DatabaseService()
+//                                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+//                                    if let error = error {
+//                                        print(error)
+//                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                                        hud.textLabel.text = error.localizedDescription
+//                                        hud.show(in: self.view)
+//                                    }
+//                                    print("Sent from DataBaseService")
+//                                })
+//                            }
+//                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
+//                        } catch let error {
+//                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+//                        }
+// 
+//                    case .failed:
+//                        self.loadingViewController.remove()
+//                        break
+//                    case .cancelled:
+//                        break
+//                    }
+//                })
                     
             }) { (progress) in
                 print(progress)

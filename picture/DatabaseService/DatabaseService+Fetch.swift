@@ -120,6 +120,8 @@ extension DatabaseService {
     
     
     func fetchMessagesInChat(withFriend friend: User, completion: @escaping ([Message]?, Error?) -> Void) {
+        MessageController.shared.messages = []
+        
         guard let currentUser = UserController.shared.currentUser else { return }
         let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
     
@@ -128,77 +130,60 @@ extension DatabaseService {
         let secondsInADay: TimeInterval = 86400
         let currentTime = Date().timeIntervalSince1970
         let last24Hours = currentTime - secondsInADay
-        Firestore.firestore().collection(Collection.chats).document(chatUid).collection(Collection.messages)
+        
+        let allMessagesRef = Firestore.firestore().collection(Collection.chats).document(chatUid).collection(Collection.messages)
+        let messagesLast24HoursRef = Firestore.firestore().collection(Collection.chats).document(chatUid).collection(Collection.messages)
             .whereField(Message.Keys.timestamp, isGreaterThanOrEqualTo: last24Hours)
-            .getDocuments(completion: { (last24HoursQuerySnapshot, error) in
+        let messagesNotOpenedRef = Firestore.firestore().collection(Collection.chats).document(chatUid).collection(Collection.messages)
+            .whereField(Message.Keys.isOpened, isEqualTo: false)
+        
+        messagesNotOpenedRef.getDocuments(completion: { (notOpenedQuerySnapshot, error) in
             if let error = error {
                 print(error)
                 completion(nil, error)
                 return
             }
+              
+            guard var queryDocs = notOpenedQuerySnapshot?.documents else { return }
             
-            
+            //var queryDocsSet: Set<QueryDocumentSnapshot> = Set(queryDocs)
                 
-            guard let queryDocs = last24HoursQuerySnapshot?.documents else { return }
-            
-            let queryDocsSet: Set<QueryDocumentSnapshot> = Set(queryDocs)
-                
-            Firestore.firestore().collection(Collection.chats).document(chatUid).collection(Collection.messages)
-                .whereField(Message.Keys.isOpened, isEqualTo: false)
-                .getDocuments(completion: { (isOpenedQuerySnapshot, error) in
+            messagesLast24HoursRef.getDocuments(completion: { (last24HoursQuerySnapshot, error) in
                     if let error = error {
                         print(error)
                         completion(nil, error)
                         return
                     }
                     
-                    var docs: [QueryDocumentSnapshot] = []
+                    var messageDocs: [QueryDocumentSnapshot] = []
                     
-                    if isOpenedQuerySnapshot?.documents != nil {
-                        docs = Array(queryDocsSet.union(Set(isOpenedQuerySnapshot!.documents)))
+                    if last24HoursQuerySnapshot?.documents != nil {
+//                        queryDocsSet = queryDocsSet.union(last24HoursQuerySnapshot!.documents)
+                        //docs = Array(Set(isOpenedQuerySnapshot!.documents))
+                        
+                        queryDocs += (last24HoursQuerySnapshot?.documents)!
                     }
                     
-                    MessageController.shared.messages = []
-                    docs.forEach({ (doc) in
-                        let message = Message(dictionary: doc.data())
+                    let queryDocsSet = Set(queryDocs)
+                
+                let messagesSet: Set<Message> = Set(queryDocs.map({ (snapshot) -> Message? in
+                    return Message(dictionary: snapshot.data())
+                })) as! Set<Message>
+                
+                    messagesSet.forEach({ (message) in
+                        //let message = Message(dictionary: doc.data())
                         let index = MessageController.shared.messages.insertionIndexOf(elem: message, isOrderedBefore: { (a, b) -> Bool in
                             return a.timestamp < b.timestamp
                         })
                         MessageController.shared.messages.insert(message, at: index)
                     })
-
+                
+                
                     completion(MessageController.shared.messages, nil)
             })
         })
     }
-    
-    func fetchMessages(withFriend friend: User, completion: @escaping ([Message]?, Error?) -> Void) {
-        guard let currentUser = UserController.shared.currentUser else { return }
-        let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
-        
-        Firestore.firestore().collection(Collection.messages).document(chatUid).getDocument { (snapshot, error) in
-            if let error = error {
-                print(error)
-                completion(nil, error)
-                return
-            }
-            
-            guard let data = snapshot?.data() else { return }
-            
-            MessageController.shared.messages = []
-            
-            for (_, messageData) in data as! [String: [String: Any]]{
-                let message = Message(dictionary: messageData)
-                MessageController.shared.messages.append(message)
-            }
-            MessageController.shared.messages.sort(by: { (a, b) -> Bool in
-                return a.timestamp < b.timestamp
-            })
-            
-            completion(MessageController.shared.messages, nil)
-        }
-    }
-    
+
     func fetchChat(withFriend friend: User, completion: @escaping (Chat?, Error?) -> Void) {
         guard let currentUser = UserController.shared.currentUser else { return }
         let chatUid = Chat.chatUid(for: currentUser, and: friend)

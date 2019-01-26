@@ -102,7 +102,7 @@ class FriendsListViewController: UIViewController {
         
         UserController.shared.fetchCurrentUser { (success) in
             if success {
-                self.tableView.isHidden = false
+                
                 if let image = UserController.shared.currentUser?.profilePhoto {
                     self.profileImageButton.setImage(image, for: .normal)
                     self.profileImageButton.isUserInteractionEnabled = true
@@ -247,8 +247,6 @@ class FriendsListViewController: UIViewController {
 
                 })
             }
-            
-
         }
 
         if #available(iOS 10.0, *) {
@@ -319,15 +317,15 @@ class FriendsListViewController: UIViewController {
     }
     
     private func reloadData() {
-
+        
             UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
                 return chatWithFriend1.friend.username < chatWithFriend2.friend.username
             })
             
             DispatchQueue.main.async {
+                self.tableView.isHidden = false
                 self.tableView.reloadData()
             }
-        
     }
     
     private func addListenerOnUser(listeningTo collection: String, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
@@ -710,10 +708,10 @@ extension FriendsListViewController {
                         }
                         
                         // So fetchChatsWithFriends only completes once when all users are fetched
-                        if i >= userChats.count {
+                        //if i >= userChats.count {
                             print("Fetched Chat With Friends and is now completing")
                             completion(nil)
-                        }
+                        //}
                     })
                 })
                 

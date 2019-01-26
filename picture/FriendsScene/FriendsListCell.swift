@@ -33,11 +33,12 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         return imageView
     }()
     
-    private let detailsLabel: UILabel = {
+    private let detailsTextFontSize: CGFloat = 13
+    private lazy var detailsLabel: UILabel = {
         let label = UILabel()
         label.textColor = WKTheme.textColor
-        label.font = UIFont.systemFont(ofSize: 14)
         label.text = ""
+        label.font = UIFont.systemFont(ofSize: detailsTextFontSize)
         return label
     }()
     
@@ -46,8 +47,8 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         button.setImage(#imageLiteral(resourceName: "icons8-camera-90").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = WKTheme.textColor
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        button.contentHorizontalAlignment = .trailing
         button.addTarget(self, action: #selector(handleCameraButton), for: .touchUpInside)
+//        button.backgroundColor = WKTheme.buttonBlue
         return button
     }()
     
@@ -70,9 +71,37 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         usernameLabel.text = name
     }
     
-    func configure(with chatWithFriend: ChatWithFriend) {
+    func attibutedText(detailsText: String, detailsTextColor: UIColor = WKTheme.textColor, timeAgoString: String, isBold: Bool = false) -> NSAttributedString {
+        
+        let attributedString = NSMutableAttributedString(string: detailsText, attributes: [
+            .font: isBold ? UIFont.systemFont(ofSize: detailsTextFontSize, weight: .bold) : UIFont.systemFont(ofSize: detailsTextFontSize),
+            .foregroundColor: detailsTextColor
+        ])
+        attributedString.append(NSAttributedString(string: timeAgoString, attributes: [
+            .font: isBold ? UIFont.boldSystemFont(ofSize: detailsTextFontSize) : UIFont.systemFont(ofSize: detailsTextFontSize),
+        ]))
+        
+        return attributedString
+    }
+    
+    
+    func configure(with chatWithFriend: ChatWithFriend, latestMessage: Message? = nil) {
+        
         let user = chatWithFriend.friend
         let chat = chatWithFriend.chat
+        
+        let type = chat.lastMessageSentType
+        
+        var textColor: UIColor {
+            switch type {
+            case .photo:
+                return WKTheme.photo
+            case .video:
+                return WKTheme.video
+            default:
+                return WKTheme.textColor
+            }
+        }
         
         usernameLabel.text = user.username
         if let url = URL(string: user.profilePhotoUrl) {
@@ -81,41 +110,41 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         
         let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
         
+
         if chat.isSending && chat.lastSenderUid == UserController.shared.currentUser?.uid {
-            detailsLabel.text = "Sending..."
             cameraButton.tintColor = WKTheme.textColor
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-            detailsLabel.font = UIFont.systemFont(ofSize: 14)
-            statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: .none)
+            detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
+            detailsLabel.text = "Sending..."
+            statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
         }
         else if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
             detailsLabel.text = "Tap to chat" + timeAgoString
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-            detailsLabel.font = UIFont.systemFont(ofSize: 14)
-            statusIndicatorView.configure(forStatus: .none, isOpened: false, type: .none)
+            detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
+            statusIndicatorView.configure(forStatus: .none, isOpened: false, type: type)
             
         } else if chat.isNewFriendship {
             usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
-            detailsLabel.font = UIFont.boldSystemFont(ofSize: 14)
+            detailsLabel.font = UIFont.boldSystemFont(ofSize: detailsTextFontSize)
             detailsLabel.text = "New friend" + timeAgoString
             cameraButton.tintColor = WKTheme.textColor
-            statusIndicatorView.configure(forStatus: .none, isOpened: false, type: .none, isNewFriendship: true)
+            statusIndicatorView.configure(forStatus: .none, isOpened: false, type: type, isNewFriendship: true)
             
         } else if !chat.isOpened {
             if UserController.shared.currentUser!.uid == chat.lastSenderUid {
-                detailsLabel.text = "Delivered" + timeAgoString
                 cameraButton.tintColor = WKTheme.textColor
                 usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-                detailsLabel.font = UIFont.systemFont(ofSize: 14)
-                statusIndicatorView.configure(forStatus: .delivered, isOpened: false, type: .none)
+                detailsLabel.attributedText = attibutedText(detailsText: "Delivered", detailsTextColor: WKTheme.textColor, timeAgoString: timeAgoString)
+//                statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
+                statusIndicatorView.configure(forStatus: .delivered, isOpened: false, type: type)
                 
             } else {
                 usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
-                detailsLabel.font = UIFont.boldSystemFont(ofSize: 14)
-                detailsLabel.text = "New message" + timeAgoString
+                detailsLabel.attributedText = attibutedText(detailsText: "New Message", detailsTextColor: textColor, timeAgoString: timeAgoString, isBold: true)
                 cameraButton.tintColor = .black
                 statusImageView.image = #imageLiteral(resourceName: "icons8-filled_circle")
-                statusIndicatorView.configure(forStatus: .received, isOpened: false, type: .none)
+                statusIndicatorView.configure(forStatus: .received, isOpened: false, type: type)
                 
             }
         } else {
@@ -124,8 +153,8 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
             cameraButton.tintColor = WKTheme.textColor
             statusImageView.image = #imageLiteral(resourceName: "icons8-circled")
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-            detailsLabel.font = UIFont.systemFont(ofSize: 14)
-            statusIndicatorView.configure(forStatus: isSender ? .delivered : .received, isOpened: true, type: .none)
+            detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
+            statusIndicatorView.configure(forStatus: isSender ? .delivered : .received, isOpened: true, type: type)
         }
             
             if let unread = chat.unread, let uid = UserController.shared.currentUser?.uid {
@@ -164,7 +193,7 @@ private extension FriendsListCell {
         separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         overallStackView.anchorCenterYToSuperview()
-        overallStackView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 16))
+        overallStackView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 8))
         
         
         unreadView.anchor(top: profileImageView.topAnchor, leading: profileImageView.leadingAnchor, bottom: profileImageView.bottomAnchor, trailing: profileImageView.trailingAnchor, padding: .init(top: -6, left: 0, bottom: 0, right: -6))

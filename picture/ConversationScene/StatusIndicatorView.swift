@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import NVActivityIndicatorView
 
 class StatusIndicatorView: UIView {
 
@@ -19,14 +20,16 @@ class StatusIndicatorView: UIView {
     
     private lazy var statusStackView = UIStackView(arrangedSubviews: [statusIndicator, sendingIndicatorView])
     
-    private let sendingIndicatorView: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView()
-        view.hidesWhenStopped = true
-        view.color = WKTheme.textColor
-//        view.heightAnchor.constraint(equalToConstant: 20).isActive = true
-//        view.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        return view
-    }()
+//    private let sendingIndicatorView: UIActivityIndicatorView = {
+//        let view = UIActivityIndicatorView()
+//        view.hidesWhenStopped = true
+//        view.color = WKTheme.textColor
+//        return view
+//    }()
+
+    
+    private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
+
     
     private let statusIndicator: UIImageView = {
         let imageView = UIImageView()

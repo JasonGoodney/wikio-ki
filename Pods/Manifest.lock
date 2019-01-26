@@ -108,6 +108,9 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
+  - NVActivityIndicatorView (4.5.1):
+    - NVActivityIndicatorView/Presenter (= 4.5.1)
+  - NVActivityIndicatorView/Presenter (4.5.1)
   - Protobuf (3.6.1)
   - SDWebImage (4.4.3):
     - SDWebImage/Core (= 4.4.3)
@@ -121,6 +124,7 @@ DEPENDENCIES:
   - Firebase/Firestore
   - Firebase/Storage
   - JGProgressHUD
+  - NVActivityIndicatorView
   - SDWebImage
   - SwiftyCam
 
@@ -144,6 +148,7 @@ SPEC REPOS:
     - JGProgressHUD
     - leveldb-library
     - nanopb
+    - NVActivityIndicatorView
     - Protobuf
     - SDWebImage
     - SwiftyCam
@@ -167,10 +172,11 @@ SPEC CHECKSUMS:
   JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  NVActivityIndicatorView: ec34a7b88c51fab270004a1a1f32116e711010cd
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
   SwiftyCam: 67338308e3a5a3545c2aeee17e2c964eba4cf49f
 
-PODFILE CHECKSUM: 91f82c7257efb4c918151edcde68c408d807349c
+PODFILE CHECKSUM: 76143ac31079401e63bf493196f5ff6511f0ce28
 
 COCOAPODS: 1.5.3

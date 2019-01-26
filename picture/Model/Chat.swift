@@ -14,6 +14,7 @@ class Chat {
     let uid: String
     let memberUids: [String]
     var lastMessageSent: String
+    var lastMessageSentType: MessageType
     var lastChatUpdateTimestamp: TimeInterval
     var lastSenderUid: String {
         didSet {
@@ -46,6 +47,7 @@ class Chat {
         static let uid = "uid"
         static let memberUids = "memberUids"
         static let lastMessageSent = "lastMessageSent"
+        static let lastMessageSentType = "lastMessageSentType"
         static let lastChatUpdateTimestamp = "lastChatUpdateTimestamp"
         static let lastSenderUid = "lastSenderUid"
         static let isOpened = "isOpened"
@@ -68,13 +70,22 @@ class Chat {
         self.areMutualBestFriends = dictionary[Keys.areMutualBestFriends] as? Bool ?? false
         self.unread = dictionary[Keys.unread] as? [String: Int] ?? [:]
         self.isSending = dictionary[Keys.isSending] as? Bool ?? false
+        
+        if dictionary[Keys.lastMessageSentType] as? String == MessageType.photo.databaseValue() {
+            self.lastMessageSentType = .photo
+        } else if dictionary[Keys.lastMessageSentType] as? String == MessageType.video.databaseValue() {
+            self.lastMessageSentType = .video
+        } else {
+            self.lastMessageSentType = .none
+        }
     }
     
-    init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String,
+    init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String, lastMessageSentType: MessageType = .none,
          lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true, areMutualBestFriends: Bool = false, isSending: Bool = false) {
         self.uid = uid
         self.memberUids = memberUids
         self.lastMessageSent = lastMessageSent
+        self.lastMessageSentType = lastMessageSentType
         self.lastChatUpdateTimestamp = lastChatUpdateTimestamp
         self.lastSenderUid = lastSenderUid
         self.isOpened = isOpened
@@ -88,6 +99,7 @@ class Chat {
         let dict: [String: Any] = [
             Keys.uid: uid,
             Keys.lastMessageSent: lastMessageSent,
+            Keys.lastMessageSentType: lastMessageSentType.databaseValue(),
             Keys.lastChatUpdateTimestamp: lastChatUpdateTimestamp,
             Keys.lastSenderUid: lastSenderUid,
             Keys.isOpened: isOpened,
