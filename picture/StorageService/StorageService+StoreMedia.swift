@@ -18,7 +18,7 @@ extension StorageService {
         let ref = Storage.storage().reference(withPath: Path.media + "\(filename)")
         let thumbnailRef = Storage.storage().reference(withPath: "thumbnails/\(thumbnailFilename)")
         
-        let metadata = StorageMetadata()
+        let mediaMetadata = StorageMetadata()
         let thumbnailMetadata = StorageMetadata()
         thumbnailMetadata.contentType = "image/jpeg"
         
@@ -28,6 +28,7 @@ extension StorageService {
                 completion(nil, error)
                 return
             }
+            
             print("Uploaded thumbnail")
             thumbnailRef.downloadURL(completion: { (url, error) in
                 if let error = error {
@@ -41,17 +42,18 @@ extension StorageService {
                 
                 // Upload Media
                 if message.messageType == .photo {
-                    metadata.contentType = "image/jpeg"
+                    mediaMetadata.contentType = "image/jpeg"
                 } else {
-                    metadata.contentType = "video/mp4"
+                    mediaMetadata.contentType = "video/mp4"
                 }
                 
-                ref.putData(data, metadata: metadata) { (_, error) in
+                ref.putData(data, metadata: mediaMetadata) { (metadata, error) in
                     if let error = error {
                         message.status = .failed
                         completion(nil, error)
                         return
                     }
+                    print("Uploaded media data size:", Double((metadata?.size)!) / MB.binarySize)
                     print("Uploaded media")
                     ref.downloadURL(completion: { (url, error) in
                         if let error = error {
@@ -69,9 +71,6 @@ extension StorageService {
                 
             })
         }
-
-        
-        
         
     }
 }

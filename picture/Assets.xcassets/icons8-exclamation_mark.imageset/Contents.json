@@ -10,15 +10,12 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "icons8-volume_up.png",
+      "filename" : "icons8-exclamation_mark.png",
       "scale" : "3x"
     }
   ],
   "info" : {
     "version" : 1,
     "author" : "xcode"
-  },
-  "properties" : {
-    "template-rendering-intent" : "template"
   }
 }

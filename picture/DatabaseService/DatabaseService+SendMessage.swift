@@ -34,7 +34,7 @@ import FirebaseFirestore
     
     func save(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
         
-//        if let sentToUid = chat.memberUids.first(where: { $0 != chat.lastSenderUid }), let unreadDict = chat.unread {
+//        if let sentToUid = chat.members.first(where: { $0 != chat.lastSenderUid }), let unreadDict = chat.unread {
 //            let unreadCount = unreadDict[sentToUid]! + 1
 //            chat.unread?[sentToUid] = unreadCount
 //        }

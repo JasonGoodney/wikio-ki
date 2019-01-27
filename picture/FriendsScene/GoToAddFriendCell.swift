@@ -30,11 +30,14 @@ class GoToAddFriendCell: UITableViewCell, ReuseIdentifiable {
         
         addSubview(goToButton)
         
-        goToButton.anchorCenterYToSuperview()
+        //goToButton.anchorCenterYToSuperview()
         goToButton.anchorCenterXToSuperview()
         
         goToButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
         goToButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        goToButton.anchor(top: nil, leading: nil, bottom: bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 24, right: 0))
+        
         goToButton.layer.cornerRadius = 28
     }
     

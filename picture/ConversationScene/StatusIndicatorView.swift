@@ -17,16 +17,9 @@ class StatusIndicatorView: UIView {
     private let receivedOpened = #imageLiteral(resourceName: "check-box-empty").withRenderingMode(.alwaysTemplate)
     private let tapToChat = #imageLiteral(resourceName: "icons8-topic").withRenderingMode(.alwaysTemplate)
     private let newFriendship = #imageLiteral(resourceName: "icons8-speech_bubble").withRenderingMode(.alwaysTemplate)
+    private let failed = #imageLiteral(resourceName: "icons8-exclamation_mark").withRenderingMode(.alwaysTemplate)
     
     private lazy var statusStackView = UIStackView(arrangedSubviews: [statusIndicator, sendingIndicatorView])
-    
-//    private let sendingIndicatorView: UIActivityIndicatorView = {
-//        let view = UIActivityIndicatorView()
-//        view.hidesWhenStopped = true
-//        view.color = WKTheme.textColor
-//        return view
-//    }()
-
     
     private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
 
@@ -51,6 +44,12 @@ class StatusIndicatorView: UIView {
     
     func configure(forStatus status: MessageStatus, isOpened: Bool = false, type: MessageType = .none, isNewFriendship: Bool = false) {
 
+        if status == .failed {
+            statusIndicator.tintColor = .red
+            statusIndicator.image = failed
+            return
+        }
+        
         if status == .sending {
             sendingIndicatorView.startAnimating()
             sendingIndicatorView.isHidden = false

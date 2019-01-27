@@ -13,12 +13,29 @@ protocol FriendsListCellDelegate: class {
     func didTapCameraButton(_ sender: PopButton)
 }
 
-class FriendsListCell: UITableViewCell, ReuseIdentifiable {
+protocol Resendable: class {
+    var doubleTapGesture: UITapGestureRecognizer { get set }
+    func resendFailedMessage(cell: ReuseIdentifiable)
+}
+
+class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
+    
+    var doubleTapGesture: UITapGestureRecognizer = {
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
+        gesture.numberOfTapsRequired = 2
+        return gesture
+    }()
+    
+    @objc private func handleDoubleTapGesture() {
+        resendFailedMessage(cell: self)
+    }
+    
+    func resendFailedMessage(cell: ReuseIdentifiable) {
+        
+    }
+    
     
     weak var delegate: FriendsListCellDelegate?
-    
-//    var friend: User?
-//    var chat: Chat?
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
@@ -79,6 +96,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         ])
         attributedString.append(NSAttributedString(string: timeAgoString, attributes: [
             .font: isBold ? UIFont.boldSystemFont(ofSize: detailsTextFontSize) : UIFont.systemFont(ofSize: detailsTextFontSize),
+            .foregroundColor: WKTheme.textColor
         ]))
         
         return attributedString
@@ -103,6 +121,11 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
             }
         }
         
+        if let unread = chat.unread, let uid = UserController.shared.currentUser?.uid {
+            let unreadCount = unread[uid]
+            unreadView.unreadCount = unreadCount ?? 0
+        }
+        
         usernameLabel.text = user.username
         if let url = URL(string: user.profilePhotoUrl) {
             profileImageView.sd_setImage(with: url, for: .normal)
@@ -110,8 +133,15 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
         
         let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
         
-
-        if chat.isSending && chat.lastSenderUid == UserController.shared.currentUser?.uid {
+        if chat.status == .failed && chat.lastSenderUid == UserController.shared.currentUser?.uid {
+            detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
+            detailsLabel.text = "Failed - Tap tap to retry"
+            detailsLabel.textColor = .red
+            statusIndicatorView.configure(forStatus: .failed)
+            return
+        }
+        
+        if chat.status == .sending && chat.lastSenderUid == UserController.shared.currentUser?.uid {
             cameraButton.tintColor = WKTheme.textColor
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
@@ -156,12 +186,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable {
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
             statusIndicatorView.configure(forStatus: isSender ? .delivered : .received, isOpened: true, type: type)
         }
-            
-            if let unread = chat.unread, let uid = UserController.shared.currentUser?.uid {
-                let unreadCount = unread[uid]
-                unreadView.unreadCount = unreadCount ?? 0
-            }
-//        }
+        
     }
     
     @objc private func handleCameraButton() {
@@ -201,3 +226,4 @@ private extension FriendsListCell {
         bringSubviewToFront(unreadView)
     }
 }
+

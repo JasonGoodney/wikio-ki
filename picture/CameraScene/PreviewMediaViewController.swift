@@ -8,6 +8,8 @@ import JGProgressHUD
 
 let buttonSize: CGFloat = 36
 
+//<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"             title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
 class PreviewMediaViewController: UIViewController {
     
     var chat: Chat?
@@ -36,7 +38,7 @@ class PreviewMediaViewController: UIViewController {
     
     lazy var cancelButton: PopButton = {
         let button = PopButton()
-        button.setImage(#imageLiteral(resourceName: "icons8-back-filled-96").withRenderingMode(.alwaysTemplate), for: .normal) // Too Small
+        button.setImage(#imageLiteral(resourceName: "icons8-left_4").withRenderingMode(.alwaysTemplate), for: .normal) // Too Small
         button.tintColor = .white
         button.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         return button
@@ -59,6 +61,15 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
+    lazy var toggleVideoSoundButton: PopButton = {
+        let button = PopButton()
+        button.setImage(#imageLiteral(resourceName: "icons8-room_sound_filled").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(toggleVideoSound), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+    
     private lazy var sendView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(white: 0, alpha: 0.5)
@@ -75,8 +86,9 @@ class PreviewMediaViewController: UIViewController {
     
     lazy var sendButton: PopButton = {
         let button = PopButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "paper_plane").withRenderingMode(.alwaysOriginal), for: .normal)
-        button.backgroundColor = .white
+        button.setImage(#imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.backgroundColor = .clear
+        button.tintColor = .white
         button.addTarget(self, action: #selector(sendButtonTapped(_:)), for: .touchUpInside)
         button.heightAnchor.constraint(equalToConstant: 56).isActive = true
         button.widthAnchor.constraint(equalToConstant: 56).isActive = true
@@ -88,14 +100,11 @@ class PreviewMediaViewController: UIViewController {
         let textView = UITextView()
         textView.backgroundColor = UIColor.black.withAlphaComponent(0.65)
         textView.delegate = self
-//        textField.setLeftPaddingPoints(8)
-//        textField.setRightPaddingPoints(8)
         textView.textColor = .white
         textView.font = UIFont.systemFont(ofSize: 17)
         textView.addGestureRecognizer(captionDragGesture)
         textView.isHidden = true
         textView.isScrollEnabled = false
-//        textView.textContainerInset = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         return textView
     }()
     
@@ -144,6 +153,7 @@ class PreviewMediaViewController: UIViewController {
         cancelButton.addShadow()
         addCaptionButton.addShadow()
         resignCaptionEditButton.addShadow()
+        toggleVideoSoundButton.addShadow()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -213,39 +223,8 @@ class PreviewMediaViewController: UIViewController {
     
     let loadingViewController = LoadingViewController(hudText: "Sending")
     
-    fileprivate func compressVideo(_ url: URL, completion: @escaping (URL) -> ()) {
-        //messageVideoURL = url.absoluteString
-        
-        // Get source video
-        let videoToCompress = url
-        
-        // Declare destination path and remove anything exists in it
-        let destinationPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("compressed.mp4")
-        try? FileManager.default.removeItem(at: destinationPath)
-        
-        // Compress
-        let cancelable = compressh264VideoInBackground(
-            videoToCompress: videoToCompress,
-            destinationPath: destinationPath,
-            size: nil, // nil preserves original,
-            
-            compressionTransform: .keepSame,
-            compressionConfig: .defaultConfig,
-            completionHandler: completion,
-            errorHandler: { e in
-                print("Error: ", e)
-            },
-            cancelHandler: {
-                print("Canceled.")
-            }
-            // To cancel compression, set cancel flag to true and wait for handler invoke
-        )
-    }
-    
     func generateThumbnail(for asset: AVAsset) -> UIImage? {
         
-//        let vidURL = NSURL(fileURLWithPath:filePathLocal as String)
-//        let asset = AVURLAsset(url: vidURL as URL)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         
@@ -263,22 +242,6 @@ class PreviewMediaViewController: UIViewController {
         
     }
     
-    func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
-        let urlAsset = AVURLAsset(url: inputURL, options: nil)
-        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetLowQuality) else {
-            handler(nil)
-            
-            return
-        }
-        
-        exportSession.outputURL = outputURL
-        exportSession.outputFileType = AVFileType.mov
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.exportAsynchronously { () -> Void in
-            handler(exportSession)
-        }
-    }
-    
     @objc func sendButtonTapped(_ sender: UIButton) {
         
         self.add(loadingViewController)
@@ -287,17 +250,17 @@ class PreviewMediaViewController: UIViewController {
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
         
+        chat?.status = .sending
+        
         var messageCaption: String? = nil
         var mediaData: Data? = nil
         var messageThumbnailData: Data? = nil
-        
-        
         
         if captionTextView.text != "", let caption = captionTextView.text, let image = image {
             messageCaption = caption
             let processor = ImageProcessor()
             let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
-            mediaData = image.jpegData(compressionQuality: Compression.quality)
+            mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
             //sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
             self.dismiss(animated: false)
@@ -315,7 +278,7 @@ class PreviewMediaViewController: UIViewController {
             }
             
         } else if let image = image {
-            mediaData = image.jpegData(compressionQuality: Compression.quality)
+            mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
             //sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
             self.dismiss(animated: false)
@@ -359,120 +322,60 @@ class PreviewMediaViewController: UIViewController {
             merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
                 guard let url = url else { return }
                 
-                do {
-                    guard let mediaData = try? Data(contentsOf: url) else { return }
-                    //self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
-                    self.dismiss(animated: false)
-                    self.presentingViewController?.dismiss(animated: false) {
-                        let dbs = DatabaseService()
-                        dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
-                            if let error = error {
-                                print(error)
-                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                hud.textLabel.text = error.localizedDescription
-                                hud.show(in: self.view)
-                            }
-                            print("Sent from DataBaseService")
-                        })
+                let videoData = try! Data(contentsOf: url)
+                print("File size before compression: \(Double(videoData.count / 1048576)) mb")
+ 
+               // let compressedURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
+                
+                Compressor.compressVideo(inputURL: url, handler: { (exportSession) in
+                    guard let session = exportSession else {
+                        return
                     }
-                    print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
-                } catch let error {
-                    print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-                }
+
+                    switch session.status {
+                    case .unknown:
+                        break
+                    case .waiting:
+                        break
+                    case .exporting:
+                        break
+                    case .completed:
+                        do {
+                            guard let mediaData = try? Data(contentsOf: session.outputURL!) else { return }
+
+                            self.dismiss(animated: false)
+                            self.presentingViewController?.dismiss(animated: false) {
+                                let dbs = DatabaseService()
+                                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                                    if let error = error {
+                                        print(error)
+                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                        hud.textLabel.text = error.localizedDescription
+                                        hud.show(in: self.view)
+                                    }
+                                    print("Sent from DataBaseService")
+                                })
+                            }
+                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
+                        } catch let error {
+                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                        }
+
+                    case .failed:
+                        self.loadingViewController.remove()
+                        break
+                    case .cancelled:
+                        break
+                    }
+                })
                 
-                
-//                self.compressVideo(inputURL: url, outputURL: url, handler: { (exportSession) in
-//                    guard let session = exportSession else {
-//                        return
-//                    }
-//                    
-//                    switch session.status {
-//                    case .unknown:
-//                        break
-//                    case .waiting:
-//                        break
-//                    case .exporting:
-//                        break
-//                    case .completed:
-//                        do {
-//                            guard let mediaData = try? Data(contentsOf: url) else { return }
-//                            //self.sendMessage(currentUser, caption, .video, friend, mediaData, messageThumbnailData)
-//                            self.dismiss(animated: false)
-//                            self.presentingViewController?.dismiss(animated: false) {
-//                                let dbs = DatabaseService()
-//                                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
-//                                    if let error = error {
-//                                        print(error)
-//                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                                        hud.textLabel.text = error.localizedDescription
-//                                        hud.show(in: self.view)
-//                                    }
-//                                    print("Sent from DataBaseService")
-//                                })
-//                            }
-//                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
-//                        } catch let error {
-//                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-//                        }
-// 
-//                    case .failed:
-//                        self.loadingViewController.remove()
-//                        break
-//                    case .cancelled:
-//                        break
-//                    }
-//                })
-                    
             }) { (progress) in
                 print(progress)
             }
         }
         
     }
-    
-    private func saveImageToFirebase(data: Data, for message: Message, completion: @escaping ErrorCompletion) {
-        let filename = UUID().uuidString
-        let ref = Storage.storage().reference(withPath: "/images/\(filename)")
-        
-        ref.putData(data, metadata: nil) { (_, error) in
-            if let error = error {
-                completion(error)
-                return
-            }
-            
-            ref.downloadURL(completion: { (url, error) in
-                if let error = error {
-                    completion(error)
-                    return
-                }
-                let imageUrl = url?.absoluteString ?? ""
-                
-                message.mediaURL = imageUrl
-                MessageController.shared.messages.append(message)
-                self.dismiss(animated: false, completion: nil)
-                self.presentingViewController?.dismiss(animated: false) {
-                    DispatchQueue.main.async {
-                        
-                        message.status = .delivered
-                    }
-                }
-                self.saveInfoToFirestore(message: message, completion: completion)
-            })
-        }
-    }
-    
-    private func saveInfoToFirestore(message: Message, completion: @escaping ErrorCompletion) {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let messageData = message.dictionary()
-        Firestore.firestore().collection("messages").document(uid).setData(messageData) { (error) in
-            if let error = error {
-                completion(error)
-                return
-            }
-            completion(nil)
-        }
-    }
-    
+
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
         if self.player != nil {
             self.player!.seek(to: CMTime.zero)
@@ -480,11 +383,11 @@ class PreviewMediaViewController: UIViewController {
         }
     }
     
-    @objc func addCaptionButton(_ sender: UIButton) {
+    @objc private  func addCaptionButton(_ sender: UIButton) {
         handleCaptionResponder()
     }
     
-    @objc func captionDragGestureDragged(_ recognizer: UIPanGestureRecognizer) {
+    @objc private func captionDragGestureDragged(_ recognizer: UIPanGestureRecognizer) {
         if captionCanBeDragged {
             let translation = recognizer.translation(in: self.view)
             let height = UIScreen.main.bounds.height
@@ -496,18 +399,26 @@ class PreviewMediaViewController: UIViewController {
         }
     }
     
-    @objc func screenTapped(_ sender: UITapGestureRecognizer) {
+    @objc private func screenTapped(_ sender: UITapGestureRecognizer) {
         handleCaptionResponder()
     }
     
-    @objc func resignCaptionEditButtonTapped(_ sender: UIButton) {
+    @objc private func resignCaptionEditButtonTapped(_ sender: UIButton) {
         handleCaptionResponder()
+    }
+    
+    @objc private func toggleVideoSound() {
+        player?.isMuted = !player!.isMuted
+        
+        let image = player!.isMuted ? #imageLiteral(resourceName: "icons8-mute_filled") : #imageLiteral(resourceName: "icons8-room_sound_filled")
+        toggleVideoSoundButton.setImage(image, for: .normal)
     }
     
     func handleCaptionResponder() {
         addCaptionButton.pop()
         // Caption Active
         if captionIsInSuperview {
+            
             if captionTextView.text != "" && captionCanBeDragged {
                 captionTextView.becomeFirstResponder()
                 dimView.isHidden = false
@@ -534,6 +445,7 @@ class PreviewMediaViewController: UIViewController {
         }
         // Caption Not Active
         else {
+            
             captionTextView.becomeFirstResponder()
             captionTextView.isHidden = false
             dimView.isHidden = false
@@ -542,22 +454,21 @@ class PreviewMediaViewController: UIViewController {
             captionIsInSuperview = true
         }
     }
-    
-    private func sendMessage(_ message: Message) {
-        
-    }
-    
-
 }
 
 // MARK: - UI
 private extension PreviewMediaViewController {
     func updateView() {
-        view.addSubviews(dimView, captionTextView, cancelButton, resignCaptionEditButton, addCaptionButton, sendView)
+        view.addSubviews([dimView, captionTextView, cancelButton, resignCaptionEditButton, addCaptionButton, sendView, toggleVideoSoundButton])
         view.addGestureRecognizer(addTextTapGesture)
+        
+        if player != nil {
+            toggleVideoSoundButton.isHidden = false
+        }
+        
         setupConstraints()
         
-        UITextField.appearance().tintColor = .white
+//        UITextField.appearance().tintColor = .white
     }
     
     func setupConstraints() {
@@ -573,6 +484,8 @@ private extension PreviewMediaViewController {
         captionTextView.anchorCenterYToSuperview()
         
         addCaptionButton.anchor(view.topAnchor, left: nil, bottom: nil, right: view.rightAnchor, topConstant: 24, leftConstant: 0, bottomConstant: 0, rightConstant: 16, widthConstant: buttonSize, heightConstant: buttonSize)
+        
+        toggleVideoSoundButton.anchor(view.topAnchor, left: nil, bottom: nil, right: addCaptionButton.leftAnchor, topConstant: 24, leftConstant: 0, bottomConstant: 0, rightConstant: 8, widthConstant: buttonSize, heightConstant: buttonSize)
         
         sendView.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 64)
         

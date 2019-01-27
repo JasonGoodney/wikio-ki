@@ -10,11 +10,44 @@ import Foundation
 import FirebaseFirestore
 
 extension DatabaseService {
+    
+    // MARK: - Send Request
+    func sendFriendRequest(to user: User, completion: @escaping (AddFriendState?, Error?) -> Void) {
+        guard let currentUser = UserController.shared.currentUser else { return }
+        let addFriendState: AddFriendState = .requested
+//        let friendRequestData: [String: Any] = ["requestedBy": currentUser.uid]
+        let friendRequestData: [String: Any] = [currentUser.uid: true]
+        Firestore.firestore().collection(DatabaseService.Collection.users)
+            .document(user.uid).collection(DatabaseService.Collection.friendRequests)
+            .addDocument(data: friendRequestData) { (error) in
+                if let error = error {
+                    print(error)
+                    completion(nil, error)
+                    return
+                }
+                
+                print("\(user.username) has a friend request from \(currentUser.username)")
+                completion(addFriendState, nil)
+        }
+        
+        let sentRequestData: [String: Any] = ["sentTo": user.uid]
+        Firestore.firestore().collection(DatabaseService.Collection.users)
+            .document(currentUser.uid).collection(DatabaseService.Collection.sentRequests)
+            .document(user.uid).setData(sentRequestData, merge: true) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                print("\(currentUser.username) sent request to \(user.username)")
+
+                completion(addFriendState, nil)
+        }
+    }
+    
     // MARK: - Accept Request
     func acceptFriendRequest(from user: User, completion: @escaping ErrorCompletion) {
-//        let hud = JGProgressHUD(style: .dark)
-//        hud.textLabel.text = "Accepting"
-//        hud.show(in: view)
+
         guard let currentUser = UserController.shared.currentUser else { return }
         
         let chat = Chat(memberUids: [currentUser.uid, user.uid], lastMessageSent: "", lastSenderUid: "")
@@ -74,19 +107,42 @@ extension DatabaseService {
         }
     }
     
-    private func removeFriendRequest(to: User, from: User, completion: @escaping ErrorCompletion) {
-        Firestore.firestore().collection(DatabaseService.Collection.users).document(to.uid).collection(DatabaseService.Collection.friendRequests).document(from.uid).delete { (error) in
+    func removeFriendRequest(to: User, from: User, completion: @escaping ErrorCompletion) {
+//        Firestore.firestore().collection(DatabaseService.Collection.users).document(to.uid).collection(DatabaseService.Collection.friendRequests).document(from.uid).delete { (error) in
+//            if let error = error {
+//                print(error)
+//                completion(error)
+//                return
+//            }
+//            print("Removed request to \(to.uid)")
+//            completion(nil)
+//        }
+        Firestore.firestore().collection(DatabaseService.Collection.users).document(to.uid).collection(DatabaseService.Collection.friendRequests).getDocuments { (snapshot, error) in
             if let error = error {
                 print(error)
                 completion(error)
                 return
             }
-            print("Removed request to \(to.uid)")
-            completion(nil)
+            
+            guard let docs = snapshot?.documents else { return }
+            let friendRequestToDelete = docs.first(where: { (doc) -> Bool in
+                let friendRequest = doc.data() as! [String: Bool]
+                return friendRequest.keys.first! == from.uid
+            })
+            
+            friendRequestToDelete?.reference.delete(completion: { (error) in
+                if let error = error {
+                    print(error)
+                    completion(error)
+                    return
+                }
+                print("Removed request to \(to.uid)")
+                completion(nil)
+            })
         }
     }
     
-    private func removeSentRequest(from: User, to: User, completion: @escaping ErrorCompletion) {
+    func removeSentRequest(from: User, to: User, completion: @escaping ErrorCompletion) {
         Firestore.firestore()
             .collection(DatabaseService.Collection.users).document(from.uid)
             .collection(DatabaseService.Collection.sentRequests).document(to.uid).delete { (error) in

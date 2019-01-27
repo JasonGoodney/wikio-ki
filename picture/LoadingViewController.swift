@@ -13,7 +13,10 @@ class LoadingViewController: UIViewController {
 
     lazy var hud = JGProgressHUD(style: .dark)
     
-    init(hudText: String? = nil) {
+    private let withHud: Bool
+    
+    init(withHud: Bool = true, hudText: String? = nil) {
+        self.withHud = withHud
         super.init(nibName: nil, bundle: nil)
         self.hud.textLabel.text = hudText
     }
@@ -25,8 +28,8 @@ class LoadingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
+        hud.interactionType = JGProgressHUDInteractionType.blockNoTouches
+
         view.backgroundColor = .clear
 
         let blurEffect = UIBlurEffect(style: .dark)
@@ -41,11 +44,12 @@ class LoadingViewController: UIViewController {
 
         blurEffectView.contentView.addSubview(vibrancyEffectView)
         
-        DispatchQueue.main.async {
-            self.hud.show(in: self.view)
-//            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        if withHud {
+            DispatchQueue.main.async {
+                self.hud.show(in: self.view)
+    //            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+            }
         }
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {

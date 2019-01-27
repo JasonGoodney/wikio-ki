@@ -11,6 +11,8 @@ import SwiftyCam
 
 class CameraViewController: SwiftyCamViewController {
 
+    private let blurViewController = LoadingViewController(withHud: false)
+    
     @IBOutlet weak var captureButton: SwiftyRecordButton!
     @IBOutlet weak var flashButton: PopButton!
     @IBOutlet weak var flipCameraButton: PopButton!
@@ -60,11 +62,20 @@ class CameraViewController: SwiftyCamViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         showButtons()
+        
+        if chat != nil && chat!.status != .sending {
+            blurViewController.remove()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         captureButton.delegate = self
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -191,6 +202,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         let newVC = PreviewMediaViewController(image: photo)
         newVC.friend = friend
         newVC.chat = chat
+        add(blurViewController)
         self.present(newVC, animated: false, completion: nil)
     }
     
@@ -212,6 +224,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         let newVC = PreviewMediaViewController(videoURL: url)
         newVC.friend = friend
         newVC.chat = chat
+        add(blurViewController)
         self.present(newVC, animated: false, completion: nil)
     }
     

@@ -26,6 +26,7 @@ extension DatabaseService {
         chat.lastSenderUid = currentUser.uid
         chat.isNewFriendship = false
         chat.isSending = true
+        chat.status = .sending
         chat.lastChatUpdateTimestamp = Date().timeIntervalSince1970
         chat.lastMessageSentType = message.messageType
         
@@ -60,8 +61,10 @@ extension DatabaseService {
                             completion(error)
                             return
                         }
+                       chat.status = .delivered
                         dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: [
                             Chat.Keys.isSending: false,
+                            Chat.Keys.status: chat.status.databaseValue(),
                             Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970
                             ], completion: { (error) in
                                 if let error = error {

@@ -13,8 +13,32 @@ struct MB {
 }
 
 struct Compression {
-    static let quality: CGFloat = 0.5
+    static let videoBitrate = 1024 * 4800
+    static let videoQuality = AVAssetExportPresetMediumQuality
+    static let photoQuality: CGFloat = 0.5
     static let thumbnailQuality: CGFloat = 0.1
+}
+
+struct Compressor {
+    static func compressVideo(inputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
+        
+        let outputURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
+        
+        let urlAsset = AVURLAsset(url: inputURL, options: nil)
+        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: Compression.videoQuality) else {
+            handler(nil)
+            
+            return
+        }
+        
+        exportSession.outputURL = outputURL
+        exportSession.outputFileType = AVFileType.mov
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.exportAsynchronously { () -> Void in
+            handler(exportSession)
+            try? FileManager.default.removeItem(at: outputURL)
+        }
+    }
 }
 
 struct VideoResolution {
@@ -78,11 +102,11 @@ struct CompressionConfig {
     let audioBitrate: Int
     
     static let defaultConfig = CompressionConfig(
-        videoBitrate: 1024 * 750,
+        videoBitrate: Compression.videoBitrate,
         videomaxKeyFrameInterval: 30,
         avVideoProfileLevel: AVVideoProfileLevelH264High41,
         audioSampleRate: 22050,
-        audioBitrate: 80000
+        audioBitrate: 180000
     )
 }
 

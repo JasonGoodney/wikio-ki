@@ -9,9 +9,9 @@
 import Foundation
 
 enum AddFriendState: String {
-    case add = "+ Add"
+    case add = "Add"
     case added = "Added"
     case accepted = "Friends"
-    case requested = "+ Accept"
+    case requested = "Accept"
     case blocked = "Blocked"
 }

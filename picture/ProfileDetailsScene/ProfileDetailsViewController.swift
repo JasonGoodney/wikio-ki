@@ -18,14 +18,30 @@ enum ProfileDetailsType: String {
     case removeFriend
 }
 
+protocol PassBackAddFriendStateDelegate: class {
+    func passBack(from viewController: UIViewController)
+}
+
 class ProfileDetailsViewController: UIViewController {
 
-    private var user: User
-    private var isFriend: Bool {
-        return addFriendState == .accepted
+    weak var delegate: PassBackAddFriendStateDelegate?
+    
+    var passBackUser: User {
+        return user
     }
+    
+    var passBackAddFriendState: AddFriendState {
+        return addFriendState
+    }
+    
+    private var user: User
+    private var isFriend: Bool = false
     private var isBestFriend: Bool
-    private var addFriendState: AddFriendState
+    private var addFriendState: AddFriendState {
+        didSet {
+            isFriend = addFriendState == .accepted
+        }
+    }
     
     private typealias SectionInfo = (title: String, value: String, type: ProfileDetailsType)
     private let sectionHeaders: [String] = ["", "", "Privacy & Support"]
@@ -76,6 +92,7 @@ class ProfileDetailsViewController: UIViewController {
         
         addFriendButton.anchorCenterXToSuperview()
         addFriendButton.anchor(top: usernameLabel.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
+        
         return header
     }()
     
@@ -112,38 +129,71 @@ class ProfileDetailsViewController: UIViewController {
     }
     
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
-        self.navigationController?.navigationBar.shadowImage = nil
-        self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.navigationBar.barTintColor = nil
-        self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
+        
+    }
+    
+    override func willMove(toParent parent: UIViewController?) {
+        super.willMove(toParent: parent)
+        if (parent == nil) {
+            delegate?.passBack(from: self)
+        }
     }
 
     @objc private func addFriendButtonTapped() {
         let dbs = DatabaseService()
         switch addFriendState {
-        case .blocked:
-            print("Will unblock user")
-            defaultAlert(alertTitle: "Unblock \(user.username)?", actionTitle: "Unblock") { (unblocked) in
-                if unblocked {
-                    dbs.unblock(user: self.user, completion: { (error) in
-                        if let error = error {
-                            print(error)
-                            return
-                        }
-                        print("\(self.user.username) unblocked")
-                        DispatchQueue.main.async {
-                            self.sectionInfoDetails[1][0] = (title: "Block", value: "", type: .block)
-                            self.tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
-                        }
-                    })
+        case .add:
+            addFriendButton.loadingIndicator(true, for: addFriendState)
+            dbs.sendFriendRequest(to: user) { (state, error) in
+                if let error = error {
+                    print(error)
+                    return
                 }
+                self.updateButton(forAddFriendState: .added)
             }
-        default:
-            print("Tapped addfriendbutton")
+        case .added:
+            print("Removing friend request sent to \(user.username)")
+            dbs.removeFriendRequest(to: user, from: UserController.shared.currentUser!) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                print("Removed friend request to \(self.user.username)")
+            }
+
+            dbs.removeSentRequest(from: UserController.shared.currentUser!, to: user) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                print("Removed friend request by me")
+            }
+            
+            DispatchQueue.main.async {
+                self.updateButton(forAddFriendState: .add)
+            }
+        case .requested:
+            addFriendButton.loadingIndicator(true, for: addFriendState)
+            dbs.acceptFriendRequest(from: user) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                self.updateButton(forAddFriendState: .accepted)
+                
+                self.tableView.reloadData()
+                print(UserController.shared.currentUser!.username, "and", self.user.username, "are friends!")
+            }
+        case .accepted:
+            print("Message start new message with user \(user.uid)")
+        case .blocked:
+            print("Alert to unblock user")
         }
     }
 }
@@ -158,9 +208,16 @@ private extension ProfileDetailsViewController {
     }
     
     func updateButton(forAddFriendState state: AddFriendState) {
-        
-        addFriendButton.setTitle(state.rawValue, for: .normal)
+        addFriendButton.removeLoadingIndicator()
+        if state == .add || state == .requested {
+            addFriendButton.textLabel.text = "+ " + state.rawValue
+        } else {
+            
+            addFriendButton.textLabel.text = state.rawValue
+        }
         addFriendButton.addFriendState = state
+        self.addFriendState = state
+        
     }
     
     func deselectCell() {

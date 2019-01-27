@@ -35,6 +35,8 @@ class FriendsListViewController: UIViewController {
     
     private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "FRIENDS", "No friends :/\n\nAdd some :)"]
     private let sectionHeaderHeight: CGFloat = 50
+    private let goToAddFriendCellHeight: CGFloat = 120
+    private let goToAddFriendSectionHeight: CGFloat = 80
     
     // MARK: - Subviews
     private var hud = JGProgressHUD(style: .dark)
@@ -125,11 +127,25 @@ class FriendsListViewController: UIViewController {
                         
                         guard let docChanges = snapshot?.documentChanges else { return }
                         
-                        docChanges.forEach({ (diff) in
+                        // New requests are ones that have not been seen ([uid: true]) in Firebase
+                        let newRequests = docChanges.filter({ (change) -> Bool in
+                            let data = change.document.data() as! [String: Bool]
+                            return data.values.first == true
+                        })
+                        
+                        if newRequests.count == 0 {
+                            self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate), for: .normal)
+                            self.addFriendButton.tintColor = .black
+                            return
+                        }
+                        
+                        newRequests.forEach({ (diff) in
                             if diff.type == .added {
-                                self.addFriendButton.pop()
-                                self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-add"), for: .normal)
-                                self.addFriendButton.tintColor = WKTheme.buttonBlue
+                                if self.addFriendButton.imageView?.image != #imageLiteral(resourceName: "icons8-add") {
+                                    self.addFriendButton.pop()
+                                    self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-add"), for: .normal)
+                                    self.addFriendButton.tintColor = WKTheme.buttonBlue
+                                }
                                 return
                             } else if diff.type == .removed {
                                 self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate), for: .normal)
@@ -534,41 +550,37 @@ extension FriendsListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        return indexPath.section == 3 ? goToAddFriendCellHeight : 80
     }
+    
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0,
                                                         width: tableView.frame.width,
-                                                        height: section == 3 ? 80 : sectionHeaderHeight))
+                                                        height: section == 3 ? goToAddFriendSectionHeight : sectionHeaderHeight))
         
         let label = UILabel()
         label.frame = headerView.frame
         label.textAlignment = .center
-        
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.textColor = #colorLiteral(red: 0.7137254902, green: 0.7568627451, blue: 0.8, alpha: 1)
         
         switch section {
         case 0 where UserController.shared.bestFriendsChats.count > 0:
             label.text = sectionHeaders[section]
-            headerView.addSubview(label)
         case 1 where UserController.shared.recentChatsWithFriends.count > 0:
             label.text = sectionHeaders[section]
-            headerView.addSubview(label)
         case 2 where UserController.shared.allChatsWithFriends.count > 0:
             label.text = sectionHeaders[section]
-            headerView.addSubview(label)
         case 3 where UserController.shared.allChatsWithFriends.isEmpty:
             label.text = sectionHeaders[section]
             label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
             label.textColor = WKTheme.darkGray
             label.numberOfLines = 0
-            headerView.addSubview(label)
         default:
             print("SECTION ERROR 🤶\(#function)")
         }
-
+        headerView.addSubview(label)
         return headerView
     }
     
@@ -581,10 +593,18 @@ extension FriendsListViewController: UITableViewDelegate {
         case 2 where !UserController.shared.allChatsWithFriends.isEmpty:
             return sectionHeaderHeight
         case 3 where UserController.shared.allChatsWithFriends.isEmpty:
-            return 80
+            return goToAddFriendSectionHeight
         default:
             return 0
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
     }
 }
 

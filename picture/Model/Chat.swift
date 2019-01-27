@@ -26,9 +26,9 @@ class Chat {
     var isOpened: Bool {
         didSet {
             if isOpened {
-            let openedByUid = memberUids.first(where: { $0 != lastSenderUid })!
-            let unreadCount = unread?[openedByUid]
-            unread?[openedByUid] = unreadCount! > 0 ? unreadCount! - 1 : 0
+                let openedByUid = memberUids.first(where: { $0 != lastSenderUid })!
+                let unreadCount = unread?[openedByUid]
+                unread?[openedByUid] = unreadCount! > 0 ? unreadCount! - 1 : 0
             }
         }
     }
@@ -36,7 +36,9 @@ class Chat {
     var areFriends: Bool
     var areMutualBestFriends: Bool
     var unread: [String: Int]?
+    var membersActiveInChat: [String: Bool]?
     var isSending: Bool
+    var status: MessageStatus
     
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }
@@ -56,6 +58,7 @@ class Chat {
         static let areMutualBestFriends = "areMutualBestFriends"
         static let unread = "unread"
         static let isSending = "isSending"
+        static let status = "status"
     }
     
     init(dictionary: [String: Any]) {
@@ -78,10 +81,24 @@ class Chat {
         } else {
             self.lastMessageSentType = .none
         }
+        
+        self.status = .none
+        
+        if let statusString = dictionary[Keys.status] as? String {
+            if statusString == MessageStatus.sending.databaseValue() {
+                self.status = .sending
+            } else if statusString == MessageStatus.delivered.databaseValue() {
+                self.status = .delivered
+            } else if statusString == MessageStatus.failed.databaseValue() {
+                self.status = .failed
+            } else if statusString == MessageStatus.opened.databaseValue() {
+                self.status = .opened
+            }
+        }
     }
     
     init(uid: String = UUID().uuidString, memberUids: [String], lastMessageSent: String, lastMessageSentType: MessageType = .none,
-         lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true, areMutualBestFriends: Bool = false, isSending: Bool = false) {
+         lastChatUpdateTimestamp: TimeInterval = Date().timeIntervalSince1970, lastSenderUid: String, isOpened: Bool = false, isNewFriendship: Bool = true, areFriends: Bool = true, areMutualBestFriends: Bool = false, isSending: Bool = false, status: MessageStatus = .none) {
         self.uid = uid
         self.memberUids = memberUids
         self.lastMessageSent = lastMessageSent
@@ -93,6 +110,7 @@ class Chat {
         self.areFriends = areFriends
         self.areMutualBestFriends = areMutualBestFriends
         self.isSending = isSending
+        self.status = status
     }
     
     func dictionary() -> [String: Any] {
@@ -108,7 +126,8 @@ class Chat {
             Keys.areFriends: areFriends,
             Keys.areMutualBestFriends: areMutualBestFriends,
             Keys.unread: unread,
-            Keys.isSending: isSending
+            Keys.isSending: isSending,
+            Keys.status: status.databaseValue(),
         ]
         
         return dict

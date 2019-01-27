@@ -35,6 +35,7 @@
 		D748910021BC88A9005AAF6B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D74890FF21BC88A9005AAF6B /* GoogleService-Info.plist */; };
 		D748910321BC90D0005AAF6B /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D748910221BC90D0005AAF6B /* AuthenticationServices.framework */; };
 		D748910521BC93AF005AAF6B /* apple-app-site-association in Resources */ = {isa = PBXBuildFile; fileRef = D748910421BC93AF005AAF6B /* apple-app-site-association */; };
+		D74B71EE21FD3F65004C994A /* SendingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */; };
 		D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */; };
 		D74F7E2621D06AD500B5EF28 /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */; };
 		D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */; };
@@ -134,6 +135,7 @@
 		D748910121BC90B3005AAF6B /* picture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = picture.entitlements; sourceTree = "<group>"; };
 		D748910221BC90D0005AAF6B /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		D748910421BC93AF005AAF6B /* apple-app-site-association */ = {isa = PBXFileReference; lastKnownFileType = text; path = "apple-app-site-association"; sourceTree = "<group>"; };
+		D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicatorView.swift; sourceTree = "<group>"; };
 		D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitleLabel.swift; sourceTree = "<group>"; };
@@ -333,19 +335,19 @@
 				D73B8AF321C80E4B00DD4CA4 /* Processor */,
 				D7643B4C21DD10F800ACE26F /* StorageService */,
 				D7643B4521DD0E8B00ACE26F /* DatabaseService */,
-				D72D793121D14A3000FB5327 /* AddFriendScene */,
 				D778E69221CDDC36005C6C96 /* Views */,
 				D73B8AEF21C72A1000DD4CA4 /* Model */,
 				D778E68F21CDD784005C6C96 /* ViewModel */,
 				D7591F1521C2DF1800B3EAAD /* CameraScene */,
-				D7591F0E21C2CD7A00B3EAAD /* MessagesScene */,
 				D7591F0521C2C1BC00B3EAAD /* FriendsScene */,
+				D7591F0E21C2CD7A00B3EAAD /* MessagesScene */,
+				D72D793121D14A3000FB5327 /* AddFriendScene */,
 				D73B8AF021C72A2200DD4CA4 /* AuthScene */,
 				D74F7E2221D0682900B5EF28 /* SettingsScene */,
+				D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */,
 				D74890F121BC86DC005AAF6B /* Main.storyboard */,
 				D7591F1321C2D6D900B3EAAD /* NavigationController.swift */,
 				D7F8992B21F250E500020A68 /* LoadingViewController.swift */,
-				D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */,
 				D7591F0D21C2C27C00B3EAAD /* Extensions */,
 				D7591F0821C2C23800B3EAAD /* Protocols */,
 				D74890F421BC86DE005AAF6B /* Assets.xcassets */,
@@ -472,6 +474,7 @@
 				D72D792D21D1399800FB5327 /* OpenCameraToolbar.swift */,
 				D7869FB921DE6A5700A1B863 /* ProfileImageButton.swift */,
 				D7F6A35521EE4487002DDB6D /* PopButton.swift */,
+				D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -702,6 +705,7 @@
 				D778E68E21CDD77D005C6C96 /* Bindable.swift in Sources */,
 				D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */,
 				D7D0007721E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift in Sources */,
+				D74B71EE21FD3F65004C994A /* SendingIndicatorView.swift in Sources */,
 				D7591F1F21C3371B00B3EAAD /* MessagesCell.swift in Sources */,
 				D786F67821D85F74003DA3C6 /* LoginFlowHandler.swift in Sources */,
 				D72D793021D13ECD00FB5327 /* UserController.swift in Sources */,

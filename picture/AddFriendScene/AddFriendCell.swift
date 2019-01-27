@@ -8,6 +8,7 @@
 
 import UIKit
 import SDWebImage
+import NVActivityIndicatorView
 
 protocol AddFriendDelegate: class {
     func didTapAddFriendButton(cell: AddFriendCell, user: User, state: AddFriendState)
@@ -23,12 +24,13 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         return label
     }()
     
     let profileImageView = ProfileImageButton(height: 44, width: 44, enabled: true)
     
-    private lazy var addFriendButton = AddFriendButton(title: "+ Add", addFriendState: .add)
+    lazy var addFriendButton = AddFriendButton(title: "+ Add", addFriendState: .add)
     
     private lazy var cancelReceivedRequestButton: PopButton = {
         let button = PopButton()
@@ -59,14 +61,20 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
     }
     
     func updateView(forAddFriendState state: AddFriendState) {
-        
+        addFriendButton.removeLoadingIndicator()
         cancelReceivedRequestButton.isHidden = state == .requested ? false : true
-        
-        addFriendButton.setTitle(state.rawValue, for: .normal)
+        if state == .add || state == .requested {
+            //addFriendButton.setTitle("+ " + state.rawValue, for: .normal)
+            addFriendButton.textLabel.text = "+ " + state.rawValue
+        } else {
+            //addFriendButton.setTitle(state.rawValue, for: .normal)
+            addFriendButton.textLabel.text = state.rawValue
+        }
         addFriendState = state
 
         if state == .accepted {
             addFriendButton.addFriendState = state
+            addFriendButton.isUserInteractionEnabled = false
         }
     }
     
@@ -85,6 +93,8 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
 // MARK: - UI
 private extension AddFriendCell {
     func setupLayout() {
+        addFriendButton.removeLoadingIndicator()
+        
         selectionStyle = .none
         
         let stackView = UIStackView(arrangedSubviews: [addFriendButton, cancelReceivedRequestButton])
@@ -95,16 +105,13 @@ private extension AddFriendCell {
         
         profileImageView.anchorCenterYToSuperview()
         usernameLabel.anchorCenterYToSuperview()
-//        addFriendButton.anchorCenterYToSuperview()
-//        cancelReceivedRequestButton.anchorCenterYToSuperview()
         stackView.anchorCenterYToSuperview()
+        
         
         profileImageView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0))
         
         usernameLabel.anchor(top: nil, leading: profileImageView.trailingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0))
-//        cancelReceivedRequestButton.anchor(top: nil, leading: addFriendButton.trailingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
-//        addFriendButton.anchor(top: nil, leading: nil, bottom: nil, trailing: cancelReceivedRequestButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
-        
+
         stackView.anchor(top: nil, leading: nil, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
         
         updateView(forAddFriendState: .add)

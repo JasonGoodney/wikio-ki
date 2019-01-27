@@ -7,27 +7,78 @@
 //
 
 import UIKit
+import NVActivityIndicatorView
 
 class AddFriendButton: PopButton {
     
     private let title: String
     weak var delegate: AddFriendDelegate?
-    var addFriendState: AddFriendState
+    var addFriendState: AddFriendState {
+        didSet {
+            if addFriendState == .accepted {
+                isUserInteractionEnabled = false
+            }
+        }
+    }
+    
+    private lazy var stackView: UIStackView = {
+        let view = UIStackView(arrangedSubviews: [sendingIndicatorView, plusImageView, textLabel])
+        view.spacing = 4
+        view.isUserInteractionEnabled = false
+        view.isExclusiveTouch = false
+        return view
+    }()
+    
+    private let plusImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = WKTheme.textColor
+        imageView.isUserInteractionEnabled = false
+        imageView.isExclusiveTouch = false
+        return imageView
+    }()
+    
+    private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
+    
+    let textLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        label.textColor = WKTheme.textColor
+        label.isUserInteractionEnabled = false
+        label.isExclusiveTouch = false
+        return label
+    }()
     
     init(title: String, addFriendState: AddFriendState) {
         self.title = title
         self.addFriendState = addFriendState
         super.init(frame: .zero)
         
-        setTitle(title, for: .normal)
-        setTitleColor(WKTheme.textColor, for: .normal)
-        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        textLabel.text = title
+        
+        addSubview(stackView)
+        
+        plusImageView.heightAnchor.constraint(equalToConstant: 13).isActive = true
+        plusImageView.widthAnchor.constraint(equalToConstant: 13).isActive = true
+        plusImageView.isHidden = true
+        
+        sendingIndicatorView.isUserInteractionEnabled = false
+        sendingIndicatorView.isExclusiveTouch = false
+        sendingIndicatorView.heightAnchor.constraint(equalToConstant: 13).isActive = true
+        sendingIndicatorView.widthAnchor.constraint(equalToConstant: 13).isActive = true
+        
+        sendingIndicatorView.isHidden = true
+        
+        stackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 8))
+        
+        titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         layer.borderWidth = 1
         layer.borderColor = WKTheme.textColor.cgColor
         titleEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         heightAnchor.constraint(equalToConstant: 34).isActive = true
         
         layer.cornerRadius = 17
+               
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -42,10 +93,21 @@ class AddFriendButton: PopButton {
         return desiredButtonSize
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if addFriendState == .accepted {
-            isUserInteractionEnabled = false
+    func loadingIndicator(_ show: Bool, for state: AddFriendState) {
+        
+        if show {
+            sendingIndicatorView.startAnimating()
+            sendingIndicatorView.isHidden = false
+            textLabel.text = state.rawValue
+        } else {
+            sendingIndicatorView.stopAnimating()
+            sendingIndicatorView.isHidden = true
+            textLabel.text = "+ " + state.rawValue
         }
-        super.touchesBegan(touches, with: event)
+    }
+    
+    func removeLoadingIndicator() {
+        sendingIndicatorView.isHidden = true
+        sendingIndicatorView.stopAnimating()
     }
 }

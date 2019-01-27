@@ -73,7 +73,7 @@ class MessagesViewController: UIViewController {
         let photo = UIImage(named: "IMG_1536")
         let dbs = DatabaseService()
 
-        let data = photo?.jpegData(compressionQuality: Compression.quality)
+        let data = photo?.jpegData(compressionQuality: Compression.photoQuality)
         let thumbnailData = photo?.jpegData(compressionQuality: Compression.thumbnailQuality)
         dbs.sendMessage(from: UserController.shared.currentUser!, to: friend!, chat: chat!, caption: nil, messageType: .photo, mediaData: data, thumbnailData: thumbnailData) { (error) in
             if let error = error {
@@ -227,6 +227,12 @@ class MessagesViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
+        self.navigationController?.navigationBar.shadowImage = nil
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.navigationBar.barTintColor = nil
+        self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
+        
         if let urlString = friend?.profilePhotoUrl, let url = URL(string: urlString) {
             DispatchQueue.main.async {
                 self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
@@ -329,9 +335,9 @@ private extension MessagesViewController {
         navigationItem.titleView = titleLabel
         navigationController?.navigationBar.tintColor = .black
         
-        navigationItem.rightBarButtonItems = [sendPhotoButton, UIBarButtonItem(customView: profileImageButton)]
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: profileImageButton)
         
-        navigationItem.rightBarButtonItems?[1].customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
+        navigationItem.rightBarButtonItem?.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
     }
 }
 
