@@ -23,15 +23,6 @@ class MessagesViewController: UIViewController {
     private let spacing: CGFloat = 5
     private let cellId = MessagesCell.reuseIdentifier
     private var messages: [Message] = []
-//    {
-//        didSet {
-//            DispatchQueue.main.async {
-//                self.collectionView.reloadData()
-//                self.collectionView.scrollToItem(at: IndexPath(item: self.messages.count-1, section: 0), at: UICollectionView.ScrollPosition.bottom, animated: false)
-//            }
-//        }
-//    }
-    
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()

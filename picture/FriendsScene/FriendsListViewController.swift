@@ -129,7 +129,7 @@ class FriendsListViewController: UIViewController {
                         
                         // New requests are ones that have not been seen ([uid: true]) in Firebase
                         let newRequests = docChanges.filter({ (change) -> Bool in
-                            let data = change.document.data() as! [String: Bool]
+                            guard let data = change.document.data() as? [String: Bool] else { return false }
                             return data.values.first == true
                         })
                         
@@ -284,6 +284,11 @@ class FriendsListViewController: UIViewController {
                     self.profileImageButton.isUserInteractionEnabled = true
                 })
             }
+        }
+        
+        DispatchQueue.main.async {
+            self.tableView.isHidden = false
+            self.tableView.reloadData()
         }
     }
     

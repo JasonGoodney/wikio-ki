@@ -132,6 +132,11 @@ class ProfileDetailsViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
+//        self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
+//        self.navigationController?.navigationBar.shadowImage = nil
+//        self.navigationController?.navigationBar.isTranslucent = true
+//        self.navigationController?.navigationBar.barTintColor = nil
+//        self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
         
     }
     

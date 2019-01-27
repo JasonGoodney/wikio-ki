@@ -78,6 +78,11 @@ class AddFriendViewController: UITableViewController {
         super.viewDidAppear(animated)
         view.backgroundColor = .white
         
+        self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
+        self.navigationController?.navigationBar.shadowImage = nil
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.navigationBar.barTintColor = nil
+        self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
         
     }
 
@@ -225,16 +230,17 @@ class AddFriendViewController: UITableViewController {
                         completion(error)
                         return
                     }
-                    let dbs = DatabaseService()
-                        dbs.updateDocument(doc.reference, withFields: [uid: false], completion: { (error) in
-                            if let error = error {
-                                print(error)
-                                print("Unable to update to seen (false)")
-                                completion(error)
-                                return
-                            }
-                        })
-                        
+                        if data.values.first == true {
+                            let dbs = DatabaseService()
+                            dbs.updateDocument(doc.reference, withFields: [uid: false], completion: { (error) in
+                                if let error = error {
+                                    print(error)
+                                    print("Unable to update to seen (false)")
+                                    completion(error)
+                                    return
+                                }
+                            })
+                        }
                     guard let dict = snapshot?.data() else { return }
                     let user = User(dictionary: dict)
                     self.friendRequests.append(user)

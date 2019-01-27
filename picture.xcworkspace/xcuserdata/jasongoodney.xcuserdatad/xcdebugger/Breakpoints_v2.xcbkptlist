@@ -10,13 +10,45 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AddFriendScene/AddFriendViewController.swift"
-            timestampString = "570316587.421441"
+            timestampString = "570320221.922594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "265"
-            endingLineNumber = "265"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
             landmarkName = "didTapCancelReceivedRequest(cell:user:state:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Bool) -&gt; () in picture.AddFriendViewController.didTapCancelReceivedRequest(cell: picture.AddFriendCell, user: picture.User, state: picture.AddFriendState) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/AddFriendScene/AddFriendViewController.swift"
+                  timestampString = "570320223.397043"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "271"
+                  endingLineNumber = "271"
+                  offsetFromSymbolStart = "461">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 (Swift.Bool) -&gt; () in picture.AddFriendViewController.didTapCancelReceivedRequest(cell: picture.AddFriendCell, user: picture.User, state: picture.AddFriendState) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/AddFriendScene/AddFriendViewController.swift"
+                  timestampString = "570320223.400714"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272"
+                  offsetFromSymbolStart = "31">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -26,7 +58,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/DatabaseService/DatabaseService+Friend.swift"
-            timestampString = "570316587.422263"
+            timestampString = "570320221.92308"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "128"
@@ -42,7 +74,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/DatabaseService/DatabaseService+Friend.swift"
-            timestampString = "570316587.42318"
+            timestampString = "570320221.923347"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "133"
@@ -58,7 +90,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/DatabaseService/DatabaseService+Friend.swift"
-            timestampString = "570316587.42364"
+            timestampString = "570320221.923476"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "139"
