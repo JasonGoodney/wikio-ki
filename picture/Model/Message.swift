@@ -9,7 +9,7 @@
 import UIKit
 import FirebaseFirestore
 
-enum MessageStatus: String {
+enum MessageStatus: String, Codable {
     case opened
     case delivered
     case received
@@ -26,7 +26,7 @@ enum MessageStatus: String {
     }
 }
 
-enum MessageType: String {
+enum MessageType: String, Codable {
     case photo
     case video
     case none
@@ -36,9 +36,10 @@ enum MessageType: String {
     }
 }
 
-class Message {
+class Message: Codable {
+    
     let uid: String
-    var user: User?
+    //var user: User?
     let senderUid: String
     var isOpened: Bool
     var status: MessageStatus
@@ -48,6 +49,8 @@ class Message {
     var mediaFilename: String?
     var mediaThumbnailURL: String?
     let timestamp: TimeInterval
+    
+    var mediaData: Data?
     
     enum Keys {
         static let uid = "uid"
@@ -92,23 +95,23 @@ class Message {
             }
         }
         
-        Firestore.firestore().collection(DatabaseService.Collection.users).document(senderUid).getDocument { (snapshot, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            guard let dict = snapshot?.data() else { return }
-            self.user = User(dictionary: dict)
-        }
+//        Firestore.firestore().collection(DatabaseService.Collection.users).document(senderUid).getDocument { (snapshot, error) in
+//            if let error = error {
+//                print(error)
+//                return
+//            }
+//
+//            guard let dict = snapshot?.data() else { return }
+//            self.user = User(dictionary: dict)
+//        }
     }
     
-    init(uid: String = UUID().uuidString, senderUid: String, user: User,
+    init(uid: String = UUID().uuidString, senderUid: String,
          caption: String? = nil, mediaURL: String? = nil, mediaFilename: String? = UUID().uuidString, mediaThumbnailURL: String? = nil, timestamp: TimeInterval = Date().timeIntervalSince1970,
          isOpened: Bool = false, status: MessageStatus = .none, messageType: MessageType) {
         self.uid = uid
         self.senderUid = senderUid
-        self.user = user
+//        self.user = user
         self.isOpened = isOpened
         self.status = status
         self.caption = caption
@@ -146,6 +149,59 @@ class Message {
         }
         
         return dict
+    }
+    
+    // MARK: - Codable
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        // Firebase
+        try container.encode(uid, forKey: .uid)
+        try container.encode(senderUid, forKey: .senderUid)
+        try container.encode(isOpened, forKey: .isOpened)
+        try container.encode(caption, forKey: .caption)
+        try container.encode(mediaFilename, forKey: .mediaFilename)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(messageType, forKey: .messageType)
+        try container.encode(status, forKey: .status)
+        
+        // Local media data
+        try container.encode(mediaData, forKey: .mediaData)
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case uid = "uid"
+        case senderUid = "senderUid"
+        case isOpened = "isOpened"
+        case caption = "caption"
+        case mediaURL = "mediaURL"
+        case mediaFilename = "mediaFilename"
+        case timestamp = "timestamp"
+        case messageType = "messageType"
+        case mediaThumbnailURL = "mediaThumbnailURL"
+        case status = "status"
+        
+        case mediaData = "mediaData"
+    }
+    
+    required convenience init(from decoder: Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Firebase
+        let uid: String = try container.decode(String.self, forKey: .uid)
+        let senderUid: String = try container.decode(String.self, forKey: .senderUid)
+        let isOpened: Bool = try container.decode(Bool.self, forKey: .isOpened)
+        let status: MessageStatus = try container.decode(MessageStatus.self, forKey: .status)
+        let messageType: MessageType = try container.decode(MessageType.self, forKey: .messageType)
+        let caption: String = try container.decode(String.self, forKey: .caption)
+        let mediaFilename: String = try container.decode(String.self, forKey: .mediaFilename)
+        let timestamp: TimeInterval = try container.decode(TimeInterval.self, forKey: .timestamp)
+        
+        self.init(uid: uid, senderUid: senderUid, caption: caption, mediaFilename: mediaFilename, timestamp: timestamp, isOpened: isOpened, status: status, messageType: messageType)
+        
+        // Local media data
+        self.mediaData = try container.decode(Data.self, forKey: .mediaData)
     }
 }
 

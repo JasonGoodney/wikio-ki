@@ -132,11 +132,6 @@ class ProfileDetailsViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-//        self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
-//        self.navigationController?.navigationBar.shadowImage = nil
-//        self.navigationController?.navigationBar.isTranslucent = true
-//        self.navigationController?.navigationBar.barTintColor = nil
-//        self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
         
     }
     
@@ -144,6 +139,13 @@ class ProfileDetailsViewController: UIViewController {
         super.willMove(toParent: parent)
         if (parent == nil) {
             delegate?.passBack(from: self)
+            
+            self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
+            self.navigationController?.navigationBar.shadowImage = nil
+            self.navigationController?.navigationBar.isTranslucent = true
+            self.navigationController?.navigationBar.barTintColor = nil
+            self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
+
         }
     }
 

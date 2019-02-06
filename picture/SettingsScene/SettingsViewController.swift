@@ -18,6 +18,11 @@ enum SettingsType: String {
     case email
     case profilePhoto
     case password
+    
+    case privacyPolicy
+    case termsOfService
+    case openSource
+    
     case clearCache
     case resetPassword
     case logout
@@ -29,11 +34,11 @@ enum SettingsType: String {
 class SettingsViewController: UITableViewController, LoginFlowHandler {
     
     private var cacheSizeInMB: Double {
-        return (Double(DiggerCache.downloadedFilesSize()) / MB.binarySize).rounded(.down)
+        return (Double(DiggerCache.downloadedFilesSize()) / BinarySize.MB).rounded(.down)
     }
     
     private var sdCacheSizeInMB: Double {
-        return (Double(SDImageCache.shared().getSize()) / MB.binarySize).rounded(.down)
+        return (Double(SDImageCache.shared().getSize()) / BinarySize.MB).rounded(.down)
     }
     
     private var didChangeProfilePhoto = false
@@ -43,7 +48,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         return UserController.shared.currentUser
     }
     
-    private let sectionHeaders: [String] = ["", "My Account", "Account Actions"]
+    private let sectionHeaders: [String] = ["", "My Account", "About", "Account Actions"]
     private lazy var sectionInfoDetails: [[SectionInfo]] = [
         [],
         [
@@ -51,6 +56,11 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             //(title: "UID", value: user?.uid ?? "", type: .none),
             (title: "Email", value: user?.email ?? "", type: .email),
             (title: "Password", value: "", type: .password),
+        ],
+        [
+            (title: "Privacy Policy", value: "", type: .privacyPolicy),
+            (title: "Terms of Service", value: "", type: .termsOfService),
+            (title: "Open Source Libraries", value: "", type: .openSource),
         ],
         [
             (title: "Clear Cache", value: "\(cacheSizeInMB + sdCacheSizeInMB) MB", type: .clearCache),
@@ -182,6 +192,15 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             let changePasswordVC = ChangePasswordViewController.init(navigationTitle: "Update Password", descriptionText: "To set a new password, please enter your current password first.", textFieldText: "", textFieldPlaceholder: "Current password")
             navigationController?.pushViewController(changePasswordVC, animated: true)
             
+        // MARK: - About
+        case .privacyPolicy:
+            let aboutVC = AboutViewController()
+            aboutVC.type = .privacyPolicy
+            navigationController?.pushViewController(aboutVC, animated: true)
+        case .termsOfService:
+            let aboutVC = AboutViewController()
+            aboutVC.type = .termsOfService
+            navigationController?.pushViewController(aboutVC, animated: true)
             
         // MARK: - Account Actions
         case .blocked:
@@ -197,11 +216,24 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             let resetPasswordVC = ResetPasswordViewController.init(navigationTitle: "Reset Password", descriptionText: "Enter the email associated with your\nWikio Ki account.", textFieldText: "", textFieldPlaceholder: "Confirm email")
             navigationController?.pushViewController(resetPasswordVC, animated: true)
         case .logout:
-            logoutActionSheet { (success) in
-                if success {
-                    self.handleLogout()
+            if !(Auth.auth().currentUser?.isEmailVerified)! {
+                verifyLogoutActionSheet { (logout, verify) in
+                    if logout {
+                        self.handleLogout()
+                    } else if verify {
+                        print("Verify account shit")
+                        let editEmailVC = EditEmailViewController.init(navigationTitle: "Email", descriptionText: "You can use this email address to log in,\nor for password recovery.", textFieldText: detail.value, textFieldPlaceholder: "Email address")
+                        self.navigationController?.pushViewController(editEmailVC, animated: true)
+                    }
                 }
-                
+ 
+            } else {
+                logoutActionSheet { (success) in
+                    if success {
+                        self.handleLogout()
+                    }
+                    
+                }
             }
         case .deleteAccount:
 

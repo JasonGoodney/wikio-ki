@@ -29,8 +29,8 @@ class OpenMessageView: UIView {
         return label
     }()
     
-    private let deliveredUnopened = #imageLiteral(resourceName: "forward_unopened").withRenderingMode(.alwaysTemplate)
-    private let deliveredOpened = #imageLiteral(resourceName: "forward_opened").withRenderingMode(.alwaysTemplate)
+    private let deliveredUnopened = #imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate)
+    private let deliveredOpened = #imageLiteral(resourceName: "iconfinder_send_3936856").withRenderingMode(.alwaysTemplate)
     private let receivedUnopened = #imageLiteral(resourceName: "rounded-black-square-shape").withRenderingMode(.alwaysTemplate)
     private let receivedOpened = #imageLiteral(resourceName: "check-box-empty").withRenderingMode(.alwaysTemplate)
     
@@ -80,45 +80,33 @@ class OpenMessageView: UIView {
     func configure(withMessage message: Message) {
         let captionText = message.caption == "" ? "" : ": \(message.caption!)"
         if message.status == .sending {
-            statusLabel.text = "Sending..."
-//            sendingIndicatorView.startAnimating()
-//            sendingIndicatorView.isHidden = false
-//            statusIndicator.isHidden = true
+            statusLabel.text = "Sending - Do not close 🙏"
+
             statusIndicatorView.configure(forStatus: .sending, isOpened: message.isOpened, type: message.messageType)
         } else if message.status == .delivered || message.status == .none {
-        
-//            sendingIndicatorView.stopAnimating()
-//            statusIndicator.isHidden = false
-            
+
             if message.senderUid == UserController.shared.currentUser?.uid {
                 if message.isOpened {
-//                    statusIndicator.image = deliveredOpened
+
                     statusIndicatorView.configure(forStatus: .delivered, isOpened: message.isOpened, type: message.messageType)
                     statusLabel.text = "Opened\(captionText)"
                 } else {
-//                    statusIndicator.image = deliveredUnopened
+
                     statusIndicatorView.configure(forStatus: .delivered, isOpened: message.isOpened, type: message.messageType)
                     statusLabel.text = "Delivered\(captionText)"
                 }
             } else {
                 if message.isOpened {
-//                    statusIndicator.image = receivedOpened
+
                     statusIndicatorView.configure(forStatus: .received, isOpened: message.isOpened, type: message.messageType)
                     statusLabel.text = "Opened\(captionText)"
                 } else {
-//                    statusIndicator.image = receivedUnopened
+
                     statusIndicatorView.configure(forStatus: .received, isOpened: message.isOpened, type: message.messageType)
                     statusLabel.text = "Received\(captionText)"
                 }
             }
         }
-        
-//        if message.messageType == .photo {
-//            statusIndicator.tintColor = WKTheme.photo
-//        } else {
-//            statusIndicator.tintColor = WKTheme.video
-//        }
-    
     }
 }
 

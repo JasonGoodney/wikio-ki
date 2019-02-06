@@ -31,7 +31,7 @@ class AddFriendButton: PopButton {
     
     private let plusImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate)
+        imageView.image = #imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate)
         imageView.tintColor = WKTheme.textColor
         imageView.isUserInteractionEnabled = false
         imageView.isExclusiveTouch = false

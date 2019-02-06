@@ -9,6 +9,8 @@
 import Foundation
 import FirebaseFirestore
 
+typealias UID = String
+
 class Chat {
     
     let uid: String
@@ -39,6 +41,8 @@ class Chat {
     var membersActiveInChat: [String: Bool]?
     var isSending: Bool
     var status: MessageStatus
+    
+    var latestMessage: Message?
     
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }

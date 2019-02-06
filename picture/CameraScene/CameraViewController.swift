@@ -13,12 +13,15 @@ class CameraViewController: SwiftyCamViewController {
 
     private let blurViewController = LoadingViewController(withHud: false)
     
-    @IBOutlet weak var captureButton: SwiftyRecordButton!
+    @IBOutlet weak var captureButton: RecordButton!
     @IBOutlet weak var flashButton: PopButton!
     @IBOutlet weak var flipCameraButton: PopButton!
     
     var chat: Chat?
     var friend: User?
+
+    var progressTimer : Timer!
+    var progress : CGFloat! = 0
     
     private lazy var cancelButton: PopButton = {
         let button = PopButton(type: .system)
@@ -41,9 +44,9 @@ class CameraViewController: SwiftyCamViewController {
         updateView()
         
         shouldPrompToAppSettings = true
-        maximumVideoDuration = 6.0
-        shouldUseDeviceOrientation = true
-        allowAutoRotate = true
+        maximumVideoDuration = 10.0
+        shouldUseDeviceOrientation = false
+        allowAutoRotate = false
         audioEnabled = true
         swipeToZoomInverted = true
         cameraDelegate = self
@@ -57,15 +60,21 @@ class CameraViewController: SwiftyCamViewController {
         captureButton.addShadow()
         flashButton.addShadow()
         flipCameraButton.addShadow()
+        
+//        captureButton.closeWhenFinished = false
+//        captureButton.addTarget(self, action: #selector(record), for: .touchDown)
+//        captureButton.addTarget(self, action: #selector(stop), for: UIControl.Event.touchCancel)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         showButtons()
         
-        if chat != nil && chat!.status != .sending {
+        if chat == nil || chat!.status != .sending {
             blurViewController.remove()
         }
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -76,6 +85,11 @@ class CameraViewController: SwiftyCamViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        showButtons()
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -104,8 +118,8 @@ class CameraViewController: SwiftyCamViewController {
 // MARK: - UI
 private extension CameraViewController {
     func updateView() {
-        view.addSubviews(cancelButton, sendToLabel)
-        //setupConstraints()
+        view.addSubviews([cancelButton, sendToLabel])
+        
         cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: 44, heightConstant: 44)
         
         sendToLabel.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
@@ -122,19 +136,6 @@ private extension CameraViewController {
         cancelButton.tintColor = .white
     }
     
-    func setupConstraints() {
-        captureButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 20, rightConstant: 0, widthConstant: 75, heightConstant: 75)
-        captureButton.translatesAutoresizingMaskIntoConstraints = false
-        captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        flipCameraButton.anchor(nil, left: nil, bottom: nil, right: captureButton.leftAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 50, widthConstant: 30, heightConstant: 23)
-        flipCameraButton.translatesAutoresizingMaskIntoConstraints = false
-        flipCameraButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
-        
-        flashButton.anchor(nil, left: captureButton.rightAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 50, bottomConstant: 0, rightConstant: 0, widthConstant: 18, heightConstant: 30)
-        flashButton.translatesAutoresizingMaskIntoConstraints = false
-        flashButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
-    }
 }
 
 // UI Animations
@@ -149,6 +150,7 @@ extension CameraViewController {
     }
     
     fileprivate func showButtons() {
+        
         flipCameraButton.setImage(#imageLiteral(resourceName: "icons8-switch_camera"), for: .normal)
         UIView.animate(withDuration: 0.25) {
             self.flashButton.alpha = 1.0
@@ -208,14 +210,14 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
         print("Did Begin Recording")
-        captureButton.growButton()
+        captureButton.growButton(maximumVideoDuration)
         hideButtons()
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
         print("Did finish Recording")
         captureButton.shrinkButton()
-        //showButtons()
+        
 //        swiftyCam.buttonDidEndLongPress()
         
     }
@@ -224,8 +226,11 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         let newVC = PreviewMediaViewController(videoURL: url)
         newVC.friend = friend
         newVC.chat = chat
-        add(blurViewController)
-        self.present(newVC, animated: false, completion: nil)
+        //add(blurViewController)
+        add(newVC)
+        
+
+        //self.present(newVC, animated: false, completion: nil)
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFocusAtPoint point: CGPoint) {

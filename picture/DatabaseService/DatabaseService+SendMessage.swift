@@ -119,8 +119,10 @@ import FirebaseFirestore
                 completion(nil)
             }
         }
-        
-       
+    }
+    
+    func delete(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
+        Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(Collection.messages).document(message.uid).delete(completion: completion)
     }
 }
 

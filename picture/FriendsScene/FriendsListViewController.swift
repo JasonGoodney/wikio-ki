@@ -73,7 +73,7 @@ class FriendsListViewController: UIViewController {
     
     private lazy var addFriendButton: PopButton = {
         let button = PopButton(frame: CGRect(x: 0, y: 0, width: 32, height: 32))
-        button.setImage(#imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(addFriendButtonTapped), for: .touchUpInside)
         button.layer.cornerRadius = 16
         return button
@@ -98,6 +98,10 @@ class FriendsListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let appDelegate = AppDelegate()
+        appDelegate.attemptRegisterForNotifications(UIApplication.shared)
+        
         updateView()
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
@@ -134,7 +138,7 @@ class FriendsListViewController: UIViewController {
                         })
                         
                         if newRequests.count == 0 {
-                            self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate), for: .normal)
+                            self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
                             self.addFriendButton.tintColor = .black
                             return
                         }
@@ -148,7 +152,7 @@ class FriendsListViewController: UIViewController {
                                 }
                                 return
                             } else if diff.type == .removed {
-                                self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate), for: .normal)
+                                self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
                                 self.addFriendButton.tintColor = .black
                                 return
                             }
@@ -287,8 +291,10 @@ class FriendsListViewController: UIViewController {
         }
         
         DispatchQueue.main.async {
+            if !UserController.shared.allChatsWithFriends.isEmpty{
             self.tableView.isHidden = false
             self.tableView.reloadData()
+            }
         }
     }
     
@@ -323,6 +329,7 @@ class FriendsListViewController: UIViewController {
     }
     
     @objc private func handleRefreshFriends() {
+        print("🤶\(#function)")
         beginRefresh()
         self.fetchChatsWithFriends(completion: { (error) in
             self.endRefresh()
@@ -541,6 +548,11 @@ extension FriendsListViewController: UITableViewDelegate {
             return
         }
         
+        guard let chatWithFriend = dataSource.get(at: indexPath.row) else {
+            print("Oops! That index path no longer exists")
+            return
+        }
+        
         if indexPath.section == 0 {
             friend.isBestFriend = true
         }
@@ -549,6 +561,7 @@ extension FriendsListViewController: UITableViewDelegate {
         
         messagesViewController.friend = friend
         messagesViewController.chat = chat
+        messagesViewController.chatWithFriend = chatWithFriend
         
         navigationController?.pushViewController(messagesViewController, animated: true)
     
@@ -713,6 +726,13 @@ extension FriendsListViewController {
                     }
 
                     guard let chat = chat else { print("chat does not exists"); return }
+                    
+                    dbs.fetchLatestMessage(in: chat, completion: { (message, error) in
+                        guard let message = message else { return }
+                        
+                        chat.latestMessage = message
+                        
+                    })
                     
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {

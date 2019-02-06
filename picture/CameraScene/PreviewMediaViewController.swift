@@ -5,6 +5,7 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 import JGProgressHUD
+import Photos
 
 let buttonSize: CGFloat = 36
 
@@ -34,11 +35,19 @@ class PreviewMediaViewController: UIViewController {
         return view
     }()
     
+    private let saveToCameraRollImage = #imageLiteral(resourceName: "icons8-downloading_updates").withRenderingMode(.alwaysTemplate)
+    private let cancelImage = ""
+    private let addCaptionImage = ""
+    private let resignCaptionImage = ""
+    private let soundOnImage = ""
+    private let soundOffImage = ""
+    private let sendImage = ""
+    
     private var backgroundImageView = UIImageView()
     
     lazy var cancelButton: PopButton = {
         let button = PopButton()
-        button.setImage(#imageLiteral(resourceName: "icons8-left_4").withRenderingMode(.alwaysTemplate), for: .normal) // Too Small
+        button.setImage(#imageLiteral(resourceName: "icons8-back-filled-96").withRenderingMode(.alwaysTemplate), for: .normal) // Too Small
         button.tintColor = .white
         button.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         return button
@@ -74,6 +83,7 @@ class PreviewMediaViewController: UIViewController {
         let view = UIView()
         view.backgroundColor = UIColor(white: 0, alpha: 0.5)
         view.addSubviews(sendToLabel, sendButton)
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(addMoreFriends)))
         return view
     }()
     
@@ -93,6 +103,14 @@ class PreviewMediaViewController: UIViewController {
         button.heightAnchor.constraint(equalToConstant: 56).isActive = true
         button.widthAnchor.constraint(equalToConstant: 56).isActive = true
         button.layer.cornerRadius = 28
+        return button
+    }()
+    
+    private lazy var saveToCameraRollButton: PopButton = {
+        let button = PopButton(type: .system)
+        button.setImage(saveToCameraRollImage, for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(saveToCameraRollButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -140,7 +158,7 @@ class PreviewMediaViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.gray
+        self.view.backgroundColor = UIColor.black
         
         if let videoURL = videoURL {
             configure(videoURL)
@@ -154,6 +172,7 @@ class PreviewMediaViewController: UIViewController {
         addCaptionButton.addShadow()
         resignCaptionEditButton.addShadow()
         toggleVideoSoundButton.addShadow()
+        saveToCameraRollButton.addShadow()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -208,6 +227,7 @@ class PreviewMediaViewController: UIViewController {
     
     // MARK: - Actions
     @objc func cancel() {
+        //self.remove()
         dismiss(animated: false, completion: nil)
     }
     
@@ -221,7 +241,7 @@ class PreviewMediaViewController: UIViewController {
         return image!
     }
     
-    let loadingViewController = LoadingViewController(hudText: "Sending")
+    let loadingViewController = LoadingViewController(hudText: "Sending\nDo not close 🙏")
     
     func generateThumbnail(for asset: AVAsset) -> UIImage? {
         
@@ -244,13 +264,16 @@ class PreviewMediaViewController: UIViewController {
     
     @objc func sendButtonTapped(_ sender: UIButton) {
         
+        
+        
         self.add(loadingViewController)
         let hud = self.loadingViewController.hud
         
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
         
-        chat?.status = .sending
+        //chat?.status = .sending
+        chat?.isSending = true
         
         var messageCaption: String? = nil
         var mediaData: Data? = nil
@@ -262,11 +285,12 @@ class PreviewMediaViewController: UIViewController {
             let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
             mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-            //sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
             self.dismiss(animated: false)
             self.presentingViewController?.dismiss(animated: false) {
                 let dbs = DatabaseService()
-                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .photo, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                let message = Message(senderUid: currentUser.uid, caption: caption, status: .sending, messageType: .photo)
+                
+                dbs.send(message, from: currentUser, to: friend, chat: self.chat!, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
                     if let error = error {
                         print(error)
                         hud.indicatorView = JGProgressHUDErrorIndicatorView()
@@ -280,11 +304,12 @@ class PreviewMediaViewController: UIViewController {
         } else if let image = image {
             mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-            //sendMessage(currentUser, messageCaption, .photo, friend, mediaData, messageThumbnailData)
             self.dismiss(animated: false)
             self.presentingViewController?.dismiss(animated: false) {
                 let dbs = DatabaseService()
-                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: nil, messageType: .photo, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
+                let message = Message(senderUid: currentUser.uid, status: .sending, messageType: .photo)
+                
+                dbs.send(message, from: currentUser, to: friend, chat: self.chat!, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
                     if let error = error {
                         print(error)
                         hud.indicatorView = JGProgressHUDErrorIndicatorView()
@@ -296,84 +321,41 @@ class PreviewMediaViewController: UIViewController {
             }
             
         } else if let videoURL = videoURL {
-            let videoWidth: CGFloat = VideoResolution.width
-            let videoHeight: CGFloat = VideoResolution.height
-            
-            let height: CGFloat = 36 * (videoHeight / view.frame.height)
-            let width = videoWidth
-            let y: CGFloat = videoHeight - (captionTextView.center.y * (videoHeight / view.frame.height))
-
-            let size = CGSize(width: width, height: height)
-            let placement = Placement.custom(x: 0, y: y, size: size)
-            
-            let config = MergeConfiguration.init(frameRate: 30, directory: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0], quality: .high, placement: placement)
-            
-            let merge = Merge(config: config)
-            let asset = AVAsset(url: videoURL)
-            
-            
-            let thumbnail = generateThumbnail(for: asset)
-            let processor = ImageProcessor()
-            let image = processor.addOverlay(captionTextView, to: thumbnail!, size: view.frame.size)
-            messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-            
-            let caption = self.captionTextView.text ?? ""
-            
-            merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
-                guard let url = url else { return }
+            let process = Process()
+            let caption: UITextView? = captionTextView.text != "" ? captionTextView : nil
+            let captionText = caption?.text
+            DispatchQueue.main.async {
                 
-                let videoData = try! Data(contentsOf: url)
-                print("File size before compression: \(Double(videoData.count / 1048576)) mb")
- 
-               // let compressedURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                self.dismiss(animated: false, completion: {
+            
+            process.video(url: videoURL, inView: self.view, caption: caption) { (data, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
                 
-                Compressor.compressVideo(inputURL: url, handler: { (exportSession) in
-                    guard let session = exportSession else {
-                        return
-                    }
-
-                    switch session.status {
-                    case .unknown:
-                        break
-                    case .waiting:
-                        break
-                    case .exporting:
-                        break
-                    case .completed:
-                        do {
-                            guard let mediaData = try? Data(contentsOf: session.outputURL!) else { return }
-
-                            self.dismiss(animated: false)
-                            self.presentingViewController?.dismiss(animated: false) {
-                                let dbs = DatabaseService()
-                                dbs.sendMessage(from: currentUser, to: friend, chat: self.chat!, caption: caption, messageType: .video, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
-                                    if let error = error {
-                                        print(error)
-                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                        hud.textLabel.text = error.localizedDescription
-                                        hud.show(in: self.view)
-                                    }
-                                    print("Sent from DataBaseService")
-                                })
+                guard let data = data else { return }
+                
+                        
+                        let dbs = DatabaseService()
+                        let message = Message(senderUid: currentUser.uid, caption: captionText, status: .sending, messageType: .video)
+                        
+                        dbs.send(message, from: currentUser, to: friend, chat: self.chat!, mediaData: data, thumbnailData: data, completion: { (error) in
+                            if let error = error {
+                                print(error)
+                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                hud.textLabel.text = error.localizedDescription
+                                hud.show(in: self.view)
                             }
-                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
-                        } catch let error {
-                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
-                        }
-
-                    case .failed:
-                        self.loadingViewController.remove()
-                        break
-                    case .cancelled:
-                        break
+                            print("Sent from DataBaseService")
+                            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                        })
+                        // self.presentingViewController?.dismiss(animated: false)
                     }
                 })
-                
-            }) { (progress) in
-                print(progress)
             }
         }
-        
     }
 
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
@@ -454,12 +436,127 @@ class PreviewMediaViewController: UIViewController {
             captionIsInSuperview = true
         }
     }
+    
+    @objc private func addMoreFriends() {
+        let addMoreFriendsViewController = AddMoreFriendsViewController()
+        let navVC = UINavigationController(rootViewController: addMoreFriendsViewController)
+        present(navVC, animated: true, completion: nil)
+    }
+    
+    @objc private func saveToCameraRollButtonTapped() {
+        print("🤶\(#function)")
+        
+        if PHPhotoLibrary.authorizationStatus() == .authorized {
+            DispatchQueue.main.async {
+                if let image = self.image {
+                    self.saveToCameraRoll(image: image)
+                } else if let videoURL = self.videoURL {
+                    self.saveToCameraRoll(videoURL: videoURL)
+                }
+            }
+            
+        } else {
+            PHPhotoLibrary.requestAuthorization { (status) in
+                
+                if status == .authorized {
+                    DispatchQueue.main.async {
+                        if let image = self.image {
+                            self.saveToCameraRoll(image: image)
+                        } else if let videoURL = self.videoURL {
+                            self.saveToCameraRoll(videoURL: videoURL)
+                        }
+                    }
+                }
+            
+            }
+        }
+        
+    }
+    
+    private func saveToCameraRoll(image: UIImage? = nil, videoURL: URL? = nil) {
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Saving"
+        //hud.show(in: self.view)
+
+        if let image = image {
+            let processor = ImageProcessor()
+            let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
+            
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAsset(from: image)
+            }, completionHandler: { success, error in
+                if success {
+                    // Saved successfully!
+                   print("Saved to photo library")
+                }
+                else if let error = error {
+                    // Save photo failed with error
+                    DispatchQueue.main.async {
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.localizedDescription
+                        hud.dismiss(afterDelay: 1)
+                    }
+                }
+                else {
+                    // Save photo failed with no error
+                }
+            })
+        } else if let videoURL = videoURL {
+            
+            if captionTextView.text != "" {
+                let process = Process()
+                
+                process.addOverlay(url: videoURL, inView: self.view, caption: captionTextView) { (url) in
+                    guard let url = url else { return }
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+                    }, completionHandler: { success, error in
+                        if success {
+                            // Saved successfully!
+                            print("Saved to photo library")
+                        }
+                        else if let error = error {
+                            // Save photo failed with error
+                            DispatchQueue.main.async {
+                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                hud.textLabel.text = error.localizedDescription
+                                hud.dismiss(afterDelay: 1)
+                            }
+                        }
+                        else {
+                            // Save photo failed with no error
+                        }
+                    })
+                }
+            } else {
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoURL)
+                }, completionHandler: { success, error in
+                    if success {
+                        // Saved successfully!
+                        print("Saved to photo library")
+                    }
+                    else if let error = error {
+                        // Save photo failed with error
+                        DispatchQueue.main.async {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = error.localizedDescription
+                            hud.dismiss(afterDelay: 1)
+                        }
+                    }
+                    else {
+                        // Save photo failed with no error
+                    }
+                })
+            }
+        }
+    }
 }
 
 // MARK: - UI
 private extension PreviewMediaViewController {
     func updateView() {
-        view.addSubviews([dimView, captionTextView, cancelButton, resignCaptionEditButton, addCaptionButton, sendView, toggleVideoSoundButton])
+        view.addSubviews([dimView, captionTextView, cancelButton, resignCaptionEditButton, addCaptionButton, sendView, toggleVideoSoundButton, saveToCameraRollButton])
         view.addGestureRecognizer(addTextTapGesture)
         
         if player != nil {
@@ -472,20 +569,32 @@ private extension PreviewMediaViewController {
     }
     
     func setupConstraints() {
+        
+        let left: CGFloat = 16
+        let top: CGFloat = 16
+        let right: CGFloat = 16
+        let bottom: CGFloat = 16
 
-        cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
-        
-        resignCaptionEditButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
-        
         dimView.anchor(view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
         
         captionTextView.anchor(nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 36)
         captionTextView.anchorCenterXToSuperview()
         captionTextView.anchorCenterYToSuperview()
         
-        addCaptionButton.anchor(view.topAnchor, left: nil, bottom: nil, right: view.rightAnchor, topConstant: 24, leftConstant: 0, bottomConstant: 0, rightConstant: 16, widthConstant: buttonSize, heightConstant: buttonSize)
+        addCaptionButton.anchor(view.topAnchor, left: nil, bottom: nil, right: view.rightAnchor,
+                                topConstant: top, leftConstant: 0, bottomConstant: 0, rightConstant: right, widthConstant: buttonSize, heightConstant: buttonSize)
         
-        toggleVideoSoundButton.anchor(view.topAnchor, left: nil, bottom: nil, right: addCaptionButton.leftAnchor, topConstant: 24, leftConstant: 0, bottomConstant: 0, rightConstant: 8, widthConstant: buttonSize, heightConstant: buttonSize)
+        cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
+                            topConstant: top, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
+        
+        resignCaptionEditButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
+                                       topConstant: top, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
+        
+        toggleVideoSoundButton.anchor(view.topAnchor, left: nil, bottom: nil, right: addCaptionButton.leftAnchor,
+                                      topConstant: top, leftConstant: 0, bottomConstant: 0, rightConstant: 8, widthConstant: buttonSize, heightConstant: buttonSize)
+        
+        saveToCameraRollButton.anchor(top: nil, leading: view.leadingAnchor, bottom: sendView.topAnchor, trailing: nil, padding: .init(top: 0, left: left, bottom: bottom, right: 0))
+        
         
         sendView.anchor(nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: view.frame.width, heightConstant: 64)
         
@@ -494,6 +603,8 @@ private extension PreviewMediaViewController {
         
         sendToLabel.anchorCenterYToSuperview()
         sendToLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: sendButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
+        
+        
     }
 }
 

@@ -221,7 +221,7 @@ class AddFriendViewController: UITableViewController {
             guard let docs = snapshot?.documents else { return }
             self.friendRequests = []
             docs.forEach({ (doc) in
-                let data = doc.data() as! [String: Bool]
+                guard let data = doc.data() as? [String: Bool] else { return }
                 let uid = data.keys.first!
                 Firestore.firestore()
                     .collection(DatabaseService.Collection.users).document(uid).getDocument(completion: { (snapshot, error) in

@@ -8,6 +8,7 @@
 
 import UIKit
 import JGProgressHUD
+import FirebaseAuth
 
 protocol LoginControllerDelegate {
     func didFinishLoggingIn()
@@ -91,7 +92,7 @@ class LoginController: UIViewController, LoginFlowHandler {
         }
     }
     
-    fileprivate let backToRegisterButton: UIButton = {
+    fileprivate lazy var backToRegisterButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Go back", for: .normal)
         button.setTitleColor(#colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1), for: .normal)
@@ -100,8 +101,21 @@ class LoginController: UIViewController, LoginFlowHandler {
         return button
     }()
     
+    fileprivate lazy var forgotPasswordButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Forgot password?", for: .normal)
+        button.setTitleColor(WKTheme.textColor, for: .normal)
+        button.addTarget(self, action: #selector(handleForgotPassword), for: .touchUpInside)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        return button
+    }()
+    
     @objc fileprivate func handleBack() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func handleForgotPassword() {
+        print("🤶\(#function)")
     }
 
     override func viewDidLoad() {
@@ -163,17 +177,21 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     fileprivate func setupLayout() {
         
-        view.addSubview(verticalStackView)
+        view.addSubviews([verticalStackView, forgotPasswordButton, backToRegisterButton])
+        
         verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
         verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
-        view.addSubview(backToRegisterButton)
+        forgotPasswordButton.anchor(top: verticalStackView.bottomAnchor, leading: verticalStackView.leadingAnchor, bottom: nil, trailing: verticalStackView.trailingAnchor, padding: .init(top: 8, left: 0, bottom: 0, right: 0))
+        
         backToRegisterButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
         let attributedText = NSMutableAttributedString(string: "Don't have an account?  ", attributes: [.foregroundColor: WKTheme.textColor])
         attributedText.append(NSAttributedString(string: "Create one", attributes: [.foregroundColor: #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)]))
         
         backToRegisterButton.setAttributedTitle(attributedText, for: .normal)
+        
+        
     }
     
     private func setupNotificationObservers() {
@@ -188,9 +206,9 @@ class LoginController: UIViewController, LoginFlowHandler {
     @objc func handleKeyboardShow(notification: Notification) {
         guard let value = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = value.cgRectValue
-        let bottomSpace = view.frame.height - verticalStackView.frame.origin.y - verticalStackView.frame.height
+        let bottomSpace = view.frame.height - verticalStackView.frame.origin.y - verticalStackView.frame.height - forgotPasswordButton.frame.height
         let difference = keyboardFrame.height - bottomSpace
-        view.transform = CGAffineTransform(translationX: 0, y: -difference - 8)
+        view.transform = CGAffineTransform(translationX: 0, y: -difference - 16)
     }
     
     @objc func handleKeyboardHide() {

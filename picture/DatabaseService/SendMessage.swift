@@ -9,30 +9,29 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseStorage
+import SDWebImage
 
 extension DatabaseService {
     
-    func sendMessage(from currentUser: User, to friend: User, chat: Chat, caption: String?, messageType: MessageType, mediaData: Data?, thumbnailData: Data?, completion: @escaping (Error?) -> Void) {
+    func sendMessage(from currentUser: User, to friend: User, chat: Chat, message: Message, completion: @escaping (Error?) -> Void) {
         
-        let message = Message(senderUid: currentUser.uid, user: currentUser, caption: caption, messageType: messageType)
+        //sendMessage(from: currentUser, to: friend, chat: chat, caption: message.caption, messageType: message.messageType, mediaData: mediaData, thumbnailData: nil, completion: completion)
+    }
+    
+    func send(_ message: Message, from currentUser: User, to friend: User, chat: Chat, mediaData: Data?, thumbnailData: Data?, completion: @escaping (Error?) -> Void) {
         
-        message.status = .sending
+        //let message = Message(senderUid: currentUser.uid, caption: caption, messageType: messageType)
         
-        let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
+        //message.status = .sending
+        
+        let chatUid = chat.chatUid// "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
         print("chatUID: \(chatUid)")
         
-        chat.isOpened = false
-        chat.lastMessageSent = message.uid
-        chat.lastSenderUid = currentUser.uid
-        chat.isNewFriendship = false
-        chat.isSending = true
-        chat.status = .sending
-        chat.lastChatUpdateTimestamp = Date().timeIntervalSince1970
-        chat.lastMessageSentType = message.messageType
         
         // If Begin
         if let data = mediaData, let thumbnailData = thumbnailData {
-            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
+            
             let dbs = DatabaseService()
             dbs.save(message, in: chat, completion: { (error) in
                 if let error = error {
@@ -51,9 +50,9 @@ extension DatabaseService {
                     
                     let fields: [String: Any] = [
                         Message.Keys.status: message.status.databaseValue(),
-                        Message.Keys.mediaURL: message.mediaURL,
-                        Message.Keys.mediaThumbnailURL: message.mediaThumbnailURL,
-                        Message.Keys.timestamp: Date().timeIntervalSince1970
+                        Message.Keys.mediaURL: message.mediaURL as Any,
+                        Message.Keys.mediaThumbnailURL: message.mediaThumbnailURL as Any,
+                        Message.Keys.timestamp: message.timestamp as Any
                     ]
                     
                     dbs.update(message, in: chatUid, withFields: fields, completion: { (error) in
@@ -61,12 +60,18 @@ extension DatabaseService {
                             completion(error)
                             return
                         }
-                       chat.status = .delivered
-                        dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: [
-                            Chat.Keys.isSending: false,
-                            Chat.Keys.status: chat.status.databaseValue(),
-                            Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970
-                            ], completion: { (error) in
+                        
+                        chat.status = .delivered
+                        chat.isOpened = false
+                        chat.lastMessageSent = message.uid
+                        chat.lastSenderUid = currentUser.uid
+                        chat.isNewFriendship = false
+                        chat.isSending = false
+                        //chat.status = .sending
+                        chat.lastChatUpdateTimestamp = Date().timeIntervalSince1970
+                        chat.lastMessageSentType = message.messageType
+                        
+                        dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: chat.dictionary(), completion: { (error) in
                                 if let error = error {
                                     completion(error)
                                     return

@@ -103,7 +103,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     }
     
     
-    func configure(with chatWithFriend: ChatWithFriend, latestMessage: Message? = nil) {
+    func configure(with chatWithFriend: ChatWithFriend) {
         
         let user = chatWithFriend.friend
         let chat = chatWithFriend.chat
@@ -131,7 +131,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
             profileImageView.sd_setImage(with: url, for: .normal)
         }
         
-        let timeAgoString = " · \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
+        let timeAgoString = "  ·  \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
         
         if chat.status == .failed && chat.lastSenderUid == UserController.shared.currentUser?.uid {
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
@@ -141,11 +141,11 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
             return
         }
         
-        if chat.status == .sending && chat.lastSenderUid == UserController.shared.currentUser?.uid {
+        if chat.isSending && chat.lastSenderUid == UserController.shared.currentUser?.uid {
             cameraButton.tintColor = WKTheme.textColor
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
-            detailsLabel.text = "Sending..."
+            detailsLabel.text = "Sending - Do not close 🙏"
             statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
         }
         else if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
@@ -166,7 +166,6 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
                 cameraButton.tintColor = WKTheme.textColor
                 usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
                 detailsLabel.attributedText = attibutedText(detailsText: "Delivered", detailsTextColor: WKTheme.textColor, timeAgoString: timeAgoString)
-//                statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
                 statusIndicatorView.configure(forStatus: .delivered, isOpened: false, type: type)
                 
             } else {

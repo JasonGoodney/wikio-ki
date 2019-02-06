@@ -16,6 +16,9 @@ import Digger
 class OpenedMessageViewController: UIViewController {
 
     private var message: Message?
+    private var chatWithFriend: ChatWithFriend?
+    
+    private var initialTouchPoint: CGPoint = CGPoint(x: 0,y: 0)
     
     private let loadingViewController = LoadingViewController()
     
@@ -23,7 +26,7 @@ class OpenedMessageViewController: UIViewController {
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 15, weight: .medium)
         label.textColor = .white
         return label
     }()
@@ -45,8 +48,11 @@ class OpenedMessageViewController: UIViewController {
         return gesture
     }()
     
-    init(message: Message) {
+    
+    
+    init(message: Message, chatWithFriend: ChatWithFriend?) {
         self.message = message
+        self.chatWithFriend = chatWithFriend
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -56,7 +62,8 @@ class OpenedMessageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
+        usernameLabel.text = chatWithFriend?.friend.username
     }
     
     override func viewDidLoad() {
@@ -137,7 +144,7 @@ class OpenedMessageViewController: UIViewController {
         super.viewDidAppear(animated)
         
         setupGradientLayer()
-        usernameLabel.text = message?.user?.username
+        
         
     }
     
@@ -187,17 +194,52 @@ class OpenedMessageViewController: UIViewController {
     }
     
     @objc func dismissGestureTapped(_ recognizer: UITapGestureRecognizer) {
-        dismiss(animated: false)
-    }
-    
-    override var prefersStatusBarHidden: Bool {
-        return true
+        DispatchQueue.main.async {
+            self.dismiss(animated: false)
+        }
+        
     }
     
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
         if self.player != nil {
             self.player!.seek(to: CMTime.zero)
             self.player!.play()
+        }
+    }
+    
+    @objc private func panGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
+        let touchPoint = sender.location(in: self.view?.window)
+        
+        if sender.state == UIGestureRecognizer.State.began {
+            initialTouchPoint = touchPoint
+        } else if sender.state == UIGestureRecognizer.State.changed {
+            if touchPoint.y - initialTouchPoint.y > 0 {
+                self.view.frame = CGRect(x: 0, y: touchPoint.y - initialTouchPoint.y, width: self.view.frame.size.width, height: self.view.frame.size.height)
+                DispatchQueue.main.async {
+                    if let parent = self.presentingViewController as? UINavigationController {
+                        if let root = parent.viewControllers.last as? MessagesViewController {
+                            root.setStatusBar(hidden: false)
+                        }
+                    }
+                }
+            }
+        } else if sender.state == UIGestureRecognizer.State.ended || sender.state == UIGestureRecognizer.State.cancelled {
+            if touchPoint.y - initialTouchPoint.y > 100 {
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true, completion: nil)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    if let parent = self.presentingViewController as? UINavigationController {
+                        if let root = parent.viewControllers.last as? MessagesViewController {
+                            root.setStatusBar(hidden: true, duration: 0)
+                        }
+                    }
+                }
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
+                })
+            }
         }
     }
 
@@ -212,12 +254,14 @@ private extension OpenedMessageViewController {
         view.addGestureRecognizer(dismissGesture)
         setupConstraints()
         
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerHandler(_:))))
+        
     }
     
     func setupConstraints() {
         imageView.anchor(view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
 
-        usernameLabel.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 24, leftConstant: 24, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+        usernameLabel.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     }
     
     func setupGradientLayer() {
