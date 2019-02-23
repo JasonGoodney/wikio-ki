@@ -8,7 +8,9 @@
 
 import UIKit
 
-class BestFriendDetailCell: UITableViewCell, ReuseIdentifiable {
+class BestFriendDetailCell: CheckmarkToggleCell {}
+
+class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
 
     private lazy var selectionButton: PopButton = {
         let button = PopButton()

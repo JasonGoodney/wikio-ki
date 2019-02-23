@@ -10,7 +10,7 @@ import UIKit
 
 struct ImageProcessor: MediaProcessable {
     
-    func addOverlay(_ overlay: UITextView, to image: UIImage, size: CGSize) -> UIImage {
+    func addOverlay(_ overlay: UIView, to image: UIImage, size: CGSize) -> UIImage {
         let width = size.width
         let height = size.height
         UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: height), false, 2.0)

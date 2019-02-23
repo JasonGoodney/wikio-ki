@@ -124,6 +124,10 @@ import FirebaseFirestore
     func delete(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
         Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(Collection.messages).document(message.uid).delete(completion: completion)
     }
+    
+    func delete(_ message: Message, forUser user: User, inChat chat: Chat, completion: @escaping ErrorCompletion) {
+    Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(user.uid).document(message.uid).delete(completion: completion)
+    }
 }
 
 private extension DatabaseService {

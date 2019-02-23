@@ -35,8 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
 
         handleLogin(withWindow: window) { (_) in }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(removeBlurEffect), name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(addBlurEffect), name: UIApplication.willResignActiveNotification, object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(removeBlurEffect), name: UIApplication.didBecomeActiveNotification, object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(addBlurEffect), name: UIApplication.willResignActiveNotification, object: nil)
     
         return true
     }
@@ -46,9 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
         
         let navController = self.window?.rootViewController as? UINavigationController
-        navController?.popToRootViewController(animated: false)
+        //navController?.popToRootViewController(animated: false)
         
-        addBlurEffect()
     }
 
     
@@ -62,10 +61,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
-
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        removeBlurEffect()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -107,49 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Unable to register for remote notifications: \(error.localizedDescription)")
     }
-    
-    // MARK: - Blur
-    private func topViewController(_ base: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let nav = base as? UINavigationController {
-            return topViewController(nav.visibleViewController)
-        }
-        if let tab = base as? UITabBarController {
-            if let selected = tab.selectedViewController {
-                return topViewController(selected)
-            }
-        }
-        if let presented = base?.presentedViewController {
-            return topViewController(presented)
-        }
-        return base
-    }
-    
-    private var newBlur: UIImageView?
-    
-    @objc private func addBlurEffect() {
-        let size = UIScreen.main.bounds
-        newBlur = UIImageView(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-        guard let newBlur = newBlur else { return }
-        let blurEffect = UIBlurEffect(style: .light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = UIScreen.main.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        newBlur.addSubview(blurEffectView)
-        if let top = topViewController() {
-            top.view.addSubview(newBlur)
-        }
-    }
-    
-    @objc private func removeBlurEffect() {
-        if let blur = newBlur {
-            let blurredEffectViews = blur.subviews.filter{ $0 is UIVisualEffectView }
-            blurredEffectViews.forEach { blurView in
-                blurView.removeFromSuperview()
-            }
-            newBlur = nil
-        }
-    }
-    
+
 }
 
 // MARK: - UNUserNotificationCenterDelegate

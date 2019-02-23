@@ -53,7 +53,6 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         [],
         [
             (title: "Username", value: user?.username ?? "", type: .username),
-            //(title: "UID", value: user?.uid ?? "", type: .none),
             (title: "Email", value: user?.email ?? "", type: .email),
             (title: "Password", value: "", type: .password),
         ],
@@ -203,6 +202,14 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             navigationController?.pushViewController(aboutVC, animated: true)
             
         // MARK: - Account Actions
+        case .clearCache:
+            alert(alertTitle: "Clear Cache", alertMessage: "Are you sure you want to clear your cache?", actionTitle: "Clear") { (clear) in
+                if clear {
+                    DiggerCache.cleanDownloadFiles()
+                    DiggerCache.cleanDownloadTempFiles()
+                    SDWebImageManager.shared().imageCache?.clearMemory()
+                }
+            }
         case .blocked:
             let blockUsersVC = BlockedUsersViewController()
             navigationController?.pushViewController(blockUsersVC, animated: true)

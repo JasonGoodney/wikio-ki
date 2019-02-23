@@ -217,10 +217,16 @@ private extension ProfileDetailsViewController {
     func updateButton(forAddFriendState state: AddFriendState) {
         addFriendButton.removeLoadingIndicator()
         if state == .add || state == .requested {
-            addFriendButton.textLabel.text = "+ " + state.rawValue
+            addFriendButton.textLabel.text = "+ \(state.rawValue)"
+            addFriendButton.backgroundColor = .white
+            addFriendButton.textLabel.textColor = WKTheme.textColor
+            addFriendButton.layer.borderWidth = 1
         } else {
-            
-            addFriendButton.textLabel.text = state.rawValue
+            let symbol = state == .added ? "✓ " : ""
+            addFriendButton.textLabel.text = "\(symbol)\(state.rawValue)"
+            addFriendButton.backgroundColor = WKTheme.buttonBlue
+            addFriendButton.textLabel.textColor = .white
+            addFriendButton.layer.borderWidth = 0
         }
         addFriendButton.addFriendState = state
         self.addFriendState = state

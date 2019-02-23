@@ -10,6 +10,11 @@ import UIKit
 import SwiftyCam
 
 class CameraViewController: SwiftyCamViewController {
+    
+    static func fromStoryboard() -> CameraViewController {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
+    }
 
     private let blurViewController = LoadingViewController(withHud: false)
     
@@ -17,8 +22,14 @@ class CameraViewController: SwiftyCamViewController {
     @IBOutlet weak var flashButton: PopButton!
     @IBOutlet weak var flipCameraButton: PopButton!
     
-    var chat: Chat?
-    var friend: User?
+    var chatWithFriend: ChatWithFriend? {
+        didSet {
+            chat = chatWithFriend?.chat
+            friend = chatWithFriend?.friend
+        }
+    }
+    private var chat: Chat?
+    private var friend: User?
 
     var progressTimer : Timer!
     var progress : CGFloat! = 0
@@ -38,6 +49,35 @@ class CameraViewController: SwiftyCamViewController {
         label.textAlignment = .center
         return label
     }()
+    
+    private lazy var sendPhotoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Test", for: .normal)
+        button.addTarget(self, action: #selector(sendPhoto), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    @objc private func sendPhoto() {
+        let photo = UIImage(named: "IMG_1536")
+        let dbs = DatabaseService()
+        
+        let data = photo?.jpegData(compressionQuality: Compression.photoQuality)
+        let thumbnailData = photo?.jpegData(compressionQuality: Compression.thumbnailQuality)
+        
+        let message = Message(senderUid: UserController.shared.currentUser!.uid, caption: "Test", status: .sending, messageType: .photo)
+        dismiss(animated: true) {
+            
+            dbs.send(message, from: UserController.shared.currentUser!, to: self.friend!, chat: self.chat!, mediaData: data, thumbnailData: thumbnailData) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                print("Sent photo for testing")
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,6 +100,8 @@ class CameraViewController: SwiftyCamViewController {
         captureButton.addShadow()
         flashButton.addShadow()
         flipCameraButton.addShadow()
+        
+        setStatusBar(hidden: true)
         
 //        captureButton.closeWhenFinished = false
 //        captureButton.addTarget(self, action: #selector(record), for: .touchDown)
@@ -85,6 +127,7 @@ class CameraViewController: SwiftyCamViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
+        setStatusBar(hidden: false)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -120,9 +163,15 @@ private extension CameraViewController {
     func updateView() {
         view.addSubviews([cancelButton, sendToLabel])
         
-        cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: 44, heightConstant: 44)
+        cancelButton.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
         
-        sendToLabel.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
+        #if targetEnvironment(simulator)
+            view.addSubview(sendPhotoButton)
+            sendPhotoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 16, left: 0, bottom: 0, right: 16))
+        #endif
+        
+        
+        sendToLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
         sendToLabel.anchorCenterXToSuperview()
         
         if let friend = friend {
@@ -134,6 +183,23 @@ private extension CameraViewController {
         flipCameraButton.tintColor = .white
         flashButton.tintColor = .white
         cancelButton.tintColor = .white
+    }
+    
+    func setStatusBar(hidden: Bool, duration: TimeInterval = 0.25) {
+        
+        //statusBarHidden = hidden
+        
+        let statusBarWindow = UIApplication.shared.value(forKey: "statusBarWindow") as? UIWindow
+        UIView.animate(withDuration: 0) {
+            statusBarWindow?.alpha = hidden ? 0.0 : 1.0
+        }
+        
+        
+        UIView.animate(withDuration: duration, animations: {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }) { (success: Bool) in
+            
+        }
     }
     
 }
@@ -227,10 +293,10 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         newVC.friend = friend
         newVC.chat = chat
         //add(blurViewController)
-        add(newVC)
+        //add(newVC)
         
 
-        //self.present(newVC, animated: false, completion: nil)
+        self.present(newVC, animated: false, completion: nil)
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFocusAtPoint point: CGPoint) {

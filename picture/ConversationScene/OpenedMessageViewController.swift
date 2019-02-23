@@ -149,6 +149,7 @@ class OpenedMessageViewController: UIViewController {
     }
     
     func configureVideo(_ videoURL: URL) {
+        imageView.image = nil
         let playerItem = CachingPlayerItem(url: videoURL, customFileExtension: "mp4")
         player = AVPlayer(playerItem: playerItem)
         player?.automaticallyWaitsToMinimizeStalling = false
@@ -190,14 +191,30 @@ class OpenedMessageViewController: UIViewController {
     }
     
     func configureImage(_ imageURL: URL) {
+        player = nil
         imageView.sd_setImage(with: imageURL)
     }
     
+    var currentIndex = 0
     @objc func dismissGestureTapped(_ recognizer: UITapGestureRecognizer) {
-        DispatchQueue.main.async {
-            self.dismiss(animated: false)
+        currentIndex += 1
+        if chatWithFriend?.chat.currentUserUnreads.indices.contains(currentIndex) ?? false {
+            guard let message = chatWithFriend?.chat.currentUserUnreads[currentIndex] else { return }
+            let url = URL(string: message.mediaURL!)!
+            if message.messageType == .photo {
+                DispatchQueue.main.async {
+                    self.configureImage(url)
+                }
+            } else if message.messageType == .video {
+                DispatchQueue.main.async {
+                    self.configureVideo(url)
+                }
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.dismiss(animated: false)
+            }
         }
-        
     }
     
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {

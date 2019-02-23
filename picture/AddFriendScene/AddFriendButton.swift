@@ -38,7 +38,7 @@ class AddFriendButton: PopButton {
         return imageView
     }()
     
-    private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
+    private let sendingIndicatorView = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 13, height: 13), type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
     
     let textLabel: UILabel = {
         let label = UILabel()

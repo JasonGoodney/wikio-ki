@@ -61,6 +61,10 @@ extension DatabaseService {
                             return
                         }
                         
+//                        if let unread = chat.unread?[friend.uid] {
+//                            chat.unread?[friend.uid] = true
+//                        }
+                        chat.unread?[friend.uid] = true
                         chat.status = .delivered
                         chat.isOpened = false
                         chat.lastMessageSent = message.uid
@@ -72,12 +76,21 @@ extension DatabaseService {
                         chat.lastMessageSentType = message.messageType
                         
                         dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: chat.dictionary(), completion: { (error) in
+                            if let error = error {
+                                completion(error)
+                                return
+                            }
+                            let chatDoc = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid).collection(friend.uid)
+                            chatDoc.document(message.uid).setData(message.dictionary(), completion: { (error) in
                                 if let error = error {
                                     completion(error)
                                     return
                                 }
-                                print("Everything uploaded and set")
-                                completion(nil)
+                                    print("Everything uploaded and set")
+                                    completion(nil)
+                                
+                            })
+                            
                         })
                         
                     })

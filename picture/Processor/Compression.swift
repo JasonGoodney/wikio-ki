@@ -74,7 +74,7 @@ class Compressor {
         
         let videoSettings:[String:Any] = [
             AVVideoCompressionPropertiesKey: [AVVideoAverageBitRateKey:self.bitrate],
-            AVVideoCodecKey: AVVideoCodecH264,
+            AVVideoCodecKey: AVVideoCodecType.h264,
             AVVideoHeightKey: videoTrack.naturalSize.height,
             AVVideoWidthKey: videoTrack.naturalSize.width
         ]

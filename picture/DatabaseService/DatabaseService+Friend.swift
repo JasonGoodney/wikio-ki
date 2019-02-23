@@ -51,7 +51,8 @@ extension DatabaseService {
         guard let currentUser = UserController.shared.currentUser else { return }
         
         let chat = Chat(memberUids: [currentUser.uid, user.uid], lastMessageSent: "", lastSenderUid: "")
-        chat.unread = [currentUser.uid: 0, user.uid: 0]
+        chat.unread = [currentUser.uid: false, user.uid: false]
+        
         let dbs = DatabaseService()
         dbs.createInitialChat(chat) { (error) in
             if let error = error {

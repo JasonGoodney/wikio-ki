@@ -51,6 +51,7 @@ class Message: Codable {
     let timestamp: TimeInterval
     
     var mediaData: Data?
+    var tempCachedURL: URL?
     
     enum Keys {
         static let uid = "uid"

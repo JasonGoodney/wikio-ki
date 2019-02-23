@@ -264,8 +264,6 @@ class MessagesViewController: UIViewController {
                 })
             }
         }
-        
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -486,8 +484,9 @@ extension MessagesViewController: OpenCameraToolbarDelegate {
     func didTapOpenCameraButton() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
-        cameraViewController.friend = friend
-        cameraViewController.chat = chat
+//        cameraViewController.friend = friend
+//        cameraViewController.chat = chat
+        cameraViewController.chatWithFriend = chatWithFriend
         present(cameraViewController, animated: true, completion: nil)
     }
 }

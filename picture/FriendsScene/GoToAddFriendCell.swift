@@ -28,6 +28,8 @@ class GoToAddFriendCell: UITableViewCell, ReuseIdentifiable {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        selectionStyle = .none
+        
         addSubview(goToButton)
         
         //goToButton.anchorCenterYToSuperview()

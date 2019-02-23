@@ -18,12 +18,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="wikioki_icon-1024" translatesAutoresizingMaskIntoConstraints="NO" id="1Fb-Ub-eKj">
-                                <rect key="frame" x="70" y="125" width="234" height="258"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon" translatesAutoresizingMaskIntoConstraints="NO" id="1Fb-Ub-eKj">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.0" green="0.56862745098039214" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="1Fb-Ub-eKj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="51w-rE-sQi"/>
+                            <constraint firstItem="1Fb-Ub-eKj" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="-20" id="BNJ-U9-QDx"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="1Fb-Ub-eKj" secondAttribute="bottom" id="gIu-1K-Ngp"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1Fb-Ub-eKj" secondAttribute="trailing" id="icO-5d-7T9"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
@@ -33,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="wikioki_icon-1024" width="1024" height="1024"/>
+        <image name="icon" width="1024" height="1024"/>
     </resources>
 </document>

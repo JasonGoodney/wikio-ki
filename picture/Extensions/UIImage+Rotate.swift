@@ -29,4 +29,19 @@ extension UIImage {
         
         return self
     }
+    
+    func addOverlay(_ overlay: UIView, size: CGSize) -> UIImage {
+        let width = size.width
+        let height = size.height
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: height), false, 2.0)
+        let currentView = UIView.init(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        let currentImage = UIImageView.init(image: self)
+        currentImage.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        currentView.addSubview(currentImage)
+        currentView.addSubview(overlay)
+        currentView.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return img!
+    }
 }

@@ -13,7 +13,7 @@
         <!--Camera View Controller-->
         <scene sceneID="Vge-L8-lY4">
             <objects>
-                <viewController storyboardIdentifier="CameraViewController" id="PPf-vu-qOI" customClass="CameraViewController" customModule="picture" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CameraViewController" id="PPf-vu-qOI" customClass="CameraViewController" customModule="develop" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="edU-Ar-1QX"/>
                         <viewControllerLayoutGuide type="bottom" id="vrb-Oa-GFr"/>
@@ -22,30 +22,33 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="picture" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="150" y="572" width="75" height="75"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="75" id="0Km-NS-s8y"/>
                                     <constraint firstAttribute="height" constant="75" id="B1S-oG-CEk"/>
                                 </constraints>
+                                <viewLayoutGuide key="safeArea" id="wp4-mt-cDR"/>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy" customClass="PopButton" customModule="picture" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy" customClass="PopButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="56" y="587.5" width="44" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="jI4-ts-oN3"/>
                                     <constraint firstAttribute="width" constant="44" id="tqz-CD-P6q"/>
                                 </constraints>
+                                <viewLayoutGuide key="safeArea" id="gIg-tM-aMY"/>
                                 <connections>
                                     <action selector="cameraSwitchTapped:" destination="PPf-vu-qOI" eventType="touchUpInside" id="fH2-pM-SQo"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ba-fA-YFE" customClass="PopButton" customModule="picture" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ba-fA-YFE" customClass="PopButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="275" y="587.5" width="44" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="muH-7g-xTc"/>
                                     <constraint firstAttribute="width" constant="44" id="raJ-uk-ZZw"/>
                                 </constraints>
+                                <viewLayoutGuide key="safeArea" id="DuZ-tz-X2Z"/>
                                 <state key="normal" image="icons8-flash_off"/>
                                 <connections>
                                     <action selector="toggleFlashTapped:" destination="PPf-vu-qOI" eventType="touchUpInside" id="rmN-9n-cHH"/>

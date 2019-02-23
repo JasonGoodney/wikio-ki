@@ -33,7 +33,6 @@
 		D74890F321BC86DC005AAF6B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D74890F121BC86DC005AAF6B /* Main.storyboard */; };
 		D74890F521BC86DE005AAF6B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D74890F421BC86DE005AAF6B /* Assets.xcassets */; };
 		D74890F821BC86DE005AAF6B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D74890F621BC86DE005AAF6B /* LaunchScreen.storyboard */; };
-		D748910321BC90D0005AAF6B /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D748910221BC90D0005AAF6B /* AuthenticationServices.framework */; };
 		D748910521BC93AF005AAF6B /* apple-app-site-association in Resources */ = {isa = PBXBuildFile; fileRef = D748910421BC93AF005AAF6B /* apple-app-site-association */; };
 		D74B71EE21FD3F65004C994A /* SendingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */; };
 		D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */; };
@@ -79,6 +78,15 @@
 		D786F67C21D92EBC003DA3C6 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D786F67B21D92EBC003DA3C6 /* Alert.swift */; };
 		D786F67E21D9A894003DA3C6 /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = D786F67D21D9A894003DA3C6 /* Chat.swift */; };
 		D78BB2E02209F84F007DD089 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2DF2209F84F007DD089 /* Process.swift */; };
+		D78BB2EC220CD078007DD089 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2EB220CD078007DD089 /* VideoCell.swift */; };
+		D78BB2F2220CDDD6007DD089 /* SegmentedProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2EF220CDDD5007DD089 /* SegmentedProgressBar.swift */; };
+		D78BB2F3220CDDD6007DD089 /* PreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2F0220CDDD6007DD089 /* PreViewController.swift */; };
+		D78BB2F5220D216D007DD089 /* ARSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2F4220D216D007DD089 /* ARSupport.swift */; };
+		D78BB2F7220DDB0F007DD089 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2F6220DDB0F007DD089 /* PhotoCell.swift */; };
+		D78BB2F9220DF194007DD089 /* MediaViewerDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2F8220DF194007DD089 /* MediaViewerDataSource.swift */; };
+		D78BB30122120687007DD089 /* ColorExtenison.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2FD2212067F007DD089 /* ColorExtenison.swift */; };
+		D78BB30222120687007DD089 /* SketchTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2FF2212067F007DD089 /* SketchTool.swift */; };
+		D78BB30322120687007DD089 /* SketchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB3002212067F007DD089 /* SketchView.swift */; };
 		D79524EA22051C1C00455E6F /* MediaUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79524E922051C1C00455E6F /* MediaUploadManager.swift */; };
 		D79524EC2206526300455E6F /* Cacher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79524EB2206526300455E6F /* Cacher.swift */; };
 		D79524EE220691E600455E6F /* FileManager+Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79524ED220691E600455E6F /* FileManager+Persist.swift */; };
@@ -197,7 +205,6 @@
 		D7FE9AD222015A2E007200D3 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C83BEB21FE94AA0086149B /* AboutViewController.swift */; };
 		D7FE9AD322015A2E007200D3 /* ProfileDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */; };
 		D7FE9AD422015A2E007200D3 /* PopButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6A35521EE4487002DDB6D /* PopButton.swift */; };
-		D7FE9AD622015A2E007200D3 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D748910221BC90D0005AAF6B /* AuthenticationServices.framework */; };
 		D7FE9AD922015A2E007200D3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D74890F621BC86DE005AAF6B /* LaunchScreen.storyboard */; };
 		D7FE9ADA22015A2E007200D3 /* apple-app-site-association in Resources */ = {isa = PBXBuildFile; fileRef = D748910421BC93AF005AAF6B /* apple-app-site-association */; };
 		D7FE9ADB22015A2E007200D3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7FE9A7622015956007200D3 /* GoogleService-Info.plist */; };
@@ -236,7 +243,6 @@
 		D74890F721BC86DE005AAF6B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D74890F921BC86DE005AAF6B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D748910121BC90B3005AAF6B /* picture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = picture.entitlements; sourceTree = "<group>"; };
-		D748910221BC90D0005AAF6B /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		D748910421BC93AF005AAF6B /* apple-app-site-association */ = {isa = PBXFileReference; lastKnownFileType = text; path = "apple-app-site-association"; sourceTree = "<group>"; };
 		D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicatorView.swift; sourceTree = "<group>"; };
 		D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -282,6 +288,15 @@
 		D786F67B21D92EBC003DA3C6 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		D786F67D21D9A894003DA3C6 /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		D78BB2DF2209F84F007DD089 /* Process.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
+		D78BB2EB220CD078007DD089 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
+		D78BB2EF220CDDD5007DD089 /* SegmentedProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegmentedProgressBar.swift; sourceTree = "<group>"; };
+		D78BB2F0220CDDD6007DD089 /* PreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreViewController.swift; sourceTree = "<group>"; };
+		D78BB2F4220D216D007DD089 /* ARSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupport.swift; sourceTree = "<group>"; };
+		D78BB2F6220DDB0F007DD089 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		D78BB2F8220DF194007DD089 /* MediaViewerDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaViewerDataSource.swift; sourceTree = "<group>"; };
+		D78BB2FD2212067F007DD089 /* ColorExtenison.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorExtenison.swift; sourceTree = "<group>"; };
+		D78BB2FF2212067F007DD089 /* SketchTool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchTool.swift; sourceTree = "<group>"; };
+		D78BB3002212067F007DD089 /* SketchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchView.swift; sourceTree = "<group>"; };
 		D79524E922051C1C00455E6F /* MediaUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaUploadManager.swift; sourceTree = "<group>"; };
 		D79524EB2206526300455E6F /* Cacher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cacher.swift; sourceTree = "<group>"; };
 		D79524ED220691E600455E6F /* FileManager+Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Persist.swift"; sourceTree = "<group>"; };
@@ -321,7 +336,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D748910321BC90D0005AAF6B /* AuthenticationServices.framework in Frameworks */,
 				A75ED217A945C681FB6CD78A /* Pods_picture.framework in Frameworks */,
 				1DA38F8C79850F3CA486F8EC /* Pods_picture.framework in Frameworks */,
 			);
@@ -331,7 +345,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D7FE9AD622015A2E007200D3 /* AuthenticationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,7 +354,6 @@
 		8E68B46E564B9AB3C88BC770 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D748910221BC90D0005AAF6B /* AuthenticationServices.framework */,
 				46A4A583030759959581799D /* Pods_picture.framework */,
 			);
 			name = Frameworks;
@@ -423,6 +435,8 @@
 			children = (
 				D73B8AFF21C885C500DD4CA4 /* ViewMessagesViewController.swift */,
 				D73B8B0121C8865B00DD4CA4 /* ViewMessageCell.swift */,
+				D78BB2EB220CD078007DD089 /* VideoCell.swift */,
+				D78BB2F6220DDB0F007DD089 /* PhotoCell.swift */,
 			);
 			path = ViewMessagesScene;
 			sourceTree = "<group>";
@@ -475,6 +489,7 @@
 				D74890F121BC86DC005AAF6B /* Main.storyboard */,
 				D7591F1321C2D6D900B3EAAD /* NavigationController.swift */,
 				D7F8992B21F250E500020A68 /* LoadingViewController.swift */,
+				D78BB2FC2212067F007DD089 /* Library */,
 				D7591F0D21C2C27C00B3EAAD /* Extensions */,
 				D7591F0821C2C23800B3EAAD /* Protocols */,
 				D74890F421BC86DE005AAF6B /* Assets.xcassets */,
@@ -539,6 +554,7 @@
 		D7591F0E21C2CD7A00B3EAAD /* MessagesScene */ = {
 			isa = PBXGroup;
 			children = (
+				D78BB2ED220CDDBF007DD089 /* MediaViewer */,
 				D7591F2621C55A5000B3EAAD /* MessageController.swift */,
 				D73B8AFE21C885A400DD4CA4 /* ViewMessagesScene */,
 				D7591F0F21C2CD9700B3EAAD /* MessagesViewController.swift */,
@@ -617,6 +633,35 @@
 				D7869FC021DEAA0800A1B863 /* BlockedUserCell.swift */,
 			);
 			path = BlockedUsersScene;
+			sourceTree = "<group>";
+		};
+		D78BB2ED220CDDBF007DD089 /* MediaViewer */ = {
+			isa = PBXGroup;
+			children = (
+				D78BB2F0220CDDD6007DD089 /* PreViewController.swift */,
+				D78BB2EF220CDDD5007DD089 /* SegmentedProgressBar.swift */,
+				D78BB2F4220D216D007DD089 /* ARSupport.swift */,
+				D78BB2F8220DF194007DD089 /* MediaViewerDataSource.swift */,
+			);
+			path = MediaViewer;
+			sourceTree = "<group>";
+		};
+		D78BB2FC2212067F007DD089 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				D78BB2FD2212067F007DD089 /* ColorExtenison.swift */,
+				D78BB2FE2212067F007DD089 /* Sketch */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		D78BB2FE2212067F007DD089 /* Sketch */ = {
+			isa = PBXGroup;
+			children = (
+				D78BB2FF2212067F007DD089 /* SketchTool.swift */,
+				D78BB3002212067F007DD089 /* SketchView.swift */,
+			);
+			path = Sketch;
 			sourceTree = "<group>";
 		};
 		D7C83BED21FE94AE0086149B /* AboutScenes */ = {
@@ -714,7 +759,7 @@
 						CreatedOnToolsVersion = 10.1;
 						SystemCapabilities = {
 							com.apple.AutoFillCredentialProvider = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -723,7 +768,17 @@
 								enabled = 1;
 							};
 							com.apple.SafariKeychain = {
-								enabled = 1;
+								enabled = 0;
+							};
+						};
+					};
+					D7FE9A7A22015A2E007200D3 = {
+						SystemCapabilities = {
+							com.apple.AutoFillCredentialProvider = {
+								enabled = 0;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 0;
 							};
 						};
 					};
@@ -786,6 +841,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-picture/Pods-picture-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BoringSSL-GRPC/openssl_grpc.framework",
+				"${BUILT_PRODUCTS_DIR}/ColorSlider/ColorSlider.framework",
 				"${BUILT_PRODUCTS_DIR}/Digger/Digger.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
@@ -794,6 +850,7 @@
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/Sketch/Sketch.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyCam/SwiftyCam.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
@@ -805,6 +862,7 @@
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl_grpc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ColorSlider.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Digger.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
@@ -813,6 +871,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sketch.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyCam.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
@@ -860,11 +919,14 @@
 				D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */,
 				D7F8992621F12F8600020A68 /* JGProgressHUD.swift in Sources */,
 				D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */,
+				D78BB30122120687007DD089 /* ColorExtenison.swift in Sources */,
 				D7643B5221DD52DA00ACE26F /* DatabaseService+Fetch.swift in Sources */,
+				D78BB2F5220D216D007DD089 /* ARSupport.swift in Sources */,
 				D72F166421D4720F0009D43D /* AddFriendButton.swift in Sources */,
 				D7591F1021C2CD9700B3EAAD /* MessagesViewController.swift in Sources */,
 				D7591F2721C55A5000B3EAAD /* MessageController.swift in Sources */,
 				D7591F1721C2DF2E00B3EAAD /* CameraViewController.swift in Sources */,
+				D78BB2F9220DF194007DD089 /* MediaViewerDataSource.swift in Sources */,
 				D72D792E21D1399800FB5327 /* OpenCameraToolbar.swift in Sources */,
 				D73B8B0021C885C500DD4CA4 /* ViewMessagesViewController.swift in Sources */,
 				D778E69621CDE2EC005C6C96 /* Extensions+UIView.swift in Sources */,
@@ -874,12 +936,14 @@
 				D715B51F21E84F29008A5E80 /* AuthValidation.swift in Sources */,
 				D73B8AF921C8117100DD4CA4 /* MediaProcessable.swift in Sources */,
 				D7F8992A21F250BE00020A68 /* UIViewController.swift in Sources */,
+				D78BB30222120687007DD089 /* SketchTool.swift in Sources */,
 				D7643B4E21DD110C00ACE26F /* StorageService.swift in Sources */,
 				D7591F2B21C56EFE00B3EAAD /* OpenedMessageViewController.swift in Sources */,
 				D7591F0C21C2C27300B3EAAD /* UIView+Anchors.swift in Sources */,
 				D72D792A21D0912F00FB5327 /* LoginController.swift in Sources */,
 				D786F67A21D92D80003DA3C6 /* AuthError.swift in Sources */,
 				D715B51C21E7EE0D008A5E80 /* ChangePasswordViewController.swift in Sources */,
+				D78BB2F7220DDB0F007DD089 /* PhotoCell.swift in Sources */,
 				D7591F0A21C2C26100B3EAAD /* ReuseIdentifiable.swift in Sources */,
 				D778E68E21CDD77D005C6C96 /* Bindable.swift in Sources */,
 				D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */,
@@ -894,6 +958,8 @@
 				D786F67E21D9A894003DA3C6 /* Chat.swift in Sources */,
 				D73B8AF221C72A4300DD4CA4 /* RegisterViewController.swift in Sources */,
 				D738322F21DFFAF2006DC2EA /* Date+TimeAgo.swift in Sources */,
+				D78BB30322120687007DD089 /* SketchView.swift in Sources */,
+				D78BB2F3220CDDD6007DD089 /* PreViewController.swift in Sources */,
 				D778E69421CDDC71005C6C96 /* RoundRectTextField.swift in Sources */,
 				D7591F2521C558BA00B3EAAD /* User.swift in Sources */,
 				D7643B4B21DD0EF300ACE26F /* DatabaseService+Friend.swift in Sources */,
@@ -911,6 +977,7 @@
 				D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */,
 				D7869FC121DEAA0800A1B863 /* BlockedUserCell.swift in Sources */,
 				D74890EE21BC86DC005AAF6B /* AppDelegate.swift in Sources */,
+				D78BB2F2220CDDD6007DD089 /* SegmentedProgressBar.swift in Sources */,
 				D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */,
 				D7591F1221C2CE5C00B3EAAD /* ReplyFooterView.swift in Sources */,
 				D79524F0220757BE00455E6F /* AddMoreFriendsViewController.swift in Sources */,
@@ -934,6 +1001,7 @@
 				D7591F2921C56A3C00B3EAAD /* OpenMessageView.swift in Sources */,
 				D79A2E5721E7023D00502FF1 /* EditSettingViewController.swift in Sources */,
 				D7F6A35A21EE6A04002DDB6D /* BestFriendDetailCell.swift in Sources */,
+				D78BB2EC220CD078007DD089 /* VideoCell.swift in Sources */,
 				D7643B4921DD0EE100ACE26F /* DatabaseService+SendMessage.swift in Sources */,
 				D7869FBE21DEA8E500A1B863 /* BlockedUsersViewController.swift in Sources */,
 				D7F0EA3421F6E7B400B9522E /* UIImage+Rotate.swift in Sources */,

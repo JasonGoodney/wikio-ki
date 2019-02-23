@@ -12,6 +12,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import JGProgressHUD
 import SDWebImage
+import Digger
 
 extension Collection {
     
@@ -32,6 +33,7 @@ class FriendsListViewController: UIViewController {
     var blockedUserListener: ListenerRegistration?
     var chatUpdateListener: ListenerRegistration?
     var userChatsListener: ListenerRegistration?
+    var newMessageListener: ListenerRegistration?
     
     private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "FRIENDS", "No friends :/\n\nAdd some :)"]
     private let sectionHeaderHeight: CGFloat = 50
@@ -40,16 +42,6 @@ class FriendsListViewController: UIViewController {
     
     // MARK: - Subviews
     private var hud = JGProgressHUD(style: .dark)
-    
-    private let noFriendsLabel: UILabel = {
-        let label = UILabel()
-        label.text = "No friends :/\n\nAdd some :)"
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.textColor = WKTheme.darkGray
-        label.numberOfLines = 0
-        return label
-    }()
     
     private lazy var tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .grouped)
@@ -69,7 +61,7 @@ class FriendsListViewController: UIViewController {
         return view
     }()
     
-    private let titleLabel = NavigationTitleLabel(title: "Wikio Ki")
+    private let titleLabel = NavigationTitleLabel(title: "XD")
     
     private lazy var addFriendButton: PopButton = {
         let button = PopButton(frame: CGRect(x: 0, y: 0, width: 32, height: 32))
@@ -80,25 +72,20 @@ class FriendsListViewController: UIViewController {
     }()
     
     private let profileImageButton: ProfileImageButton = {
-        let button = ProfileImageButton(height: 32, width: 32)
+        let button = ProfileImageButton(height: 32, width: 32, enabled: true)
         return button
-    }()
-    
-    private lazy var doubleTapRefresh: UITapGestureRecognizer = {
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(handleRefreshFriends))
-        gesture.numberOfTapsRequired = 2
-        return gesture
     }()
     
     deinit {
         friendRequestListener?.remove()
         friendshipChangedListener?.remove()
         chatUpdateListener?.remove()
+        newMessageListener?.remove()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let appDelegate = AppDelegate()
         appDelegate.attemptRegisterForNotifications(UIApplication.shared)
         
@@ -225,9 +212,7 @@ class FriendsListViewController: UIViewController {
                                 for change in modifiedDocs {
                                     let pendingChat = Chat(dictionary: change.document.data())
                                     self.tableView.performBatchUpdates({
-
-//                                        let insertIndexPath = IndexPath(row: self.messages.count, section: 0)
-
+                                        
                                         let isSender = pendingChat.lastSenderUid == UserController.shared.currentUser?.uid
 
                                         if isSender {
@@ -282,6 +267,7 @@ class FriendsListViewController: UIViewController {
         super.viewWillAppear(animated)
         deselectCell()
         
+        
         if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
             DispatchQueue.main.async {
                 self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
@@ -292,8 +278,8 @@ class FriendsListViewController: UIViewController {
         
         DispatchQueue.main.async {
             if !UserController.shared.allChatsWithFriends.isEmpty{
-            self.tableView.isHidden = false
-            self.tableView.reloadData()
+                self.tableView.isHidden = false
+                self.tableView.reloadData()
             }
         }
     }
@@ -335,7 +321,7 @@ class FriendsListViewController: UIViewController {
             self.endRefresh()
             if let error = error {
                 print(error)
-                
+               
                 return
             }
             
@@ -346,14 +332,14 @@ class FriendsListViewController: UIViewController {
     
     private func reloadData() {
         
-            UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
-                return chatWithFriend1.friend.username < chatWithFriend2.friend.username
-            })
-            
-            DispatchQueue.main.async {
-                self.tableView.isHidden = false
-                self.tableView.reloadData()
-            }
+        UserController.shared.allChatsWithFriends.sort(by: { (chatWithFriend1, chatWithFriend2) -> Bool in
+            return chatWithFriend1.friend.username < chatWithFriend2.friend.username
+        })
+        
+        DispatchQueue.main.async {
+            self.tableView.isHidden = false
+            self.tableView.reloadData()
+        }
     }
     
     private func addListenerOnUser(listeningTo collection: String, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
@@ -372,15 +358,15 @@ class FriendsListViewController: UIViewController {
         }
     }
     
-    private func addListener(listeningTo collection: CollectionReference, completion: @escaping (Bool) -> Void = { _ in }) -> ListenerRegistration {
+    private func addListener(listeningTo collection: CollectionReference, completion: @escaping ([DocumentChange]?) -> Void = { _ in }) -> ListenerRegistration {
         return collection.addSnapshotListener { (querySnapshot, error) in
             if let error = error {
                 print(error)
-                completion(false)
+                completion(nil)
                 return
             }
             if let changes = querySnapshot?.documentChanges, changes.count > 0 {
-                completion(true)
+                completion(changes)
             }
         }
     }
@@ -442,18 +428,22 @@ private extension FriendsListViewController {
     func beginRefresh() {
         DispatchQueue.main.async {
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
-            self.hud.show(in: self.view)
+            //self.hud.show(in: self.view)
             self.refreshControl.beginRefreshing()
+            
         }
     }
+    
     
     func endRefresh() {
         DispatchQueue.main.async {
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
-            self.hud.dismiss()
+            //self.hud.dismiss()
             self.refreshControl.endRefreshing()
         }
     }
+    
+    
 }
 
 // MARK: - Actions
@@ -496,21 +486,16 @@ extension FriendsListViewController: UITableViewDataSource {
         
         let friendsListCell = tableView.dequeueReusableCell(withIdentifier: FriendsListCell.reuseIdentifier, for: indexPath) as! FriendsListCell
         
-        var friend: User
-        
         switch indexPath.section {
         case 0 where !UserController.shared.bestFriendsChats.isEmpty:
-            friend = UserController.shared.bestFriendsChats[indexPath.row].friend
             let chatWithFriend = UserController.shared.bestFriendsChats[indexPath.row]
             friendsListCell.configure(with: chatWithFriend)
         
         case 1 where !UserController.shared.recentChatsWithFriends.isEmpty:
-            friend = UserController.shared.recentChatsWithFriends[indexPath.row].friend
             let chatWithFriend = UserController.shared.recentChatsWithFriends[indexPath.row]
             friendsListCell.configure(with: chatWithFriend)
         
         case 2 where !UserController.shared.allChatsWithFriends.isEmpty:
-            friend = UserController.shared.allChatsWithFriends[indexPath.row].friend
             let chatWithFriend = UserController.shared.allChatsWithFriends[indexPath.row]
             friendsListCell.configure(with: chatWithFriend)
         default:
@@ -528,6 +513,7 @@ extension FriendsListViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension FriendsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         let messagesViewController = MessagesViewController()
         
         var dataSource: [ChatWithFriend] = []
@@ -563,7 +549,27 @@ extension FriendsListViewController: UITableViewDelegate {
         messagesViewController.chat = chat
         messagesViewController.chatWithFriend = chatWithFriend
         
-        navigationController?.pushViewController(messagesViewController, animated: true)
+         if chatWithFriend.chat.currentUserUnreads.count > 0 {
+            let viewMessageVC = PreViewController()
+            //viewMessageVC.items = chatWithFriend.chat.currentUserUnreads
+            viewMessageVC.chatWithFriend = chatWithFriend
+            viewMessageVC.modalPresentationStyle = .overFullScreen
+            viewMessageVC.modalPresentationCapturesStatusBarAppearance = true
+            present(viewMessageVC, animated: false) {
+                
+                    
+            }
+        } else {
+            print("No new messages")
+//            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//            let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
+//            //let cameraViewController = CameraViewController.fromStoryboard()
+//            cameraViewController.chatWithFriend = chatWithFriend
+//            present(cameraViewController, animated: true, completion: nil)
+        }
+        
+        
+        //navigationController?.pushViewController(messagesViewController, animated: true)
     
     }
     
@@ -681,13 +687,8 @@ extension FriendsListViewController: FriendsListCellDelegate {
             print("SECTION ERROR 🤶\(#function)")
         }
         
-        let friend = dataSource[indexPath.row].friend
-        let chat = dataSource[indexPath.row].chat
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
-        cameraViewController.friend = friend
-        cameraViewController.chat = chat
+        let cameraViewController = CameraViewController.fromStoryboard()
+        cameraViewController.chatWithFriend = dataSource[indexPath.row]
         present(cameraViewController, animated: true, completion: nil)
     }
 }
@@ -727,12 +728,7 @@ extension FriendsListViewController {
 
                     guard let chat = chat else { print("chat does not exists"); return }
                     
-                    dbs.fetchLatestMessage(in: chat, completion: { (message, error) in
-                        guard let message = message else { return }
-                        
-                        chat.latestMessage = message
-                        
-                    })
+
                     
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {
@@ -748,15 +744,53 @@ extension FriendsListViewController {
                             
                             UserController.shared.currentUser?.friendsUids.insert(user.uid)
                             
-                            UserController.shared.allChatsWithFriends.append((friend: friend, chat: chat))
-                            i += 1
+                            let chatWithFriend = (friend: friend, chat: chat)
+                            UserController.shared.allChatsWithFriends.append(chatWithFriend)
+                            
+                            let collectionRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid).collection(UserController.shared.currentUser!.uid)
+                             collectionRef.limit(to: 1).getDocuments(completion: { (snapshot, error) in
+                                if snapshot != nil {
+                                    self.newMessageListener = self.addListener(listeningTo: collectionRef, completion: { (changes) in
+                                        if let changes = changes {
+                                            changes.forEach({
+                                                let message = Message(dictionary: $0.document.data())
+                                                switch $0.type {
+                                                case .added:
+                                                    let insertionIndex = chat.currentUserUnreads.insertionIndexOf(elem: message, isOrderedBefore: { $0.timestamp < $1.timestamp })
+                                                    chatWithFriend.chat.currentUserUnreads.insert(message, at: insertionIndex)
+                                                    guard let cwfIndex = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.chatUid == chatWithFriend.chat.chatUid }) else {
+                                                        print("No index")
+                                                        return }
+                                                    UserController.shared.allChatsWithFriends[cwfIndex] = chatWithFriend
+                                                    print("New message: \(UserController.shared.allChatsWithFriends[cwfIndex].chat.currentUserUnreads.count)")
+                                                    //                                            DispatchQueue.main.async {
+                                                    //                                                self.tableView.reloadData()
+                                                //                                            }
+                                                case .modified:
+                                                    print("Message modified")
+                                                case .removed:
+                                                    chatWithFriend.chat.currentUserUnreads.removeFirst()
+                                                    guard let cwfIndex = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.chatUid == chatWithFriend.chat.chatUid }) else {
+                                                        print("No index")
+                                                        return }
+                                                    UserController.shared.allChatsWithFriends[cwfIndex] = chatWithFriend
+                                                    print("Deleted message: \(UserController.shared.allChatsWithFriends[cwfIndex].chat.currentUserUnreads.count)")
+                                                }
+                                                //                                        DispatchQueue.main.async {
+                                                //                                            self.tableView.reloadData()
+                                                //                                        }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                            
                         }
                         
-                        // So fetchChatsWithFriends only completes once when all users are fetched
-                        //if i >= userChats.count {
+                        
                             print("Fetched Chat With Friends and is now completing")
                             completion(nil)
-                        //}
+                        
                     })
                 })
                 

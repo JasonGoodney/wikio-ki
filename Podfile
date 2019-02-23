@@ -21,5 +21,6 @@ target 'picture' do
   pod 'Digger'
   pod 'NVActivityIndicatorView'
   pod 'SVProgressHUD'
+  pod 'ColorSlider'
   
 end

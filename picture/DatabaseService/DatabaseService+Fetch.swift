@@ -93,9 +93,34 @@ extension DatabaseService {
                 let dict = doc.data()
                 let chat = Chat(dictionary: dict)
                 chats.append(chat)
+                
+                
+                
             })
             
             completion(chats, nil)
+        }
+    }
+    
+    func fetchUnreadMessages(in chat: Chat, completion: @escaping (Error?) -> Void) {
+        Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(UserController.shared.currentUser!.uid).order(by: "timestamp", descending: false).getDocuments { (snapshot, error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            
+            guard let docs = snapshot?.documents else {
+                completion(error)
+                return
+            }
+            
+            docs.forEach({ (doc) in
+                let message = Message(dictionary: doc.data())
+                chat.currentUserUnreads.append(message)
+            })
+            
+            completion(nil)
         }
     }
     
@@ -112,6 +137,7 @@ extension DatabaseService {
             }
             
             guard let data = snapshot?.data() else {
+                completion(nil, error)
                 return
             }
                 

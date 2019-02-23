@@ -128,7 +128,7 @@ extension UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    func alert(alertTitle: String? = nil, alertMessage: String? = nil, actionTitle: String? = nil, actionStyle: UIAlertAction.Style? = .default, cancelTitle: String = "Cancel", completion: @escaping (Bool) -> Void) {
+    func alert(alertTitle: String? = nil, alertMessage: String? = nil, actionTitle: String? = "OK", actionStyle: UIAlertAction.Style? = .default, cancelTitle: String = "Cancel", completion: @escaping (Bool) -> Void) {
         let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         
         let destructiveAction = UIAlertAction(title: actionTitle, style: actionStyle ?? .default) { _ in
