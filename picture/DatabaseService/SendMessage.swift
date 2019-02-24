@@ -20,11 +20,8 @@ extension DatabaseService {
     
     func send(_ message: Message, from currentUser: User, to friend: User, chat: Chat, mediaData: Data?, thumbnailData: Data?, completion: @escaping (Error?) -> Void) {
         
-        //let message = Message(senderUid: currentUser.uid, caption: caption, messageType: messageType)
-        
-        //message.status = .sending
-        
-        let chatUid = chat.chatUid// "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
+
+        let chatUid = chat.chatUid
         print("chatUID: \(chatUid)")
         
         
@@ -61,9 +58,7 @@ extension DatabaseService {
                             return
                         }
                         
-//                        if let unread = chat.unread?[friend.uid] {
-//                            chat.unread?[friend.uid] = true
-//                        }
+
                         chat.unread?[friend.uid] = true
                         chat.status = .delivered
                         chat.isOpened = false
@@ -80,8 +75,8 @@ extension DatabaseService {
                                 completion(error)
                                 return
                             }
-                            let chatDoc = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid).collection(friend.uid)
-                            chatDoc.document(message.uid).setData(message.dictionary(), completion: { (error) in
+                            let friendsUnreadCollection = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid).collection(friend.uid)
+                            friendsUnreadCollection.document(message.uid).setData(message.dictionary(), completion: { (error) in
                                 if let error = error {
                                     completion(error)
                                     return

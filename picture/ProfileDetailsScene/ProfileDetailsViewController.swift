@@ -18,13 +18,10 @@ enum ProfileDetailsType: String {
     case removeFriend
 }
 
-protocol PassBackAddFriendStateDelegate: class {
-    func passBack(from viewController: UIViewController)
-}
-
 class ProfileDetailsViewController: UIViewController {
 
-    weak var delegate: PassBackAddFriendStateDelegate?
+    // Pass back properties
+    weak var delegate: PassBackDelegate?
     
     var passBackUser: User {
         return user
@@ -34,9 +31,12 @@ class ProfileDetailsViewController: UIViewController {
         return addFriendState
     }
     
+    var bestFriendStateChanged = false
+    
+    private var chatWithFriend: ChatWithFriend?
     private var user: User
     private var isFriend: Bool = false
-    private var isBestFriend: Bool
+    private var isBestFriend: Bool = false
     private var addFriendState: AddFriendState {
         didSet {
             isFriend = addFriendState == .accepted
@@ -96,9 +96,16 @@ class ProfileDetailsViewController: UIViewController {
         return header
     }()
     
-    init(user: User, isBestFriend: Bool = false, addFriendState: AddFriendState = .add) {
-        self.user = user
+    init(chatWithFriend: ChatWithFriend, isBestFriend: Bool = false, addFriendState: AddFriendState = .add) {
+        self.chatWithFriend = chatWithFriend
+        self.user = chatWithFriend.friend
         self.isBestFriend = isBestFriend
+        self.addFriendState = addFriendState
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(user: User, addFriendState: AddFriendState = .add) {
+        self.user = user
         self.addFriendState = addFriendState
         super.init(nibName: nil, bundle: nil)
     }
@@ -302,6 +309,7 @@ extension ProfileDetailsViewController: UITableViewDelegate {
                     if self.isBestFriend {
                         cell.toggleOn()
                         UserController.shared.bestFriendUids.append(self.user.uid)
+                        
                     } else {
                         cell.toggleOff()
                         UserController.shared.bestFriendUids.removeAll(where: { $0 == self.user.uid })
@@ -309,6 +317,12 @@ extension ProfileDetailsViewController: UITableViewDelegate {
                     
                     tableView.reloadRows(at: [indexPath], with: .automatic)
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                    
+                    self.bestFriendStateChanged = true
+                    guard let chatWithFriend = self.chatWithFriend else { return }
+                    UserController.shared.allChatsWithFriends.removeAll(where: { $0.friend.uid == chatWithFriend.friend.uid })
+                    let index = UserController.shared.allChatsWithFriends.insertionIndexOf(elem: chatWithFriend, isOrderedBefore: { $0.friend.username < $1.friend.username })
+                    UserController.shared.allChatsWithFriends.insert(chatWithFriend, at: index)
                 }
             }
             

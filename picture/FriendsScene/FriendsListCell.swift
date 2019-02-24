@@ -80,7 +80,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     
     private let statusIndicatorView = StatusIndicatorView(subviewSize: 15)
 
-    let profileImageView = ProfileImageButton(height: 44, width: 44, enabled: true)
+    let profileImageView = ProfileImageButton(height: 56, width: 56, enabled: true)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -310,9 +310,10 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     }
     
     let separatorView = UIView()
-    func hideSeparatorView() {
-        separatorView.isHidden = true
+    func separatorView(isHidden: Bool) {
+        separatorView.isHidden = isHidden
     }
+
 }
 
 // MARK: - UI
@@ -341,9 +342,7 @@ private extension FriendsListCell {
         
         unreadView.anchor(top: nil, leading: nil, bottom: nil, trailing: cameraButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 8), size: .init(width: 12, height: 12))
         unreadView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        
-        
-        
+
         separatorView.backgroundColor = WKTheme.ultraLightGray
         addSubview(separatorView)
         separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: frame.width, height: 1))

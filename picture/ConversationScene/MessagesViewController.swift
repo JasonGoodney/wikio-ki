@@ -328,8 +328,8 @@ class MessagesViewController: UIViewController {
     
     @objc private func profileImageButtonTapped() {
         guard let friend = friend else { return }
-        let profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: friend.isBestFriend, addFriendState: .accepted)
-        navigationController?.pushViewController(profileDetailsViewController, animated: true)
+        //let profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: friend.isBestFriend, addFriendState: .accepted)
+        //navigationController?.pushViewController(profileDetailsViewController, animated: true)
     }
 }
 

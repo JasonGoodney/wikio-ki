@@ -370,7 +370,7 @@ extension AddFriendViewController: ProfileImageButtonDelegate {
     }
 }
 
-extension AddFriendViewController: PassBackAddFriendStateDelegate {
+extension AddFriendViewController: PassBackDelegate {
     func passBack(from viewController: UIViewController) {
         if let vc = viewController as? ProfileDetailsViewController {
             if vc.passBackAddFriendState == .requested || vc.passBackAddFriendState == .accepted {

@@ -33,24 +33,14 @@ import FirebaseFirestore
     }
     
     func save(_ message: Message, in chat: Chat, completion: @escaping ErrorCompletion) {
-        
-//        if let sentToUid = chat.members.first(where: { $0 != chat.lastSenderUid }), let unreadDict = chat.unread {
-//            let unreadCount = unreadDict[sentToUid]! + 1
-//            chat.unread?[sentToUid] = unreadCount
-//        }
-        
-        saveChatsCollection(chat) { (error) in
-            if let error = error {
-                print(error)
-                completion(error)
-                return
-            }
-//            self.saveUserChatsCollection(forChatMembersIn: chat) { (error) in
-//                if let error = error {
-//                    print(error)
-//                    completion(error)
-//                    return
-//                }
+  
+//        saveChatsCollection(chat) { (error) in
+//            if let error = error {
+//                print(error)
+//                completion(error)
+//                return
+//            }
+
                 self.saveMessagesCollectionInChats(message, in: chat) { (error) in
                     if let error = error {
                         print(error)
@@ -67,8 +57,8 @@ import FirebaseFirestore
                         completion(nil)
                     })
                 }
-//            }
-        }
+
+//        }
     }
     
     func update(_ messsage: Message, in chatUid: String, withFields fields: [String: Any], completion: @escaping ErrorCompletion) {

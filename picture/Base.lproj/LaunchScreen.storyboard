@@ -18,16 +18,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon" translatesAutoresizingMaskIntoConstraints="NO" id="1Fb-Ub-eKj">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="XD" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="91D-D0-Drb">
+                                <rect key="frame" x="13" y="209" width="349" height="249"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="220"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.56862745098039214" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="1Fb-Ub-eKj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="51w-rE-sQi"/>
-                            <constraint firstItem="1Fb-Ub-eKj" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="-20" id="BNJ-U9-QDx"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="1Fb-Ub-eKj" secondAttribute="bottom" id="gIu-1K-Ngp"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1Fb-Ub-eKj" secondAttribute="trailing" id="icO-5d-7T9"/>
+                            <constraint firstItem="91D-D0-Drb" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="189" id="0hp-Rw-M1j"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="91D-D0-Drb" secondAttribute="bottom" constant="209" id="YRv-wO-RXJ"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="91D-D0-Drb" secondAttribute="trailing" constant="13" id="nbI-iz-6Ea"/>
+                            <constraint firstItem="91D-D0-Drb" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="13" id="wVJ-p5-fig"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -37,7 +40,4 @@
             <point key="canvasLocation" x="52" y="374.66266866566718"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="icon" width="1024" height="1024"/>
-    </resources>
 </document>

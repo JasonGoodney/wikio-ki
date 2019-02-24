@@ -507,11 +507,7 @@ extension FriendsListViewController: UITableViewDataSource {
         friendsListCell.delegate = self
         friendsListCell.profileImageView.delegate = self
         
-        if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
-            
-                friendsListCell.hideSeparatorView()
-            
-        }
+        
         
         return friendsListCell
     }
@@ -572,45 +568,49 @@ extension FriendsListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        if (tableView == self.tableView)
+        let cornerRadius = 20
+        var corners: UIRectCorner = []
+        
+        if indexPath.row == 0
         {
-            let cornerRadius: CGFloat = 20
-            //Top Left Right Corners
-            let maskPathTop = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
-            let shapeLayerTop = CAShapeLayer()
-            shapeLayerTop.frame = cell.bounds
-            shapeLayerTop.path = maskPathTop.cgPath
-            
-            //Bottom Left Right Corners
-            let maskPathBottom = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
-            let shapeLayerBottom = CAShapeLayer()
-            shapeLayerBottom.frame = cell.bounds
-            shapeLayerBottom.path = maskPathBottom.cgPath
-            
-            //All Corners
-            let maskPathAll = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: [.topLeft, .topRight, .bottomRight, .bottomLeft], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
-            let shapeLayerAll = CAShapeLayer()
-            shapeLayerAll.frame = cell.bounds
-            shapeLayerAll.path = maskPathAll.cgPath
-            
-            if (indexPath.row == 0 && indexPath.row == tableView.numberOfRows(inSection: indexPath.section)-1)
-            {
-                cell.layer.mask = shapeLayerAll
-            }
-            else if (indexPath.row == 0)
-            {
-                cell.layer.mask = shapeLayerTop
-            }
-            else if (indexPath.row == tableView.numberOfRows(inSection: indexPath.section)-1)
-            {
-                cell.layer.mask = shapeLayerBottom
-            }
+            corners.update(with: .topLeft)
+            corners.update(with: .topRight)
         }
         
-        if indexPath.section == tableView.numberOfSections - 1 {
-            cell.backgroundColor = .clear
+        if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+        {
+            corners.update(with: .bottomLeft)
+            corners.update(with: .bottomRight)
         }
-
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = UIBezierPath(roundedRect: cell.bounds,
+                                      byRoundingCorners: corners,
+                                      cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)).cgPath
+        cell.layer.mask = maskLayer
+        
+        if cell is GoToAddFriendCell {
+            cell.backgroundColor = .clear
+            return
+        }
+        
+        if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+            switch cell {
+            case let cell as FriendsListCell:
+                cell.separatorView(isHidden: true)
+                break
+            case _:
+                break
+            }
+        } else if indexPath.row < tableView.numberOfRows(inSection: indexPath.section) - 1 {
+            switch cell {
+            case let cell as FriendsListCell:
+                cell.separatorView(isHidden: false)
+                break
+            case _:
+                break
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -719,10 +719,11 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
         
         let friend = dataSource[indexPath.row].friend
         _ = dataSource[indexPath.row].chat
+        let chatWithFriend = dataSource[indexPath.row]
         
-        profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: isBestFriend, addFriendState: .accepted)
+        profileDetailsViewController = ProfileDetailsViewController(chatWithFriend: chatWithFriend, isBestFriend: isBestFriend, addFriendState: .accepted)
 
-        
+        profileDetailsViewController.delegate = self
         navigationController?.pushViewController(profileDetailsViewController, animated: true)
     }
 }
@@ -752,11 +753,27 @@ extension FriendsListViewController: FriendsListCellDelegate {
     }
 }
 
+// MARK: - GoToAddFriendCellDelegate
 extension FriendsListViewController: GoToAddFriendCellDelegate {
     func handleGoToButton(_ sender: Any) {
         addFriendButtonTapped(sender)
     }
 }
+
+// MARK: - PassBackDelegate
+extension FriendsListViewController: PassBackDelegate {
+    func passBack(from viewController: UIViewController) {
+        if let vc = viewController as? ProfileDetailsViewController {
+            if vc.bestFriendStateChanged {
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                    
+                }
+            }
+        }
+    }
+}
+
 
 // MARK: - Fetch Chats With Friends
 extension FriendsListViewController {

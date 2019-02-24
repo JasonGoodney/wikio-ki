@@ -160,8 +160,7 @@ class PreViewController: UIViewController {
                         return
                     }
                     print("Deleted opened message: \(message.uid)")
-                   // self.items.remove(at: i)
-                    //self.chatWithFriend?.chat.currentUserUnreads.removeAll(keepingCapacity: { $0 == message.uid })
+
                     if unreads.indices.contains(i) {
                         unreads.remove(at: i)
                     }
@@ -170,38 +169,29 @@ class PreViewController: UIViewController {
 
 
 
-            //let unreadCount = unreads - 1
-
-            if unreads.count == openedMessages.count {
-                let key = "unread.\(UserController.shared.currentUser!.uid)"
-                let fields: [String: Any] = [key: false]
-                guard let path = self.chatWithFriend?.chat.chatUid else { return }
-                let docRef = DatabaseService.chatReference(forPath: path)
-                dbs.updateData(docRef, withFields: fields) { (error) in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-
-                    print("Decreased unread count by opened messages count(\(openedMessages.count))")
-
-                }
-            }
 
             guard let chat = self.chatWithFriend?.chat else { return }
             let docRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid)
-
+            
             chat.status = .opened
-
-            let fields: [String: Any] = [Chat.Keys.isOpened: true,
+            
+            var fields: [String: Any] = [Chat.Keys.isOpened: true,
                                          Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
                                          Chat.Keys.status: chat.status.databaseValue()]
+            
+            if self.items.filter({ $0.isOpened == false }).isEmpty {
+                let key = "unread.\(UserController.shared.currentUser!.uid)"
+                fields[key] = false
+            }
 
-            dbs.updateDocument(docRef, withFields: fields, completion: { (error) in
+
+            dbs.updateData(docRef, withFields: fields, completion: { (error) in
                 if let error = error {
                     print(error)
                     return
                 }
+                
+                print("Updated \(chat.chatUid) chat")
             })
             
         }
@@ -359,3 +349,9 @@ private extension PreViewController {
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(dismissPanGestureRecognizerHandler(_:))))
     }
 }
+
+
+
+// frKOhvebFho:APA91bEK2mNWBEzW9K3pDQAGAgTU4JIhUXuCVj1GddKPp5ThgjAGjllsy9kPct-qpeKduZQ47lT3HRLo_1nv8XxLBc4NQfF4-fW1EGEgCFfpKiG1t8Sd1q4vZgJrHU2bVFgtVX7ebAbj
+
+//frKOhvebFho:APA91bEK2mNWBEzW9K3pDQAGAgTU4JIhUXuCVj1GddKPp5ThgjAGjllsy9kPct-qpeKduZQ47lT3HRLo_1nv8XxLBc4NQfF4-fW1EGEgCFfpKiG1t8Sd1q4vZgJrHU2bVFgtVX7ebAbj
