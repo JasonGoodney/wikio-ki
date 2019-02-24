@@ -78,7 +78,7 @@ class PreviewMediaViewController: UIViewController {
     
     private var backgroundImageView = UIImageView()
     
-    lazy var cancelButton: PopButton = {
+    private lazy var cancelButton: PopButton = {
         let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "icons8-back-filled-96").withRenderingMode(.alwaysTemplate), for: .normal) // Too Small
         button.tintColor = .white
@@ -86,7 +86,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var addCaptionButton: PopButton = {
+    private lazy var addCaptionButton: PopButton = {
         let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "add_text").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
@@ -94,7 +94,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var resignCaptionEditButton: PopButton = {
+    private lazy var resignCaptionEditButton: PopButton = {
         let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "icons8-undo").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
@@ -103,7 +103,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var toggleVideoSoundButton: PopButton = {
+    private lazy var toggleVideoSoundButton: PopButton = {
         let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "icons8-room_sound_filled").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
@@ -112,7 +112,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var toggleDrawingButton: PopButton = {
+    private lazy var toggleDrawingButton: PopButton = {
         let button = PopButton()
         button.setImage(drawImage, for: .normal)
         button.tintColor = .white
@@ -121,7 +121,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var undoButton: PopButton = {
+    private lazy var undoButton: PopButton = {
         let button = PopButton()
         button.setImage(undoImage, for: .normal)
         button.tintColor = .white
@@ -131,7 +131,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var eraserButton: PopButton = {
+    private lazy var eraserButton: PopButton = {
         let button = PopButton()
         button.setImage(eraserImage, for: .normal)
         button.tintColor = .white
@@ -142,7 +142,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var penButton: PopButton = {
+    private lazy var penButton: PopButton = {
         let button = PopButton()
         button.setImage(drawImage, for: .normal)
         button.tintColor = colorSlider.color
@@ -171,7 +171,7 @@ class PreviewMediaViewController: UIViewController {
         return label
     }()
     
-    lazy var sendButton: PopButton = {
+    private lazy var sendButton: PopButton = {
         let button = PopButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate), for: .normal)
         button.backgroundColor = .clear
@@ -194,7 +194,7 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
-    lazy var captionTextView: UITextView = {
+    private lazy var captionTextView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = UIColor.black.withAlphaComponent(0.65)
         textView.delegate = self
@@ -206,15 +206,16 @@ class PreviewMediaViewController: UIViewController {
         return textView
     }()
     
+    private lazy var screenTapButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(screenTapped(_:)), for: .touchUpInside)
+        return button
+    }()
+    
     private var videoURL: URL?
     private var image: UIImage?
     var player: AVPlayer?
     var playerController : AVPlayerViewController?
-    
-    private lazy var addTextTapGesture: UITapGestureRecognizer = {
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(screenTapped(_:)))
-        return gesture
-    }()
     
     private lazy var captionDragGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer()
@@ -590,6 +591,7 @@ class PreviewMediaViewController: UIViewController {
         sketchView.isUserInteractionEnabled = true
         toggleDrawingButton.setImage(confirmImage, for: .normal)
         captionTextView.isHidden = captionTextView.text == ""
+        screenTapButton.isHidden = true
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = true
         }
@@ -607,6 +609,7 @@ class PreviewMediaViewController: UIViewController {
         eraserButton.isHidden = true
         sketchView.isUserInteractionEnabled = false
         toggleDrawingButton.setImage(drawImage, for: .normal)
+        screenTapButton.isHidden = false
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = false
         }
@@ -648,6 +651,7 @@ class PreviewMediaViewController: UIViewController {
     }
     
     private func saveToCameraRoll(image: UIImage? = nil, videoURL: URL? = nil) {
+        
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Saving"
         //hud.show(in: self.view)
@@ -661,7 +665,7 @@ class PreviewMediaViewController: UIViewController {
                 image = image.addOverlay(captionTextView, size: view.frame.size)
             }
             //let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
-            
+
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.creationRequestForAsset(from: image)
             }, completionHandler: { success, error in
@@ -740,8 +744,7 @@ private extension PreviewMediaViewController {
         let editButtonsStackView = UIStackView(arrangedSubviews: [toggleVideoSoundButton, addCaptionButton, toggleDrawingButton])
         editButtonsStackView.spacing = 16
 
-        view.addSubviews([sketchView, colorSlider, dimView, captionTextView, cancelButton, editButtonsStackView, resignCaptionEditButton, undoButton, penButton, eraserButton, sendButton, sendToLabel])
-        view.addGestureRecognizer(addTextTapGesture)
+        view.addSubviews([sketchView, colorSlider, dimView, captionTextView, cancelButton, editButtonsStackView, resignCaptionEditButton, undoButton, penButton, eraserButton, sendButton, sendToLabel, saveToCameraRollButton, screenTapButton])
         
         if player != nil {
             toggleVideoSoundButton.isHidden = false
@@ -775,6 +778,8 @@ private extension PreviewMediaViewController {
         sendToLabel.centerYAnchor.constraint(equalTo: sendButton.centerYAnchor).isActive = true
         sendToLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: sendButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: right))
         
+        saveToCameraRollButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: left, bottom: bottom, right: 0))
+        
         sketchView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
 
         colorSlider.anchor(top: editButtonsStackView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0), size: .init(width: 15, height: 150))
@@ -788,6 +793,8 @@ private extension PreviewMediaViewController {
         penButton.anchor(top: eraserButton.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
         undoButton.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
         undoButton.anchor(top: penButton.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
+        
+        screenTapButton.anchor(top: editButtonsStackView.bottomAnchor, leading: view.leadingAnchor, bottom: sendButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 20, right: 0))
     }
 }
 
@@ -880,15 +887,6 @@ extension PreviewMediaViewController: SketchViewDelegate {
         let alpha: CGFloat = isDrawing ? 0.0 : 1.0
         
         UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
-//            self.toggleDrawingButton.alpha = alpha
-//            self.cancelButton.alpha = alpha
-//            self.sendToLabel.alpha = alpha
-//            self.addCaptionButton.alpha = alpha
-//            self.colorSlider.alpha = alpha
-//            self.saveToCameraRollButton.alpha = alpha
-//            self.undoButton.alpha = alpha
-//            self.eraserButton.alpha = alpha
-//            self.penButton.alpha = alpha
             self.view.subviews.forEach({ (subview) in
                 if subview == self.sketchView || subview == self.playerController?.view || subview == self.backgroundImageView {
                     return
