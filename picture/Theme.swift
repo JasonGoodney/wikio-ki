@@ -18,6 +18,8 @@ enum WKTheme {
     static let buttonLightBlue = #colorLiteral(red: 0.3098039216, green: 0.737254902, blue: 1, alpha: 1) // UIColor(hex: 0x4fbcff)
     static let buttonBlue = #colorLiteral(red: 0, green: 0.568627451, blue: 1, alpha: 1) // 0091FF
     static let gainsboro = #colorLiteral(red: 0.8431372549, green: 0.8549019608, blue: 0.862745098, alpha: 1) // 0xd7dadc
+    static let ultraLightGray = #colorLiteral(red: 0.9652408957, green: 0.9685459733, blue: 0.9769696593, alpha: 1)
+    static let ultraDarkGray = #colorLiteral(red: 0.1748231947, green: 0.1880332828, blue: 0.2051027715, alpha: 1)
     static let seashell = #colorLiteral(red: 0.9764705882, green: 0.9647058824, blue: 0.937254902, alpha: 1) // 0xf9f6ef
     static let errorRed = #colorLiteral(red: 0.8, green: 0, blue: 0, alpha: 1)
     static let warningYellow = #colorLiteral(red: 0.9333333333, green: 0.8235294118, blue: 0.007843137255, alpha: 1)

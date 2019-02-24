@@ -35,7 +35,7 @@ class FriendsListViewController: UIViewController {
     var userChatsListener: ListenerRegistration?
     var newMessageListener: ListenerRegistration?
     
-    private let sectionHeaders = ["BEST FRIENDS", "RECENTS", "FRIENDS", "No friends :/\n\nAdd some :)"]
+    private let sectionHeaders = ["Best Friends", "Recents", "Friends", "No friends :/\n\nAdd some :)"]
     private let sectionHeaderHeight: CGFloat = 50
     private let goToAddFriendCellHeight: CGFloat = 120
     private let goToAddFriendSectionHeight: CGFloat = 80
@@ -50,8 +50,9 @@ class FriendsListViewController: UIViewController {
         view.register(FriendsListCell.self, forCellReuseIdentifier: FriendsListCell.reuseIdentifier)
         view.register(GoToAddFriendCell.self, forCellReuseIdentifier: GoToAddFriendCell.reuseIdentifier)
         view.separatorStyle = .none
-        view.backgroundColor = .white
+        view.backgroundColor = WKTheme.ultraLightGray
         view.isHidden = true
+        view.showsVerticalScrollIndicator = false
         return view
     }()
     
@@ -399,14 +400,14 @@ class FriendsListViewController: UIViewController {
 // MARK: - UI
 private extension FriendsListViewController {
     func updateView() {
-        view.backgroundColor = .white
+        view.backgroundColor = WKTheme.ultraLightGray
         view.addSubviews([tableView])
         setupConstraints()
         setupNavigationBar()
     }
     
     func setupConstraints() {
-        tableView.anchor(view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
+        tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
     }
     
     func setupNavigationBar() {
@@ -428,7 +429,7 @@ private extension FriendsListViewController {
     func beginRefresh() {
         DispatchQueue.main.async {
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
-            //self.hud.show(in: self.view)
+            self.hud.show(in: self.view)
             self.refreshControl.beginRefreshing()
             
         }
@@ -438,7 +439,7 @@ private extension FriendsListViewController {
     func endRefresh() {
         DispatchQueue.main.async {
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
-            //self.hud.dismiss()
+            self.hud.dismiss()
             self.refreshControl.endRefreshing()
         }
     }
@@ -506,6 +507,12 @@ extension FriendsListViewController: UITableViewDataSource {
         friendsListCell.delegate = self
         friendsListCell.profileImageView.delegate = self
         
+        if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+            
+                friendsListCell.hideSeparatorView()
+            
+        }
+        
         return friendsListCell
     }
 }
@@ -551,7 +558,6 @@ extension FriendsListViewController: UITableViewDelegate {
         
          if chatWithFriend.chat.currentUserUnreads.count > 0 {
             let viewMessageVC = PreViewController()
-            //viewMessageVC.items = chatWithFriend.chat.currentUserUnreads
             viewMessageVC.chatWithFriend = chatWithFriend
             viewMessageVC.modalPresentationStyle = .overFullScreen
             viewMessageVC.modalPresentationCapturesStatusBarAppearance = true
@@ -561,16 +567,50 @@ extension FriendsListViewController: UITableViewDelegate {
             }
         } else {
             print("No new messages")
-//            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//            let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
-//            //let cameraViewController = CameraViewController.fromStoryboard()
-//            cameraViewController.chatWithFriend = chatWithFriend
-//            present(cameraViewController, animated: true, completion: nil)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        if (tableView == self.tableView)
+        {
+            let cornerRadius: CGFloat = 20
+            //Top Left Right Corners
+            let maskPathTop = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+            let shapeLayerTop = CAShapeLayer()
+            shapeLayerTop.frame = cell.bounds
+            shapeLayerTop.path = maskPathTop.cgPath
+            
+            //Bottom Left Right Corners
+            let maskPathBottom = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+            let shapeLayerBottom = CAShapeLayer()
+            shapeLayerBottom.frame = cell.bounds
+            shapeLayerBottom.path = maskPathBottom.cgPath
+            
+            //All Corners
+            let maskPathAll = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: [.topLeft, .topRight, .bottomRight, .bottomLeft], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+            let shapeLayerAll = CAShapeLayer()
+            shapeLayerAll.frame = cell.bounds
+            shapeLayerAll.path = maskPathAll.cgPath
+            
+            if (indexPath.row == 0 && indexPath.row == tableView.numberOfRows(inSection: indexPath.section)-1)
+            {
+                cell.layer.mask = shapeLayerAll
+            }
+            else if (indexPath.row == 0)
+            {
+                cell.layer.mask = shapeLayerTop
+            }
+            else if (indexPath.row == tableView.numberOfRows(inSection: indexPath.section)-1)
+            {
+                cell.layer.mask = shapeLayerBottom
+            }
         }
         
-        
-        //navigationController?.pushViewController(messagesViewController, animated: true)
-    
+        if indexPath.section == tableView.numberOfSections - 1 {
+            cell.backgroundColor = .clear
+        }
+
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -585,9 +625,15 @@ extension FriendsListViewController: UITableViewDelegate {
         
         let label = UILabel()
         label.frame = headerView.frame
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        label.textColor = #colorLiteral(red: 0.7137254902, green: 0.7568627451, blue: 0.8, alpha: 1)
+        
+        // Old
+//        label.textAlignment = .center
+//        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+//        label.textColor = #colorLiteral(red: 0.7137254902, green: 0.7568627451, blue: 0.8, alpha: 1)
+        
+        // New
+        label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        label.textColor = WKTheme.ultraDarkGray
         
         switch section {
         case 0 where UserController.shared.bestFriendsChats.count > 0:
@@ -597,6 +643,7 @@ extension FriendsListViewController: UITableViewDelegate {
         case 2 where UserController.shared.allChatsWithFriends.count > 0:
             label.text = sectionHeaders[section]
         case 3 where UserController.shared.allChatsWithFriends.isEmpty:
+            label.textAlignment = .center
             label.text = sectionHeaders[section]
             label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
             label.textColor = WKTheme.darkGray
@@ -628,7 +675,19 @@ extension FriendsListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return UIView()
+        let shadowView = UIView()
+        let gradient = CAGradientLayer()
+        gradient.frame.size = CGSize(width: tableView.bounds.width, height: 15)
+        
+        let stopColor = UIColor.gray.cgColor
+        let startColor = UIColor.white.cgColor
+        
+        gradient.colors = [stopColor, startColor]
+        gradient.locations = [0.0,0.8]
+        
+        shadowView.layer.addSublayer(gradient)
+        
+        return shadowView
     }
 }
 
@@ -659,7 +718,7 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
         }
         
         let friend = dataSource[indexPath.row].friend
-        let chat = dataSource[indexPath.row].chat
+        _ = dataSource[indexPath.row].chat
         
         profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: isBestFriend, addFriendState: .accepted)
 
@@ -715,7 +774,7 @@ extension FriendsListViewController {
             
             guard let userChats = userChats, userChats.count > 0 else { completion(error); return }
             
-            var i = 0
+            _ = 0
             for chatUid in userChats {
 //                let chatUid = userChats[i]
                 

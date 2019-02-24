@@ -40,6 +40,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     private let usernameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.textColor = WKTheme.secondaryBackground
         return label
     }()
     
@@ -91,6 +92,8 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
     
     func configure(with name: String) {
         usernameLabel.text = name
@@ -305,6 +308,11 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     @objc private func handleCameraButton() {
         delegate?.didTapCameraButton(cameraButton)
     }
+    
+    let separatorView = UIView()
+    func hideSeparatorView() {
+        separatorView.isHidden = true
+    }
 }
 
 // MARK: - UI
@@ -316,14 +324,9 @@ private extension FriendsListCell {
         
         let detailsStackView = UIStackView(arrangedSubviews: [statusIndicatorView, detailsLabel])
         detailsStackView.spacing = 8
-        //detailsStackView.heightAnchor.constraint(equalToConstant: 15).isActive = true
         
         let textStackView = UIStackView(arrangedSubviews: [usernameLabel, detailsStackView])
         textStackView.axis = .vertical
-        //textStackView.heightAnchor.constraint(equalToConstant: 44).isActive = true
-
-//        let unreadStackView = UIStackView(arrangedSubviews: [unreadView, cameraButton])
-//        unreadStackView.spacing = 8
         
         let overallStackView = UIStackView(arrangedSubviews: [profileImageView, textStackView, cameraButton])
         overallStackView.distribution = .fillProportionally
@@ -336,10 +339,14 @@ private extension FriendsListCell {
         overallStackView.anchorCenterYToSuperview()
         overallStackView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 8))
         
-        //unreadView.anchor(top: profileImageView.topAnchor, leading: profileImageView.leadingAnchor, bottom: profileImageView.bottomAnchor, trailing: profileImageView.trailingAnchor, padding: .init(top: -6, left: 0, bottom: 0, right: -6))
         unreadView.anchor(top: nil, leading: nil, bottom: nil, trailing: cameraButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 8), size: .init(width: 12, height: 12))
         unreadView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        //bringSubviewToFront(unreadView)
+        
+        
+        
+        separatorView.backgroundColor = WKTheme.ultraLightGray
+        addSubview(separatorView)
+        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: frame.width, height: 1))
     }
 }
 

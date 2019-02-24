@@ -144,65 +144,65 @@ class PreViewController: UIViewController {
 
     func dismiss() {
         dismiss(animated: true) {
-//            let dbs = DatabaseService()
-//            let openedMessages = self.items.filter({ $0.isOpened })
-//
-//            guard var unreads = self.chatWithFriend?.chat.currentUserUnreads else {
-//                fatalError("No unread field")
-//            }
-//
-//            for i in 0 ..< openedMessages.count {
-//                let message = openedMessages[i]
-//
-//                dbs.delete(message, forUser: UserController.shared.currentUser!, inChat: self.chatWithFriend!.chat, completion: { (error) in
-//                    if let error = error {
-//                        print(error)
-//                        return
-//                    }
-//                    print("Deleted opened message: \(message.uid)")
-//                   // self.items.remove(at: i)
-//                    //self.chatWithFriend?.chat.currentUserUnreads.removeAll(keepingCapacity: { $0 == message.uid })
-//                    if unreads.indices.contains(i) {
-//                        unreads.remove(at: i)
-//                    }
-//                })
-//            }
-//
-//
-//
-//            //let unreadCount = unreads - 1
-//
-//            if unreads.count == openedMessages.count {
-//                let key = "unread.\(UserController.shared.currentUser!.uid)"
-//                let fields: [String: Any] = [key: false]
-//                guard let path = self.chatWithFriend?.chat.chatUid else { return }
-//                let docRef = DatabaseService.chatReference(forPath: path)
-//                dbs.updateData(docRef, withFields: fields) { (error) in
-//                    if let error = error {
-//                        print(error)
-//                        return
-//                    }
-//
-//                    print("Decreased unread count by opened messages count(\(openedMessages.count))")
-//
-//                }
-//            }
-//
-//            guard let chat = self.chatWithFriend?.chat else { return }
-//            let docRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid)
-//
-//            chat.status = .opened
-//
-//            let fields: [String: Any] = [Chat.Keys.isOpened: true,
-//                                         Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
-//                                         Chat.Keys.status: chat.status.databaseValue()]
-//
-//            dbs.updateDocument(docRef, withFields: fields, completion: { (error) in
-//                if let error = error {
-//                    print(error)
-//                    return
-//                }
-//            })
+            let dbs = DatabaseService()
+            let openedMessages = self.items.filter({ $0.isOpened })
+
+            guard var unreads = self.chatWithFriend?.chat.currentUserUnreads else {
+                fatalError("No unread field")
+            }
+
+            for i in 0 ..< openedMessages.count {
+                let message = openedMessages[i]
+
+                dbs.delete(message, forUser: UserController.shared.currentUser!, inChat: self.chatWithFriend!.chat, completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    print("Deleted opened message: \(message.uid)")
+                   // self.items.remove(at: i)
+                    //self.chatWithFriend?.chat.currentUserUnreads.removeAll(keepingCapacity: { $0 == message.uid })
+                    if unreads.indices.contains(i) {
+                        unreads.remove(at: i)
+                    }
+                })
+            }
+
+
+
+            //let unreadCount = unreads - 1
+
+            if unreads.count == openedMessages.count {
+                let key = "unread.\(UserController.shared.currentUser!.uid)"
+                let fields: [String: Any] = [key: false]
+                guard let path = self.chatWithFriend?.chat.chatUid else { return }
+                let docRef = DatabaseService.chatReference(forPath: path)
+                dbs.updateData(docRef, withFields: fields) { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+
+                    print("Decreased unread count by opened messages count(\(openedMessages.count))")
+
+                }
+            }
+
+            guard let chat = self.chatWithFriend?.chat else { return }
+            let docRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid)
+
+            chat.status = .opened
+
+            let fields: [String: Any] = [Chat.Keys.isOpened: true,
+                                         Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
+                                         Chat.Keys.status: chat.status.databaseValue()]
+
+            dbs.updateDocument(docRef, withFields: fields, completion: { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+            })
             
         }
     }
