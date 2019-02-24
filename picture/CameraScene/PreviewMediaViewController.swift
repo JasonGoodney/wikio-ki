@@ -582,7 +582,6 @@ class PreviewMediaViewController: UIViewController {
     func beginDrawing() {
         captionCanBeDragged = false
         captionTextView.isUserInteractionEnabled = false
-        addTextTapGesture.isEnabled = false
         addCaptionButton.isHidden = true
         saveToCameraRollButton.isHidden = true
         cancelButton.isHidden = true
@@ -600,7 +599,6 @@ class PreviewMediaViewController: UIViewController {
     func endDrawing() {
         captionCanBeDragged = true
         captionTextView.isUserInteractionEnabled = true
-        addTextTapGesture.isEnabled = true
         addCaptionButton.isHidden = false
         saveToCameraRollButton.isHidden = false
         cancelButton.isHidden = false
@@ -881,7 +879,6 @@ extension PreviewMediaViewController: SketchViewDelegate {
     
     func isDrawing(_ isDrawing: Bool) {
         
-        addTextTapGesture.isEnabled = !isDrawing
         captionCanBeDragged = !isDrawing
         
         let alpha: CGFloat = isDrawing ? 0.0 : 1.0
