@@ -18,19 +18,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="XD" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="91D-D0-Drb">
-                                <rect key="frame" x="13" y="209" width="349" height="249"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="220"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="xd_icon_launchscreen" translatesAutoresizingMaskIntoConstraints="NO" id="S8l-oY-JNR">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.56862745098039214" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="91D-D0-Drb" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="189" id="0hp-Rw-M1j"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="91D-D0-Drb" secondAttribute="bottom" constant="209" id="YRv-wO-RXJ"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="91D-D0-Drb" secondAttribute="trailing" constant="13" id="nbI-iz-6Ea"/>
-                            <constraint firstItem="91D-D0-Drb" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="13" id="wVJ-p5-fig"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="FyL-8A-pHp"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OEH-hx-Vq8"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Tj7-i6-Syq"/>
+                            <constraint firstAttribute="trailing" secondItem="S8l-oY-JNR" secondAttribute="trailing" id="bfT-ny-JBk"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -40,4 +37,7 @@
             <point key="canvasLocation" x="52" y="374.66266866566718"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="xd_icon_launchscreen" width="1024" height="1024"/>
+    </resources>
 </document>

@@ -66,12 +66,12 @@ class PreviewMediaViewController: UIViewController {
     
     private let saveToCameraRollImage = #imageLiteral(resourceName: "icons8-downloading_updates").withRenderingMode(.alwaysTemplate)
     private let cancelImage = #imageLiteral(resourceName: "icons8-back-filled-96").withRenderingMode(.alwaysTemplate)
-    private let addCaptionImage = ""
+    private let addCaptionImage = #imageLiteral(resourceName: "icons8-type_filled").withRenderingMode(.alwaysTemplate)
     private let resignCaptionImage = ""
     private let soundOnImage = ""
     private let soundOffImage = ""
     private let sendImage = ""
-    private let drawImage = #imageLiteral(resourceName: "icons8-pencil").withRenderingMode(.alwaysTemplate)
+    private let drawImage = #imageLiteral(resourceName: "icons8-brush_filled").withRenderingMode(.alwaysTemplate)
     private let undoImage = #imageLiteral(resourceName: "icons8-undo").withRenderingMode(.alwaysTemplate)
     private let confirmImage = #imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate)
     private let eraserImage = #imageLiteral(resourceName: "icons8-eraser").withRenderingMode(.alwaysTemplate)
@@ -88,7 +88,7 @@ class PreviewMediaViewController: UIViewController {
     
     private lazy var addCaptionButton: PopButton = {
         let button = PopButton()
-        button.setImage(#imageLiteral(resourceName: "add_text").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(addCaptionImage, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(addCaptionButton(_:)), for: .touchUpInside)
         return button
@@ -348,9 +348,12 @@ class PreviewMediaViewController: UIViewController {
     }
     
     @objc func sendButtonTapped(_ sender: UIButton) {
-        
-        
-        
+        if chat == nil {
+            let addMoreFriendsVC = SendToViewController()
+            present(addMoreFriendsVC, animated: false, completion: nil)
+            return
+        }
+
         self.add(loadingViewController)
         let hud = self.loadingViewController.hud
         
@@ -532,7 +535,7 @@ class PreviewMediaViewController: UIViewController {
     }
     
     @objc private func addMoreFriends() {
-        let addMoreFriendsViewController = AddMoreFriendsViewController()
+        let addMoreFriendsViewController = SendToViewController()
         let navVC = UINavigationController(rootViewController: addMoreFriendsViewController)
         present(navVC, animated: true, completion: nil)
     }
@@ -663,26 +666,26 @@ class PreviewMediaViewController: UIViewController {
                 image = image.addOverlay(captionTextView, size: view.frame.size)
             }
             //let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
-
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAsset(from: image)
-            }, completionHandler: { success, error in
-                if success {
-                    // Saved successfully!
-                   print("Saved to photo library")
-                }
-                else if let error = error {
-                    // Save photo failed with error
-                    DispatchQueue.main.async {
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = error.localizedDescription
-                        hud.dismiss(afterDelay: 1)
-                    }
-                }
-                else {
-                    // Save photo failed with no error
-                }
-            })
+//
+//            PHPhotoLibrary.shared().performChanges({
+//                PHAssetChangeRequest.creationRequestForAsset(from: image)
+//            }, completionHandler: { success, error in
+//                if success {
+//                    // Saved successfully!
+//                   print("Saved to photo library")
+//                }
+//                else if let error = error {
+//                    // Save photo failed with error
+//                    DispatchQueue.main.async {
+//                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                        hud.textLabel.text = error.localizedDescription
+//                        hud.dismiss(afterDelay: 1)
+//                    }
+//                }
+//                else {
+//                    // Save photo failed with no error
+//                }
+//            })
         } else if let videoURL = videoURL {
             
             if captionTextView.text != "" {
@@ -690,25 +693,25 @@ class PreviewMediaViewController: UIViewController {
                 
                 process.addOverlay(url: videoURL, inView: self.view, caption: captionTextView) { (url) in
                     guard let url = url else { return }
-                    PHPhotoLibrary.shared().performChanges({
-                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-                    }, completionHandler: { success, error in
-                        if success {
-                            // Saved successfully!
-                            print("Saved to photo library")
-                        }
-                        else if let error = error {
-                            // Save photo failed with error
-                            DispatchQueue.main.async {
-                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                hud.textLabel.text = error.localizedDescription
-                                hud.dismiss(afterDelay: 1)
-                            }
-                        }
-                        else {
-                            // Save photo failed with no error
-                        }
-                    })
+//                    PHPhotoLibrary.shared().performChanges({
+//                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+//                    }, completionHandler: { success, error in
+//                        if success {
+//                            // Saved successfully!
+//                            print("Saved to photo library")
+//                        }
+//                        else if let error = error {
+//                            // Save photo failed with error
+//                            DispatchQueue.main.async {
+//                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+//                                hud.textLabel.text = error.localizedDescription
+//                                hud.dismiss(afterDelay: 1)
+//                            }
+//                        }
+//                        else {
+//                            // Save photo failed with no error
+//                        }
+//                    })
                 }
             } else {
                 PHPhotoLibrary.shared().performChanges({
@@ -748,7 +751,6 @@ private extension PreviewMediaViewController {
             toggleVideoSoundButton.isHidden = false
         }
         
-
         sketchView.sketchViewDelegate = self
         
         let left: CGFloat = 16
@@ -763,6 +765,7 @@ private extension PreviewMediaViewController {
         captionTextView.anchorCenterYToSuperview()
 
         editButtonsStackView.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: top, left: 0, bottom: 0, right: right))
+        editButtonsStackView.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
 
         cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
                             topConstant: top, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)

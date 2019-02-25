@@ -10,7 +10,39 @@ import UIKit
 
 class BestFriendDetailCell: CheckmarkToggleCell {}
 
+class SendToCell: CheckmarkToggleCell {
+    
+    let separatorView = UIView()
+    func separatorView(isHidden: Bool) {
+        separatorView.isHidden = isHidden
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        separatorView.backgroundColor = WKTheme.ultraLightGray
+        addSubview(separatorView)
+        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: frame.width, height: 1))
+        
+        selectionStyle = .none
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
 class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
+    
+    var isChecked = false {
+        didSet {
+            if isChecked {
+                toggleOn()
+            } else {
+                toggleOff()
+            }
+        }
+    }
 
     private lazy var selectionButton: PopButton = {
         let button = PopButton()

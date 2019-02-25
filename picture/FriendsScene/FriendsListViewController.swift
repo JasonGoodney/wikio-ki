@@ -53,6 +53,7 @@ class FriendsListViewController: UIViewController {
         view.backgroundColor = WKTheme.ultraLightGray
         view.isHidden = true
         view.showsVerticalScrollIndicator = false
+        view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: (56+16+8), right: 0)
         return view
     }()
     
@@ -74,6 +75,19 @@ class FriendsListViewController: UIViewController {
     
     private let profileImageButton: ProfileImageButton = {
         let button = ProfileImageButton(height: 32, width: 32, enabled: true)
+        return button
+    }()
+    
+    private lazy var cameraButton: PopButton = {
+        let side: CGFloat = 56
+        let button = PopButton(frame: CGRect(x: 0, y: 0, width: side, height: side))
+        button.heightAnchor.constraint(equalToConstant: side).isActive = true
+        button.widthAnchor.constraint(equalToConstant: side).isActive = true
+        button.layer.cornerRadius = side / 2
+        button.layer.borderColor = WKTheme.gainsboro.cgColor
+        button.layer.borderWidth = 4
+        button.backgroundColor = UIColor.white
+        button.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
         return button
     }()
     
@@ -401,12 +415,15 @@ class FriendsListViewController: UIViewController {
 private extension FriendsListViewController {
     func updateView() {
         view.backgroundColor = WKTheme.ultraLightGray
-        view.addSubviews([tableView])
+        view.addSubviews([tableView, cameraButton])
         setupConstraints()
         setupNavigationBar()
     }
     
     func setupConstraints() {
+        cameraButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 8, right: 0))
+        cameraButton.anchorCenterXToSuperview()
+        
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
     }
     
@@ -414,8 +431,9 @@ private extension FriendsListViewController {
         navigationItem.titleView = titleLabel
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: addFriendButton)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageButton)
-    
-        navigationItem.leftBarButtonItem?.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(settingsButtonTapped)))
+        navigationItem.leftBarButtonItem?.customView?.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(settingsButtonTapped))
+        )
         navigationController?.navigationBar.tintColor = .black
         
     }
@@ -625,13 +643,7 @@ extension FriendsListViewController: UITableViewDelegate {
         
         let label = UILabel()
         label.frame = headerView.frame
-        
-        // Old
-//        label.textAlignment = .center
-//        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-//        label.textColor = #colorLiteral(red: 0.7137254902, green: 0.7568627451, blue: 0.8, alpha: 1)
-        
-        // New
+
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         label.textColor = WKTheme.ultraDarkGray
         
@@ -730,7 +742,12 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
 
 // MARK: - FriendsListCellDelegate
 extension FriendsListViewController: FriendsListCellDelegate {
-    func didTapCameraButton(_ sender: PopButton) {
+    @objc func didTapCameraButton(_ sender: PopButton) {
+        if sender == cameraButton {
+            let cameraViewController = CameraViewController.fromStoryboard()
+            present(cameraViewController, animated: true, completion: nil)
+            return
+        }
         let cell = sender.superview?.superview as! FriendsListCell
         guard let indexPath = tableView.indexPath(for: cell) else { return }
 
