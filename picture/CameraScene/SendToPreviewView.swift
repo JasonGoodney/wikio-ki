@@ -33,7 +33,8 @@ class SendToPreviewView: UIView {
     
     init(videoURL: URL) {
         super.init(frame: .zero)
-        
+        addSubview(videoView)
+        videoView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
         self.configure(videoURL)
     }
     
@@ -48,6 +49,7 @@ class SendToPreviewView: UIView {
     }
     
     private func configure(_ videoURL: URL) {
+        
         let playerItem = CachingPlayerItem(url: videoURL, customFileExtension: "mp4")
         //        guard let downloadURL = NSURL(string: message.mediaURL!) as? URL else { return }
         self.player = AVPlayer(playerItem: playerItem)
@@ -79,7 +81,6 @@ class SendToPreviewView: UIView {
         playFromBeginning()
         
     }
-    
     
     @objc private func playerItemDidReachEnd(notification: Notification) {
         playFromBeginning()

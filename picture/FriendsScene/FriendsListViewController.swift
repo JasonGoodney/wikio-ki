@@ -77,19 +77,21 @@ class FriendsListViewController: UIViewController {
         let button = ProfileImageButton(height: 32, width: 32, enabled: true)
         return button
     }()
+
+    private let cameraButton = UIButton()
     
-    private lazy var cameraButton: PopButton = {
-        let side: CGFloat = 56
-        let button = PopButton(frame: CGRect(x: 0, y: 0, width: side, height: side))
-        button.heightAnchor.constraint(equalToConstant: side).isActive = true
-        button.widthAnchor.constraint(equalToConstant: side).isActive = true
-        button.layer.cornerRadius = side / 2
-        button.layer.borderColor = Theme.gainsboro.cgColor
-        button.layer.borderWidth = 4
-        button.backgroundColor = UIColor.white
-        button.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
-        return button
-    }()
+//    private lazy var cameraButton: PopButton = {
+//        let side: CGFloat = 56
+//        let button = PopButton(frame: CGRect(x: 0, y: 0, width: side, height: side))
+//        button.heightAnchor.constraint(equalToConstant: side).isActive = true
+//        button.widthAnchor.constraint(equalToConstant: side).isActive = true
+//        button.layer.cornerRadius = side / 2
+//        button.layer.borderColor = Theme.gainsboro.cgColor
+//        button.layer.borderWidth = 4
+//        button.backgroundColor = UIColor.white
+//        button.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
+//        return button
+//    }()
     
     deinit {
         friendRequestListener?.remove()
@@ -262,9 +264,6 @@ class FriendsListViewController: UIViewController {
 
                                 }
                         }
-
-                        
-
                 })
             }
         }
@@ -274,8 +273,7 @@ class FriendsListViewController: UIViewController {
         } else {
             tableView.addSubview(refreshControl)
         }
-        
-       
+
     }
  
     override func viewWillAppear(_ animated: Bool) {
@@ -415,16 +413,25 @@ class FriendsListViewController: UIViewController {
 private extension FriendsListViewController {
     func updateView() {
         view.backgroundColor = Theme.ultraLightGray
-        view.addSubviews([tableView, cameraButton])
-        setupConstraints()
+        view.addSubviews([tableView])
         setupNavigationBar()
-    }
-    
-    func setupConstraints() {
-        cameraButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 8, right: 0))
-        cameraButton.anchorCenterXToSuperview()
+ 
+//        cameraButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 8, right: 0))
+//        cameraButton.anchorCenterXToSuperview()
         
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
+        
+        
+        
+        cameraButton.setTitle("  Camera", for: .normal)
+        cameraButton.setTitleColor(Theme.buttonBlue, for: .normal)
+        cameraButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        cameraButton.tintColor = Theme.buttonBlue
+        cameraButton.setImage(#imageLiteral(resourceName: "icons8-camera-90").withRenderingMode(.alwaysTemplate), for: .normal)
+        cameraButton.addTarget(self, action: #selector(didTapCameraButton(_:)), for: .touchUpInside)
+        
+        navigationController?.setToolbarHidden(false, animated: false)
+        toolbarItems = [UIBarButtonItem(customView: cameraButton)]
     }
     
     func setupNavigationBar() {
@@ -581,6 +588,14 @@ extension FriendsListViewController: UITableViewDelegate {
             }
         } else {
             print("No new messages")
+        }
+    }
+    
+    func setStatusBar(hidden: Bool, duration: TimeInterval = 0.25) {
+        
+        let statusBarWindow = UIApplication.shared.value(forKey: "statusBarWindow") as? UIWindow
+        UIView.animate(withDuration: 0) {
+            statusBarWindow?.alpha = hidden ? 0.0 : 1.0
         }
     }
     
@@ -743,30 +758,32 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
 // MARK: - FriendsListCellDelegate
 extension FriendsListViewController: FriendsListCellDelegate {
     @objc func didTapCameraButton(_ sender: PopButton) {
-        if sender == cameraButton {
-            let cameraViewController = CameraViewController.fromStoryboard()
-            present(cameraViewController, animated: true, completion: nil)
-            return
-        }
-        let cell = sender.superview?.superview as! FriendsListCell
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-
-        var dataSource: [ChatWithFriend] = []
-        
-        switch indexPath.section {
-        case 0:
-            dataSource = UserController.shared.bestFriendsChats
-        case 1:
-            dataSource = UserController.shared.recentChatsWithFriends
-        case 2:
-            dataSource = UserController.shared.allChatsWithFriends
-        default:
-            print("SECTION ERROR 🤶\(#function)")
-        }
-        
         let cameraViewController = CameraViewController.fromStoryboard()
-        cameraViewController.chatWithFriend = dataSource[indexPath.row]
-        present(cameraViewController, animated: true, completion: nil)
+
+        if sender != cameraButton {
+            
+            let cell = sender.superview?.superview as! FriendsListCell
+            guard let indexPath = tableView.indexPath(for: cell) else { return }
+            
+            var dataSource: [ChatWithFriend] = []
+            
+            switch indexPath.section {
+            case 0:
+                dataSource = UserController.shared.bestFriendsChats
+            case 1:
+                dataSource = UserController.shared.recentChatsWithFriends
+            case 2:
+                dataSource = UserController.shared.allChatsWithFriends
+            default:
+                print("SECTION ERROR 🤶\(#function)")
+            }
+            
+            cameraViewController.chatWithFriend = dataSource[indexPath.row]
+        }
+        
+        setStatusBar(hidden: true)
+        cameraViewController.modalPresentationStyle = .overFullScreen
+        present(cameraViewController, animated: false, completion: nil)
     }
 }
 

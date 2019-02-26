@@ -22,32 +22,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="develop" customModuleProvider="target">
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="150" y="572" width="75" height="75"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="75" id="0Km-NS-s8y"/>
-                                    <constraint firstAttribute="height" constant="75" id="B1S-oG-CEk"/>
-                                </constraints>
                                 <viewLayoutGuide key="safeArea" id="wp4-mt-cDR"/>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy" customClass="PopButton" customModule="develop" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy" customClass="PopButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="56" y="587.5" width="44" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="jI4-ts-oN3"/>
-                                    <constraint firstAttribute="width" constant="44" id="tqz-CD-P6q"/>
-                                </constraints>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <viewLayoutGuide key="safeArea" id="gIg-tM-aMY"/>
                                 <connections>
                                     <action selector="cameraSwitchTapped:" destination="PPf-vu-qOI" eventType="touchUpInside" id="fH2-pM-SQo"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ba-fA-YFE" customClass="PopButton" customModule="develop" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ba-fA-YFE" customClass="PopButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="275" y="587.5" width="44" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="muH-7g-xTc"/>
-                                    <constraint firstAttribute="width" constant="44" id="raJ-uk-ZZw"/>
-                                </constraints>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <viewLayoutGuide key="safeArea" id="DuZ-tz-X2Z"/>
                                 <state key="normal" image="icons8-flash_off"/>
                                 <connections>
@@ -56,14 +47,6 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="WFD-E9-7bq" firstAttribute="centerX" secondItem="SDd-m9-VeH" secondAttribute="centerX" id="2En-6S-K6O"/>
-                            <constraint firstItem="6ba-fA-YFE" firstAttribute="leading" secondItem="WFD-E9-7bq" secondAttribute="trailing" constant="50" id="HnT-Xc-gTf"/>
-                            <constraint firstItem="6ba-fA-YFE" firstAttribute="centerY" secondItem="WFD-E9-7bq" secondAttribute="centerY" id="UJ2-VD-gq6"/>
-                            <constraint firstItem="WFD-E9-7bq" firstAttribute="leading" secondItem="4Wt-LL-pSy" secondAttribute="trailing" constant="50" id="awf-gi-rJo"/>
-                            <constraint firstItem="4Wt-LL-pSy" firstAttribute="centerY" secondItem="WFD-E9-7bq" secondAttribute="centerY" id="hET-a0-CDY"/>
-                            <constraint firstAttribute="bottom" secondItem="WFD-E9-7bq" secondAttribute="bottom" constant="20" symbolic="YES" id="zWo-KV-moJ"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="mb4-YZ-0o0"/>
                     </view>
                     <connections>

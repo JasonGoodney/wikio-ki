@@ -87,7 +87,7 @@ private extension SendToViewController {
         tableView.anchor(top: cancelButton.bottomAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 16, left: 16, bottom: 0, right: 16))
         
         sendButton.anchor(top: nil, leading: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 24, right: 0), size: .init(width: 200, height: 56))
-        sendButton.layer.cornerRadius = 26
+        sendButton.layer.cornerRadius = 28
         sendButton.anchorCenterXToSuperview()
         
         sendToPreviewView.layer.cornerRadius = 12
@@ -163,12 +163,17 @@ extension SendToViewController: UITableViewDataSource {
 extension SendToViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! SendToCell
+        if indexPath.section == 0 {
+            return
+        }
+        guard let cell = tableView.cellForRow(at: indexPath) as? SendToCell else {
+            return
+        }
         cell.isChecked = !cell.isChecked
         
         let visibleCells = tableView.visibleCells
         visibleCells.forEach({
-            let otherCell = $0 as! SendToCell
+            guard let otherCell = $0 as? SendToCell else { return }
             if let name = cell.textLabel?.text, name == otherCell.textLabel?.text  {
                 otherCell.isChecked = cell.isChecked
                 

@@ -270,7 +270,16 @@ class PreviewMediaViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        player?.play()
+        if videoURL != nil {
+            playFromBeginning()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if videoURL != nil {
+            player?.pause()
+        }
     }
     
     func configure() {
@@ -364,15 +373,16 @@ class PreviewMediaViewController: UIViewController {
     
     @objc func sendButtonTapped(_ sender: UIButton) {
         if chat == nil {
-            var sentToVC: SendToViewController
+            var sendToVC: SendToViewController
             if let image = image {
                 let imageEdits = editContainerView.screenshot()
                 let editedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
-                sentToVC = SendToViewController(image: editedImage)
-                present(sentToVC, animated: false, completion: nil)
+                sendToVC = SendToViewController(image: editedImage)
+                present(sendToVC, animated: false, completion: nil)
+            } else if let videoURL = videoURL {
+                sendToVC = SendToViewController(videoURL: videoURL)
+                present(sendToVC, animated: false, completion: nil)
             }
-            
-            
             return
         }
         
@@ -476,12 +486,16 @@ class PreviewMediaViewController: UIViewController {
             }
         }
     }
-
-    @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
+    
+    private func playFromBeginning() {
         if self.player != nil {
             self.player!.seek(to: CMTime.zero)
             self.player!.play()
         }
+    }
+
+    @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
+        playFromBeginning()
     }
     
     @objc private func addCaptionButton(_ sender: UIButton) {
