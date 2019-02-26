@@ -15,7 +15,7 @@ class PopButton: UIButton {
         
         layer.cornerRadius = buttonSize / 2
         
-        adjustsImageWhenHighlighted = false
+        adjustsImageWhenHighlighted = false        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -42,16 +42,15 @@ class PopButton: UIButton {
         })
     }
     
-    func setIsSelected(_ selected: Bool, bgColor: UIColor = .white, tintColor: UIColor = .red) {
+    func setIsSelected(_ selected: Bool, bgColor: UIColor = .clear, tintColor: UIColor = .white) {
 
         if selected {
             self.backgroundColor = bgColor
-            self.imageView?.contentMode = .scaleAspectFit
-            self.imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+            self.tintColor = tintColor
+            self.imageEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         } else {
-            self.backgroundColor = .clear
-            self.tintColor = .white
-            self.imageView?.contentMode = .scaleAspectFit
+            self.backgroundColor = bgColor
+            self.tintColor = tintColor
             self.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         }
     }

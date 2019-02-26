@@ -21,6 +21,12 @@ class PreviewMediaViewController: UIViewController {
         }
     }
     
+    private var videoURL: URL?
+    private var image: UIImage?
+    var player: AVPlayer?
+    var playerController : AVPlayerViewController?
+    
+    
     // Caption charater Limit
     private var characterLimit = 140
     private var captionIsInSuperview = false
@@ -70,7 +76,7 @@ class PreviewMediaViewController: UIViewController {
     
     private let dimView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         view.isHidden = true
         return view
     }()
@@ -97,11 +103,24 @@ class PreviewMediaViewController: UIViewController {
         return button
     }()
     
+    private lazy var captionResponderTapGesture: UITapGestureRecognizer = {
+        let gesture = UITapGestureRecognizer()
+        gesture.numberOfTapsRequired = 2
+        gesture.addTarget(self, action: #selector(handleAddCaption(_:)))
+        return gesture
+    }()
+    
+    private lazy var resignCaptionTap: UITapGestureRecognizer = {
+        let gesture = UITapGestureRecognizer()
+        gesture.addTarget(self, action: #selector(resignCaptionEditButtonTapped(_:)))
+        return gesture
+    }()
+    
     private lazy var addCaptionButton: PopButton = {
         let button = PopButton()
         button.setImage(addCaptionImage, for: .normal)
         button.tintColor = .white
-        button.addTarget(self, action: #selector(addCaptionButton(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleAddCaption(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -149,7 +168,8 @@ class PreviewMediaViewController: UIViewController {
         button.addTarget(self, action: #selector(eraserButtonTapped), for: .touchUpInside)
         button.addShadow()
         button.isHidden = true
-
+        button.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
+        button.widthAnchor.constraint(equalToConstant: buttonSize).isActive = true
         return button
     }()
     
@@ -160,7 +180,9 @@ class PreviewMediaViewController: UIViewController {
         button.addTarget(self, action: #selector(penButtonTapped), for: .touchUpInside)
         button.addShadow()
         button.isHidden = true
-
+        button.setIsSelected(true, bgColor: UIColor.black.withAlphaComponent(0.2), tintColor: colorSlider.color)
+        button.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
+        button.widthAnchor.constraint(equalToConstant: buttonSize).isActive = true
         return button
     }()
     
@@ -216,17 +238,7 @@ class PreviewMediaViewController: UIViewController {
         textView.isScrollEnabled = false
         return textView
     }()
-    
-    private lazy var screenTapButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(screenTapped(_:)), for: .touchUpInside)
-        return button
-    }()
-    
-    private var videoURL: URL?
-    private var image: UIImage?
-    var player: AVPlayer?
-    var playerController : AVPlayerViewController?
+
     
     private lazy var captionDragGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer()
@@ -265,6 +277,8 @@ class PreviewMediaViewController: UIViewController {
         resignCaptionEditButton.addShadow()
         toggleVideoSoundButton.addShadow()
         saveToCameraRollButton.addShadow()
+        
+        view.addGestureRecognizer(captionResponderTapGesture)
         
     }
     
@@ -466,7 +480,6 @@ class PreviewMediaViewController: UIViewController {
                 
                 guard let data = data else { return }
                 
-                        
                         let dbs = DatabaseService()
                         let message = Message(senderUid: currentUser.uid, caption: captionText, status: .sending, messageType: .video)
                         
@@ -498,7 +511,8 @@ class PreviewMediaViewController: UIViewController {
         playFromBeginning()
     }
     
-    @objc private func addCaptionButton(_ sender: UIButton) {
+    @objc private func handleAddCaption(_ sender: UIButton) {
+        addCaptionButton.pop()
         handleCaptionResponder()
     }
     
@@ -518,11 +532,6 @@ class PreviewMediaViewController: UIViewController {
                 break
             }
         }
-    }
-    
-    @objc private func screenTapped(_ sender: UITapGestureRecognizer) {
-        addCaptionButton.pop()
-        handleCaptionResponder()
     }
     
     @objc private func resignCaptionEditButtonTapped(_ sender: UIButton) {
@@ -572,16 +581,19 @@ class PreviewMediaViewController: UIViewController {
             captionTextView.isHidden = false
             dimView.isHidden = false
             cancelButton.isHidden = true
-            //resignCaptionEditButton.isHidden = false
             captionIsInSuperview = true
         }
         
         if captionTextView.isFirstResponder {
             toggleDrawingButton.isHidden = true
+            toggleVideoSoundButton.isHidden = true
             addCaptionButton.setImage(confirmImage, for: .normal)
+            captionResponderTapGesture.numberOfTapsRequired = 1
         } else {
             toggleDrawingButton.isHidden = false
+            toggleVideoSoundButton.isHidden = player == nil ? true : false
             addCaptionButton.setImage(addCaptionImage, for: .normal)
+            captionResponderTapGesture.numberOfTapsRequired = 2
         }
     }
     
@@ -592,19 +604,24 @@ class PreviewMediaViewController: UIViewController {
     }
     
     @objc func undoButtonTapped() {
+        sketchView.undo()
         
         if !sketchView.hasDrawing {
             undoButton.isHidden = true
             return
         }
-        sketchView.undo()
+        
     }
 
     @objc func eraserButtonTapped() {
+        eraserButton.setIsSelected(true, bgColor: UIColor.black.withAlphaComponent(0.2), tintColor: .white)
+        penButton.setIsSelected(false, tintColor: colorSlider.color)
         sketchView.drawTool = .eraser
     }
     
     @objc func penButtonTapped() {
+        penButton.setIsSelected(true, bgColor: UIColor.black.withAlphaComponent(0.2), tintColor: colorSlider.color)
+        eraserButton.setIsSelected(false)
         sketchView.drawTool = .pen
     }
     
@@ -644,8 +661,8 @@ class PreviewMediaViewController: UIViewController {
         sketchView.isUserInteractionEnabled = true
         toggleDrawingButton.setImage(confirmImage, for: .normal)
         captionTextView.isHidden = captionTextView.text == ""
-        screenTapButton.isHidden = true
         sendButton.isHidden = true
+        captionResponderTapGesture.isEnabled = false
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = true
         }
@@ -662,8 +679,8 @@ class PreviewMediaViewController: UIViewController {
         eraserButton.isHidden = true
         sketchView.isUserInteractionEnabled = false
         toggleDrawingButton.setImage(drawImage, for: .normal)
-        screenTapButton.isHidden = false
         sendButton.isHidden = false
+        captionResponderTapGesture.isEnabled = true
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = false
         }
@@ -710,87 +727,64 @@ class PreviewMediaViewController: UIViewController {
         hud.textLabel.text = "Saving"
         hud.show(in: self.view)
 
-        if var image = image {
-            let processor = ImageProcessor()
-//            if sketchView.hasDrawing {
-//                image = image.addOverlay(sketchView, size: view.frame.size)
-//            }
-//            if captionTextView.text != "" {
-//                image = image.addOverlay(captionTextView, size: view.frame.size)
-//            }
-            
+        if let image = image {
+
             let imageEdits = editContainerView.screenshot()
-            let edittedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
-            hud.dismiss()
-            //let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
-//
-//            PHPhotoLibrary.shared().performChanges({
-//                PHAssetChangeRequest.creationRequestForAsset(from: image)
-//            }, completionHandler: { success, error in
-//                if success {
-//                    // Saved successfully!
-//                   print("Saved to photo library")
-//                }
-//                else if let error = error {
-//                    // Save photo failed with error
-//                    DispatchQueue.main.async {
-//                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                        hud.textLabel.text = error.localizedDescription
-//                        hud.dismiss(afterDelay: 1)
-//                    }
-//                }
-//                else {
-//                    // Save photo failed with no error
-//                }
-//            })
+            let editedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
+
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAsset(from: editedImage)
+            }, completionHandler: { success, error in
+                if success {
+                    // Saved successfully!
+                   print("Saved to photo library")
+                    DispatchQueue.main.async {
+                        hud.dismiss()
+                    }
+                }
+                else if let error = error {
+                    // Save photo failed with error
+                    DispatchQueue.main.async {
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.localizedDescription
+                        hud.dismiss(afterDelay: 1)
+                    }
+                }
+                else {
+                    // Save photo failed with no error
+                }
+            })
         } else if let videoURL = videoURL {
             
-            if captionTextView.text != "" {
-                let process = Process()
-                
-                process.addOverlay(url: videoURL, inView: self.view, caption: captionTextView) { (url) in
+            let process = Process()
+            let editsImage = editContainerView.screenshot()
+            process.addOverlay(url: videoURL, inView: self.view, image: editsImage, imageFrame: editContainerView.frame) { (url) in
                     guard let url = url else { return }
-//                    PHPhotoLibrary.shared().performChanges({
-//                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-//                    }, completionHandler: { success, error in
-//                        if success {
-//                            // Saved successfully!
-//                            print("Saved to photo library")
-//                        }
-//                        else if let error = error {
-//                            // Save photo failed with error
-//                            DispatchQueue.main.async {
-//                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
-//                                hud.textLabel.text = error.localizedDescription
-//                                hud.dismiss(afterDelay: 1)
-//                            }
-//                        }
-//                        else {
-//                            // Save photo failed with no error
-//                        }
-//                    })
-                }
-            } else {
-                PHPhotoLibrary.shared().performChanges({
-                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoURL)
-                }, completionHandler: { success, error in
-                    if success {
-                        // Saved successfully!
-                        print("Saved to photo library")
-                    }
-                    else if let error = error {
-                        // Save photo failed with error
-                        DispatchQueue.main.async {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.localizedDescription
-                            hud.dismiss(afterDelay: 1)
+                    
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+                    }, completionHandler: { success, error in
+                        if success {
+                            // Saved successfully!
+                            print("Saved to photo library")
+                            DispatchQueue.main.async {
+                                hud.dismiss()
+                            }
+                            
                         }
-                    }
-                    else {
-                        // Save photo failed with no error
-                    }
-                })
-            }
+                        else if let error = error {
+                            // Save photo failed with error
+                            DispatchQueue.main.async {
+                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                                hud.textLabel.text = error.localizedDescription
+                                hud.dismiss(afterDelay: 1)
+                            }
+                        }
+                        else {
+                            // Save photo failed with no error
+                        }
+                    })
+                }
         }
     }
 }
@@ -845,16 +839,15 @@ private extension PreviewMediaViewController {
         colorSlider.anchor(top: editButtonsStackView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0), size: .init(width: 15, height: 150))
         
         colorSlider.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
-        
-        eraserButton.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
-        eraserButton.anchor(top: colorSlider.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
-        
-        penButton.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
-        penButton.anchor(top: eraserButton.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
-        undoButton.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
-        undoButton.anchor(top: penButton.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
-        
-        //screenTapButton.anchor(top: editButtonsStackView.bottomAnchor, leading: view.leadingAnchor, bottom: sendButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 20, right: 0))
+      
+        let drawingToolsStackView = UIStackView(arrangedSubviews: [penButton, eraserButton])
+        drawingToolsStackView.spacing = 16
+        view.addSubview(drawingToolsStackView)
+        drawingToolsStackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
+        drawingToolsStackView.anchorCenterXToSuperview()
+  
+        undoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: top, left: left, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+
     }
 }
 
@@ -933,7 +926,7 @@ extension PreviewMediaViewController: SketchViewDelegate {
         
         isDrawing(true)
         
-        undoButton.isHidden = !view.hasDrawing
+        
     }
     
     func drawView(_ view: SketchView, didEndDrawUsingTool tool: AnyObject) {
@@ -958,9 +951,12 @@ extension PreviewMediaViewController: SketchViewDelegate {
                 }
                 
                 subview.alpha = alpha
+                
             })
             
-        }, completion: nil)
+        }, completion: { _ in
+            self.undoButton.isHidden = !self.sketchView.hasDrawing
+        })
         
         
     }

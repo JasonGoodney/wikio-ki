@@ -11,6 +11,29 @@ import AVFoundation
 
 class Process {
     
+    func addOverlay(url: URL, inView view: UIView, image: UIImage, imageFrame: CGRect, completion: @escaping (URL?) -> Void) {
+
+        let videoWidth: CGFloat = VideoResolution.width
+        let videoHeight: CGFloat = VideoResolution.height
+        
+        let height: CGFloat = videoHeight
+        let width = videoWidth
+    
+        let size = CGSize(width: width, height: height)
+        let placement = Placement.custom(x: 0, y: 0, size: size)
+        
+        let config = MergeConfiguration.init(frameRate: 30, directory: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0], quality: .high, placement: placement)
+        
+        let merge = Merge(config: config)
+        let asset = AVAsset(url: url)
+        
+        merge.overlayVideo(video: asset, overlayImage: image, completion: { (url) in
+            completion(url)
+        }) { (progress) in
+            print("Overlay progress: \(progress * 100)%")
+        }
+    }
+    
     func addOverlay(url: URL, inView view: UIView, caption: UITextView? = nil, completion: @escaping (URL?) -> Void) {
         guard let captionTextView = caption else {
             print("No caption 🤷‍♂️")
