@@ -35,7 +35,7 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
     private lazy var cancelReceivedRequestButton: PopButton = {
         let button = PopButton()
         button.setImage(#imageLiteral(resourceName: "icons8-multiply-90").withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = WKTheme.textColor
+        button.tintColor = Theme.textColor
         button.addTarget(self, action: #selector(cancelReceivedRequestButtonTapped), for: .touchUpInside)
         button.isHidden = true
         return button
@@ -66,12 +66,12 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
         if state == .add || state == .requested {
             addFriendButton.textLabel.text = "+ \(state.rawValue)"
             addFriendButton.backgroundColor = .white
-            addFriendButton.textLabel.textColor = WKTheme.textColor
+            addFriendButton.textLabel.textColor = Theme.textColor
             addFriendButton.layer.borderWidth = 1
         } else {
             let symbol = state == .added ? "✓ " : ""
             addFriendButton.textLabel.text = "\(symbol)\(state.rawValue)"
-            addFriendButton.backgroundColor = WKTheme.buttonBlue
+            addFriendButton.backgroundColor = Theme.buttonBlue
             addFriendButton.textLabel.textColor = .white
             addFriendButton.layer.borderWidth = 0
         }

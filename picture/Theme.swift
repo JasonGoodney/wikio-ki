@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum WKTheme {
+enum Theme {
     static let primaryBackground =  #colorLiteral(red: 0.07057783753, green: 0.07059488446, blue: 0.07057412714, alpha: 1) // UIColor(hex: 0x121212)
     static let secondaryBackground = #colorLiteral(red: 0.156845212, green: 0.1568739116, blue: 0.1568388939, alpha: 1) // UIColor(hex: 0x121212)
     static let titleColor =  #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) // UIColor(hex: 0xFFFFFF)

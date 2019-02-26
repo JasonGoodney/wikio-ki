@@ -50,7 +50,7 @@ class FriendsListViewController: UIViewController {
         view.register(FriendsListCell.self, forCellReuseIdentifier: FriendsListCell.reuseIdentifier)
         view.register(GoToAddFriendCell.self, forCellReuseIdentifier: GoToAddFriendCell.reuseIdentifier)
         view.separatorStyle = .none
-        view.backgroundColor = WKTheme.ultraLightGray
+        view.backgroundColor = Theme.ultraLightGray
         view.isHidden = true
         view.showsVerticalScrollIndicator = false
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: (56+16+8), right: 0)
@@ -84,7 +84,7 @@ class FriendsListViewController: UIViewController {
         button.heightAnchor.constraint(equalToConstant: side).isActive = true
         button.widthAnchor.constraint(equalToConstant: side).isActive = true
         button.layer.cornerRadius = side / 2
-        button.layer.borderColor = WKTheme.gainsboro.cgColor
+        button.layer.borderColor = Theme.gainsboro.cgColor
         button.layer.borderWidth = 4
         button.backgroundColor = UIColor.white
         button.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
@@ -150,7 +150,7 @@ class FriendsListViewController: UIViewController {
                                 if self.addFriendButton.imageView?.image != #imageLiteral(resourceName: "icons8-add") {
                                     self.addFriendButton.pop()
                                     self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-add"), for: .normal)
-                                    self.addFriendButton.tintColor = WKTheme.buttonBlue
+                                    self.addFriendButton.tintColor = Theme.buttonBlue
                                 }
                                 return
                             } else if diff.type == .removed {
@@ -414,7 +414,7 @@ class FriendsListViewController: UIViewController {
 // MARK: - UI
 private extension FriendsListViewController {
     func updateView() {
-        view.backgroundColor = WKTheme.ultraLightGray
+        view.backgroundColor = Theme.ultraLightGray
         view.addSubviews([tableView, cameraButton])
         setupConstraints()
         setupNavigationBar()
@@ -645,7 +645,7 @@ extension FriendsListViewController: UITableViewDelegate {
         label.frame = headerView.frame
 
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        label.textColor = WKTheme.ultraDarkGray
+        label.textColor = Theme.ultraDarkGray
         
         switch section {
         case 0 where UserController.shared.bestFriendsChats.count > 0:
@@ -658,7 +658,7 @@ extension FriendsListViewController: UITableViewDelegate {
             label.textAlignment = .center
             label.text = sectionHeaders[section]
             label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-            label.textColor = WKTheme.darkGray
+            label.textColor = Theme.darkGray
             label.numberOfLines = 0
         default:
             print("SECTION ERROR 🤶\(#function)")

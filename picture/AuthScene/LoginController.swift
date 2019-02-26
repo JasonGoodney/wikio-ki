@@ -104,7 +104,7 @@ class LoginController: UIViewController, LoginFlowHandler {
     fileprivate lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Forgot password?", for: .normal)
-        button.setTitleColor(WKTheme.textColor, for: .normal)
+        button.setTitleColor(Theme.textColor, for: .normal)
         button.addTarget(self, action: #selector(handleForgotPassword), for: .touchUpInside)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         return button
@@ -146,7 +146,7 @@ class LoginController: UIViewController, LoginFlowHandler {
         loginViewModel.isFormValid.bind { [unowned self] (isFormValid) in
             guard let isFormValid = isFormValid else { return }
             self.loginButton.isEnabled = isFormValid
-            self.loginButton.backgroundColor = isFormValid ? WKTheme.buttonBlue : .lightGray
+            self.loginButton.backgroundColor = isFormValid ? Theme.buttonBlue : .lightGray
             self.loginButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
         }
         loginViewModel.isLoggingIn.bind { [unowned self] (isRegistering) in
@@ -186,7 +186,7 @@ class LoginController: UIViewController, LoginFlowHandler {
         
         backToRegisterButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
-        let attributedText = NSMutableAttributedString(string: "Don't have an account?  ", attributes: [.foregroundColor: WKTheme.textColor])
+        let attributedText = NSMutableAttributedString(string: "Don't have an account?  ", attributes: [.foregroundColor: Theme.textColor])
         attributedText.append(NSAttributedString(string: "Create one", attributes: [.foregroundColor: #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)]))
         
         backToRegisterButton.setAttributedTitle(attributedText, for: .normal)

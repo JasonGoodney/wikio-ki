@@ -226,12 +226,12 @@ private extension ProfileDetailsViewController {
         if state == .add || state == .requested {
             addFriendButton.textLabel.text = "+ \(state.rawValue)"
             addFriendButton.backgroundColor = .white
-            addFriendButton.textLabel.textColor = WKTheme.textColor
+            addFriendButton.textLabel.textColor = Theme.textColor
             addFriendButton.layer.borderWidth = 1
         } else {
             let symbol = state == .added ? "✓ " : ""
             addFriendButton.textLabel.text = "\(symbol)\(state.rawValue)"
-            addFriendButton.backgroundColor = WKTheme.buttonBlue
+            addFriendButton.backgroundColor = Theme.buttonBlue
             addFriendButton.textLabel.textColor = .white
             addFriendButton.layer.borderWidth = 0
         }

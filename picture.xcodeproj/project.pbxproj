@@ -38,6 +38,7 @@
 		D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */; };
 		D74F7E2621D06AD500B5EF28 /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */; };
 		D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */; };
+		D750F8DC22245BD100F2BF47 /* SendToPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D750F8DB22245BD100F2BF47 /* SendToPreviewView.swift */; };
 		D7591F0421C2C1B700B3EAAD /* FriendsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7591F0321C2C1B700B3EAAD /* FriendsListViewController.swift */; };
 		D7591F0721C2C23300B3EAAD /* FriendsListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7591F0621C2C23300B3EAAD /* FriendsListCell.swift */; };
 		D7591F0A21C2C26100B3EAAD /* ReuseIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7591F0921C2C26100B3EAAD /* ReuseIdentifiable.swift */; };
@@ -249,6 +250,7 @@
 		D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitleLabel.swift; sourceTree = "<group>"; };
+		D750F8DB22245BD100F2BF47 /* SendToPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendToPreviewView.swift; sourceTree = "<group>"; };
 		D7591F0321C2C1B700B3EAAD /* FriendsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsListViewController.swift; sourceTree = "<group>"; };
 		D7591F0621C2C23300B3EAAD /* FriendsListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsListCell.swift; sourceTree = "<group>"; };
 		D7591F0921C2C26100B3EAAD /* ReuseIdentifiable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReuseIdentifiable.swift; sourceTree = "<group>"; };
@@ -578,6 +580,7 @@
 				D7591F1621C2DF2E00B3EAAD /* CameraViewController.swift */,
 				D7591F1A21C3141E00B3EAAD /* PreviewMediaViewController.swift */,
 				D79524EF220757BE00455E6F /* SendToViewController.swift */,
+				D750F8DB22245BD100F2BF47 /* SendToPreviewView.swift */,
 				D7591F1B21C3141E00B3EAAD /* PhotoViewController.swift */,
 				D7591F2021C415F400B3EAAD /* CaptionTextField.swift */,
 			);
@@ -919,6 +922,7 @@
 				D73B8B0221C8865B00DD4CA4 /* ViewMessageCell.swift in Sources */,
 				D726383321E13E7E00FDA242 /* UIColor.swift in Sources */,
 				D778E69121CDD79B005C6C96 /* RegisterViewModel.swift in Sources */,
+				D750F8DC22245BD100F2BF47 /* SendToPreviewView.swift in Sources */,
 				D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */,
 				D7F8992621F12F8600020A68 /* JGProgressHUD.swift in Sources */,
 				D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */,

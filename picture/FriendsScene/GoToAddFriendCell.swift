@@ -21,7 +21,7 @@ class GoToAddFriendCell: UITableViewCell, ReuseIdentifiable {
         button.setTitle("Add Friends", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         button.addTarget(self, action: #selector(goToButtonTapped), for: .touchUpInside)
-        button.backgroundColor = WKTheme.buttonBlue
+        button.backgroundColor = Theme.buttonBlue
         return button
     }()
     

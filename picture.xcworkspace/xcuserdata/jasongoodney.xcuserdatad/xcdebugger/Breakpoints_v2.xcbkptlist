@@ -42,12 +42,12 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
-                  timestampString = "572757439.111338"
+                  timestampString = "572845377.022194"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "129"
                   endingLineNumber = "129"
-                  offsetFromSymbolStart = "854">
+                  offsetFromSymbolStart = "636">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -57,12 +57,12 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
-                  timestampString = "572757439.115115"
+                  timestampString = "572845377.025648"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "130"
                   endingLineNumber = "130"
-                  offsetFromSymbolStart = "37">
+                  offsetFromSymbolStart = "44">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -90,12 +90,12 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
-                  timestampString = "572757439.187902"
+                  timestampString = "572845377.033035"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "134"
                   endingLineNumber = "134"
-                  offsetFromSymbolStart = "1134">
+                  offsetFromSymbolStart = "852">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -105,12 +105,12 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
-                  timestampString = "572757439.1913821"
+                  timestampString = "572845377.035432"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "135"
                   endingLineNumber = "135"
-                  offsetFromSymbolStart = "53">
+                  offsetFromSymbolStart = "48">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -138,7 +138,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.607448"
+            timestampString = "572845376.230087"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "165"
@@ -282,7 +282,7 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/StorageService/StorageService+StoreMedia.swift"
-                  timestampString = "572757436.404446"
+                  timestampString = "572845377.0620739"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "79"
@@ -297,7 +297,7 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/StorageService/StorageService+StoreMedia.swift"
-                  timestampString = "572757436.407249"
+                  timestampString = "572845377.065586"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "80"
@@ -330,7 +330,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.6081049"
+            timestampString = "572845376.230502"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "95"
@@ -346,7 +346,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.608259"
+            timestampString = "572845376.230583"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "84"
@@ -362,7 +362,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.608417"
+            timestampString = "572845376.230644"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "114"
@@ -378,7 +378,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.608556"
+            timestampString = "572845376.2307121"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "116"
@@ -394,7 +394,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.608701"
+            timestampString = "572845376.230803"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "162"
@@ -410,7 +410,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.608847"
+            timestampString = "572845376.230898"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "92"
@@ -448,22 +448,6 @@
             startingLineNumber = "95"
             endingLineNumber = "95"
             landmarkName = "video(url:inView:caption:completion:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "picture/CameraScene/PreviewMediaViewController.swift"
-            timestampString = "572757435.6091239"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "429"
-            endingLineNumber = "429"
-            landmarkName = "sendButtonTapped(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -570,45 +554,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/CameraScene/PreviewMediaViewController.swift"
-            timestampString = "572757435.609605"
+            timestampString = "572845376.231545"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "642"
-            endingLineNumber = "642"
+            startingLineNumber = "681"
+            endingLineNumber = "681"
             landmarkName = "saveToCameraRollButtonTapped()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in closure #2 (__C.PHAuthorizationStatus) -&gt; () in picture.PreviewMediaViewController.(saveToCameraRollButtonTapped in _D6D278F4DF237860B254151523697CF0)() -&gt; ()"
-                  moduleName = "picture"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/CameraScene/PreviewMediaViewController.swift"
-                  timestampString = "572757439.303233"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "642"
-                  endingLineNumber = "642"
-                  offsetFromSymbolStart = "232">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in closure #2 (__C.PHAuthorizationStatus) -&gt; () in picture.PreviewMediaViewController.(saveToCameraRollButtonTapped in _D6D278F4DF237860B254151523697CF0)() -&gt; ()"
-                  moduleName = "picture"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/CameraScene/PreviewMediaViewController.swift"
-                  timestampString = "572757439.3069431"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "642"
-                  endingLineNumber = "642"
-                  offsetFromSymbolStart = "259">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -650,7 +602,7 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Fetch.swift"
-                  timestampString = "572757436.4814661"
+                  timestampString = "572845377.116208"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "92"
@@ -665,7 +617,7 @@
                   moduleName = "picture"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Fetch.swift"
-                  timestampString = "572757436.484087"
+                  timestampString = "572845377.1185631"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "93"
@@ -778,7 +730,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "572757435.610182"
+            timestampString = "572845376.2321939"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "72"
@@ -1034,7 +986,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListCell.swift"
-            timestampString = "572757435.6111799"
+            timestampString = "572845376.23294"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "124"
@@ -1050,7 +1002,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListCell.swift"
-            timestampString = "572757435.611549"
+            timestampString = "572845376.2330101"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "117"
@@ -1066,7 +1018,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.61172"
+            timestampString = "572845376.233066"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "515"
@@ -1161,88 +1113,8 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "picture/CameraScene/PreviewMediaViewController.swift"
-            timestampString = "572757435.612195"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "370"
-            endingLineNumber = "370"
-            landmarkName = "sendButtonTapped(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "picture/CameraScene/PreviewMediaViewController.swift"
-            timestampString = "572757435.612339"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "375"
-            endingLineNumber = "375"
-            landmarkName = "sendButtonTapped(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "picture/CameraScene/PreviewMediaViewController.swift"
-            timestampString = "572757435.612474"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "398"
-            endingLineNumber = "398"
-            landmarkName = "sendButtonTapped(_:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "picture.PreviewMediaViewController.sendButtonTapped(__C.UIButton) -&gt; ()"
-                  moduleName = "picture"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/CameraScene/PreviewMediaViewController.swift"
-                  timestampString = "571870673.252785"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "394"
-                  endingLineNumber = "394"
-                  offsetFromSymbolStart = "3180">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "picture.PreviewMediaViewController.sendButtonTapped(__C.UIButton) -&gt; ()"
-                  moduleName = "picture"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/CameraScene/PreviewMediaViewController.swift"
-                  timestampString = "571870673.25666"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "394"
-                  endingLineNumber = "394"
-                  offsetFromSymbolStart = "3228">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListCell.swift"
-            timestampString = "572757435.61261"
+            timestampString = "572845376.233295"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "244"
@@ -1258,7 +1130,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.612765"
+            timestampString = "572845376.233348"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "839"
@@ -1274,7 +1146,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.6129889"
+            timestampString = "572845376.2334"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "567"
@@ -1290,7 +1162,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListCell.swift"
-            timestampString = "572757435.613175"
+            timestampString = "572845376.233451"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "186"
@@ -1306,7 +1178,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListCell.swift"
-            timestampString = "572757435.613337"
+            timestampString = "572845376.233503"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "162"
@@ -1322,7 +1194,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.613499"
+            timestampString = "572845376.2335531"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "708"
@@ -1338,7 +1210,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.6136841"
+            timestampString = "572845376.233604"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "558"
@@ -1450,7 +1322,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListCell.swift"
-            timestampString = "572757435.614123"
+            timestampString = "572845376.233727"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "151"
@@ -1466,7 +1338,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.614262"
+            timestampString = "572845376.23378"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "845"
@@ -1482,7 +1354,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.614434"
+            timestampString = "572845376.23383"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "844"
@@ -1545,22 +1417,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "picture/CameraScene/PreviewMediaViewController.swift"
-            timestampString = "572757435.614747"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "484"
-            endingLineNumber = "484"
-            landmarkName = "resignCaptionEditButtonTapped(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "picture/DatabaseService/SendMessage.swift"
             timestampString = "572757435.614876"
             startingColumnNumber = "9223372036854775807"
@@ -1578,7 +1434,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.61499"
+            timestampString = "572845376.233954"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "782"
@@ -1594,7 +1450,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/FriendsScene/FriendsListViewController.swift"
-            timestampString = "572757435.615121"
+            timestampString = "572845376.234005"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "786"
@@ -1616,6 +1472,22 @@
             startingLineNumber = "141"
             endingLineNumber = "141"
             landmarkName = "tableView(_:didSelectRowAt:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "picture/CameraScene/PreviewMediaViewController.swift"
+            timestampString = "572845376.2340961"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "710"
+            endingLineNumber = "710"
+            landmarkName = "saveToCameraRoll(image:videoURL:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

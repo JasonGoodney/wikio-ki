@@ -26,7 +26,7 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
     let timestampLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 11, weight: .light)
-        label.textColor = WKTheme.darkGray
+        label.textColor = Theme.darkGray
         return label
     }()
     
@@ -47,7 +47,7 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
         let view = OpenMessageView()
         view.layer.cornerRadius = 10
         view.layer.borderWidth = 0.75
-        view.layer.borderColor = WKTheme.gainsboro.cgColor
+        view.layer.borderColor = Theme.gainsboro.cgColor
         //view.heightAnchor.constraint(equalToConstant: 56).isActive = true
         return view
     }()
@@ -72,13 +72,13 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
   
         if sender.uid == UserController.shared.currentUser?.uid {
             usernameLabel.text = "ME"
-            usernameLabel.textColor = WKTheme.meColor
-            separatorView.backgroundColor = WKTheme.meColor
+            usernameLabel.textColor = Theme.meColor
+            separatorView.backgroundColor = Theme.meColor
             
         } else {
             usernameLabel.text = sender.username.uppercased()
-            usernameLabel.textColor = WKTheme.friendColor
-            separatorView.backgroundColor = WKTheme.friendColor
+            usernameLabel.textColor = Theme.friendColor
+            separatorView.backgroundColor = Theme.friendColor
         }
         
         openMessageView.configure(withMessage: message)

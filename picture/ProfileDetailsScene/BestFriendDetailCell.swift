@@ -20,7 +20,7 @@ class SendToCell: CheckmarkToggleCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        separatorView.backgroundColor = WKTheme.ultraLightGray
+        separatorView.backgroundColor = Theme.ultraLightGray
         addSubview(separatorView)
         separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: frame.width, height: 1))
         
@@ -66,13 +66,13 @@ class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
     
     func toggleOn() {
         selectionButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
-        selectionButton.tintColor = WKTheme.buttonBlue
+        selectionButton.tintColor = Theme.buttonBlue
         selectionButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
     }
     
     func toggleOff() {
         selectionButton.setImage(#imageLiteral(resourceName: "icons8-circled").withRenderingMode(.alwaysTemplate), for: .normal)
-        selectionButton.tintColor = WKTheme.gainsboro
+        selectionButton.tintColor = Theme.gainsboro
         selectionButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
     }
     

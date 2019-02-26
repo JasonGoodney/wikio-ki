@@ -60,8 +60,8 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         button.imageView?.contentMode = .scaleAspectFill
         button.clipsToBounds = true
         button.layer.borderWidth = 1
-        button.layer.borderColor = WKTheme.gainsboro.cgColor
-        button.tintColor = WKTheme.gainsboro
+        button.layer.borderColor = Theme.gainsboro.cgColor
+        button.tintColor = Theme.gainsboro
         return button
     }()
     
@@ -168,8 +168,8 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         
         goToLoginButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
-        let attributedText = NSMutableAttributedString(string: "Have an account already?  ", attributes: [.foregroundColor: WKTheme.textColor])
-        attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: WKTheme.buttonBlue]))
+        let attributedText = NSMutableAttributedString(string: "Have an account already?  ", attributes: [.foregroundColor: Theme.textColor])
+        attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: Theme.buttonBlue]))
         
         // #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)
         
@@ -210,7 +210,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
             guard let isFormValid = isFormValid else { return }
             self.registerButton.isEnabled = isFormValid
             if isFormValid {
-                self.registerButton.backgroundColor = WKTheme.buttonBlue
+                self.registerButton.backgroundColor = Theme.buttonBlue
                 self.registerButton.setTitleColor(.white, for: .normal)
             } else {
                 self.registerButton.backgroundColor = .lightGray

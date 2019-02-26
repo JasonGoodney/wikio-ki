@@ -25,6 +25,7 @@ class PreviewMediaViewController: UIViewController {
     private var characterLimit = 140
     private var captionIsInSuperview = false
     private var captionCanBeDragged = false
+    private var previousCaptionPoint: CGPoint!
     
     // Drawing
     
@@ -57,6 +58,16 @@ class PreviewMediaViewController: UIViewController {
         return true
     }
     
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        return [.bottom, .top]
+    }
+    
+    private lazy var editContainerView: UIView = {
+        let view = UIView()
+        view.addSubviews([sketchView, captionTextView])
+        return view
+    }()
+    
     private let dimView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
@@ -71,7 +82,7 @@ class PreviewMediaViewController: UIViewController {
     private let soundOnImage = ""
     private let soundOffImage = ""
     private let sendImage = ""
-    private let drawImage = #imageLiteral(resourceName: "icons8-brush_filled").withRenderingMode(.alwaysTemplate)
+    private let drawImage = #imageLiteral(resourceName: "icons8-pencil").withRenderingMode(.alwaysTemplate)
     private let undoImage = #imageLiteral(resourceName: "icons8-undo").withRenderingMode(.alwaysTemplate)
     private let confirmImage = #imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate)
     private let eraserImage = #imageLiteral(resourceName: "icons8-eraser").withRenderingMode(.alwaysTemplate)
@@ -180,8 +191,8 @@ class PreviewMediaViewController: UIViewController {
         button.heightAnchor.constraint(equalToConstant: 56).isActive = true
         button.widthAnchor.constraint(equalToConstant: 56).isActive = true
         button.layer.cornerRadius = 28
-        button.imageEdgeInsets = .init(top: 8, left: 9, bottom: 8, right: 7)
-        button.backgroundColor = WKTheme.buttonBlue
+        button.imageEdgeInsets = .init(top: 8, left: 9.5, bottom: 8, right: 6.5)
+        button.backgroundColor = Theme.buttonBlue
         button.addShadow()
         return button
     }()
@@ -347,15 +358,25 @@ class PreviewMediaViewController: UIViewController {
         
     }
     
+    func generateOutput() {
+        
+    }
+    
     @objc func sendButtonTapped(_ sender: UIButton) {
         if chat == nil {
-            let addMoreFriendsVC = SendToViewController()
-            present(addMoreFriendsVC, animated: false, completion: nil)
+            var sentToVC: SendToViewController
+            if let image = image {
+                let imageEdits = editContainerView.screenshot()
+                let editedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
+                sentToVC = SendToViewController(image: editedImage)
+                present(sentToVC, animated: false, completion: nil)
+            }
+            
+            
             return
         }
-
-        self.add(loadingViewController)
-        let hud = self.loadingViewController.hud
+        
+        let hud = JGProgressHUD(style: .dark)
         
         guard let currentUser = UserController.shared.currentUser,
             let friend = friend else { return }
@@ -379,6 +400,7 @@ class PreviewMediaViewController: UIViewController {
             let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
             mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+
             self.dismiss(animated: false)
             self.presentingViewController?.dismiss(animated: false) {
                 let dbs = DatabaseService()
@@ -398,6 +420,8 @@ class PreviewMediaViewController: UIViewController {
         } else if let image = image {
             mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
             messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+
+            
             self.dismiss(animated: false)
             self.presentingViewController?.dismiss(animated: false) {
                 let dbs = DatabaseService()
@@ -460,19 +484,25 @@ class PreviewMediaViewController: UIViewController {
         }
     }
     
-    @objc private  func addCaptionButton(_ sender: UIButton) {
+    @objc private func addCaptionButton(_ sender: UIButton) {
         handleCaptionResponder()
     }
     
     @objc private func captionDragGestureDragged(_ recognizer: UIPanGestureRecognizer) {
         if captionCanBeDragged {
-            let translation = recognizer.translation(in: self.view)
-            let height = UIScreen.main.bounds.height
-            if let view = recognizer.view, view.frame.minY > 0 , view.frame.maxY < height {
-                view.center = CGPoint(x:view.center.x,
-                                      y:view.center.y + translation.y)
+            let view = editContainerView
+            let translation = recognizer.translation(in: view)
+            switch recognizer.state {
+            case .began, .changed:
+                if let view = recognizer.view {
+                    view.center = CGPoint(x:view.center.x,
+                                          y:view.center.y + translation.y)
+                }
+                recognizer.setTranslation(CGPoint.zero, in: view)
+                break
+            default:
+                break
             }
-            recognizer.setTranslation(CGPoint.zero, in: self.view)
         }
     }
     
@@ -502,12 +532,12 @@ class PreviewMediaViewController: UIViewController {
                 captionTextView.becomeFirstResponder()
                 dimView.isHidden = false
                 cancelButton.isHidden = true
-                resignCaptionEditButton.isHidden = false
+                
             } else if captionTextView.text == "" {
                 captionTextView.isHidden = true
                 dimView.isHidden = true
                 cancelButton.isHidden = false
-                resignCaptionEditButton.isHidden = true
+                
                 captionIsInSuperview = false
                 captionTextView.resignFirstResponder()
             } else {
@@ -519,25 +549,32 @@ class PreviewMediaViewController: UIViewController {
                 captionTextView.isHidden = false
                 dimView.isHidden = true
                 cancelButton.isHidden = false
-                resignCaptionEditButton.isHidden = true
+                
             }
         }
         // Caption Not Active
         else {
-            
             captionTextView.becomeFirstResponder()
             captionTextView.isHidden = false
             dimView.isHidden = false
             cancelButton.isHidden = true
-            resignCaptionEditButton.isHidden = false
+            //resignCaptionEditButton.isHidden = false
             captionIsInSuperview = true
+        }
+        
+        if captionTextView.isFirstResponder {
+            toggleDrawingButton.isHidden = true
+            addCaptionButton.setImage(confirmImage, for: .normal)
+        } else {
+            toggleDrawingButton.isHidden = false
+            addCaptionButton.setImage(addCaptionImage, for: .normal)
         }
     }
     
     @objc private func addMoreFriends() {
-        let addMoreFriendsViewController = SendToViewController()
-        let navVC = UINavigationController(rootViewController: addMoreFriendsViewController)
-        present(navVC, animated: true, completion: nil)
+//        let addMoreFriendsViewController = SendToViewController()
+//        let navVC = UINavigationController(rootViewController: addMoreFriendsViewController)
+//        present(navVC, animated: true, completion: nil)
     }
     
     @objc func undoButtonTapped() {
@@ -594,6 +631,7 @@ class PreviewMediaViewController: UIViewController {
         toggleDrawingButton.setImage(confirmImage, for: .normal)
         captionTextView.isHidden = captionTextView.text == ""
         screenTapButton.isHidden = true
+        sendButton.isHidden = true
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = true
         }
@@ -611,6 +649,7 @@ class PreviewMediaViewController: UIViewController {
         sketchView.isUserInteractionEnabled = false
         toggleDrawingButton.setImage(drawImage, for: .normal)
         screenTapButton.isHidden = false
+        sendButton.isHidden = false
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = false
         }
@@ -655,16 +694,20 @@ class PreviewMediaViewController: UIViewController {
         
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Saving"
-        //hud.show(in: self.view)
+        hud.show(in: self.view)
 
         if var image = image {
             let processor = ImageProcessor()
-            if sketchView.hasDrawing {
-                image = image.addOverlay(sketchView, size: view.frame.size)
-            }
-            if captionTextView.text != "" {
-                image = image.addOverlay(captionTextView, size: view.frame.size)
-            }
+//            if sketchView.hasDrawing {
+//                image = image.addOverlay(sketchView, size: view.frame.size)
+//            }
+//            if captionTextView.text != "" {
+//                image = image.addOverlay(captionTextView, size: view.frame.size)
+//            }
+            
+            let imageEdits = editContainerView.screenshot()
+            let edittedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
+            hud.dismiss()
             //let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
 //
 //            PHPhotoLibrary.shared().performChanges({
@@ -745,7 +788,9 @@ private extension PreviewMediaViewController {
         let editButtonsStackView = UIStackView(arrangedSubviews: [toggleVideoSoundButton, addCaptionButton, toggleDrawingButton])
         editButtonsStackView.spacing = 16
 
-        view.addSubviews([sketchView, colorSlider, dimView, captionTextView, cancelButton, editButtonsStackView, resignCaptionEditButton, undoButton, penButton, eraserButton, sendButton, sendToLabel, saveToCameraRollButton, screenTapButton])
+        view.addSubviews([dimView, editContainerView, colorSlider, cancelButton, editButtonsStackView, resignCaptionEditButton, undoButton, penButton, eraserButton, sendButton, sendToLabel, saveToCameraRollButton])
+        
+        editContainerView.isUserInteractionEnabled = true
         
         if player != nil {
             toggleVideoSoundButton.isHidden = false
@@ -757,13 +802,13 @@ private extension PreviewMediaViewController {
         let top: CGFloat = 16
         let right: CGFloat = 16
         let bottom: CGFloat = 16
+        
+        editContainerView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
 
         dimView.anchor(view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
         
-        captionTextView.anchor(nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 36)
-        captionTextView.anchorCenterXToSuperview()
-        captionTextView.anchorCenterYToSuperview()
-
+        captionTextView.frame = CGRect(x: 0, y: view.frame.midY, width: view.frame.width, height: 36)
+        
         editButtonsStackView.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: top, left: 0, bottom: 0, right: right))
         editButtonsStackView.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
 
@@ -781,7 +826,7 @@ private extension PreviewMediaViewController {
         
         saveToCameraRollButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: left, bottom: bottom, right: 0))
         
-        sketchView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
+        sketchView.anchor(top: editContainerView.topAnchor, leading: editContainerView.leadingAnchor, bottom: editContainerView.bottomAnchor, trailing: editContainerView.trailingAnchor)
 
         colorSlider.anchor(top: editButtonsStackView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0), size: .init(width: 15, height: 150))
         
@@ -795,23 +840,25 @@ private extension PreviewMediaViewController {
         undoButton.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
         undoButton.anchor(top: penButton.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
         
-        screenTapButton.anchor(top: editButtonsStackView.bottomAnchor, leading: view.leadingAnchor, bottom: sendButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 20, right: 0))
+        //screenTapButton.anchor(top: editButtonsStackView.bottomAnchor, leading: view.leadingAnchor, bottom: sendButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 20, left: 0, bottom: 20, right: 0))
     }
 }
 
 extension PreviewMediaViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        
+        if captionIsInSuperview {
+            previousCaptionPoint = captionTextView.frame.origin
+        } else {
+            previousCaptionPoint = CGPoint(x: 0, y: view.frame.midY)
+        }
         handleCaptionResponder()
         textView.textAlignment = .left
         captionCanBeDragged = false
-        captionTextView.anchorCenterXToSuperview()
-        captionTextView.anchorCenterYToSuperview()
-        captionTextView.layoutIfNeeded()
+        captionTextView.frame.origin = CGPoint(x: 0, y: view.frame.midY)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        #warning("Move textview back to it's position before editing")
+        captionTextView.frame.origin = previousCaptionPoint
         captionCanBeDragged = true
         if textView.text?.last == " " {
             textView.text?.removeLast()
@@ -888,9 +935,14 @@ extension PreviewMediaViewController: SketchViewDelegate {
         
         UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
             self.view.subviews.forEach({ (subview) in
-                if subview == self.sketchView || subview == self.playerController?.view || subview == self.backgroundImageView {
+                if subview == self.sketchView || subview == self.playerController?.view || subview == self.backgroundImageView || subview == self.editContainerView {
                     return
                 }
+                
+                if subview == self.captionTextView {
+                    subview.alpha = alpha
+                }
+                
                 subview.alpha = alpha
             })
             

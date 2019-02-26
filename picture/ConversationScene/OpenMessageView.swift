@@ -25,7 +25,7 @@ class OpenMessageView: UIView {
     
     private let statusLabel: UILabel = {
         let label = UILabel()
-        label.textColor = WKTheme.textColor
+        label.textColor = Theme.textColor
         return label
     }()
     
@@ -39,7 +39,7 @@ class OpenMessageView: UIView {
     private let sendingIndicatorView: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
         view.hidesWhenStopped = true
-        view.color = WKTheme.textColor
+        view.color = Theme.textColor
         view.heightAnchor.constraint(equalToConstant: 20).isActive = true
         view.widthAnchor.constraint(equalToConstant: 20).isActive = true
         return view

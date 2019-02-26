@@ -44,4 +44,47 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return img!
     }
+    
+    public func scale(x:CGFloat) -> UIImage {
+        if x == 1.0 {
+            return self
+        }
+        
+        let newSize = CGSize.init(width: self.size.width * x, height: self.size.height * x)
+        
+        UIGraphicsBeginImageContext(newSize)
+        self.draw(in: CGRect.init(x: 0, y: 0, width: newSize.width, height: newSize.height))
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return img!
+    }
+    
+    public func imageMontage(img:UIImage, bgColor:UIColor?, size:CGSize) -> UIImage {
+        let newImg = self.scale(x: size.width / self.size.width)
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+        
+        if let c = bgColor {
+            c.set()
+            UIRectFill(CGRect.init(x: 0, y: 0, width: size.width, height: size.height))
+        }
+        
+        newImg.draw(in: CGRect.init(x: (size.width - newImg.size.width) / 2, y: (size.height - newImg.size.height) / 2, width: newImg.size.width, height: newImg.size.height), blendMode: CGBlendMode.normal, alpha: 1.0)
+        img.draw(in: CGRect.init(x: 0, y: 0, width: size.width, height: size.height), blendMode: CGBlendMode.normal, alpha: 1.0)
+        
+        let result = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return result!
+    }
+}
+
+extension UIView {
+    public func screenshot() -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, UIScreen.main.scale)
+        self.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
+    }
 }

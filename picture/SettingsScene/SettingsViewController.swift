@@ -87,7 +87,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
     private lazy var changeProfileImageButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Change Profile Photo", for: .normal)
-        button.setTitleColor(WKTheme.buttonBlue, for: .normal)
+        button.setTitleColor(Theme.buttonBlue, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(handleEditProfileImage), for: .touchUpInside)
         return button
@@ -159,7 +159,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             case .email where Auth.auth().currentUser != nil && !(Auth.auth().currentUser?.isEmailVerified)!:
                 let warningView = UIImageView(frame: .init(x: 0, y: 0, width: 16, height: 16))
                 warningView.image = #imageLiteral(resourceName: "icons8-error").withRenderingMode(.alwaysTemplate)
-                warningView.tintColor = WKTheme.warningYellow
+                warningView.tintColor = Theme.warningYellow
                 cell.accessoryView = warningView
             case .username:
                 cell.accessoryType = .none

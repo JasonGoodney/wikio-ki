@@ -17,7 +17,7 @@ class EditSettingViewController: UIViewController {
     
     weak var delegate: EditSettingDelegate?
     
-    let labelTextColor = WKTheme.textColor
+    let labelTextColor = Theme.textColor
     let labelFont = UIFont.systemFont(ofSize: 14, weight: .medium)
     
     let navigationTitle: String

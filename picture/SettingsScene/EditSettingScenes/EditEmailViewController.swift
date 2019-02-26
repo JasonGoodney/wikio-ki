@@ -42,7 +42,7 @@ class EditEmailViewController: EditSettingViewController {
             verifyEmailLabel.isUserInteractionEnabled = false
         } else {
             let attributedText = NSMutableAttributedString(string: "Verify your email address.  ", attributes: [.foregroundColor: labelTextColor])
-            attributedText.append(NSAttributedString(string: "Tap here.", attributes: [.foregroundColor: WKTheme.buttonBlue]))
+            attributedText.append(NSAttributedString(string: "Tap here.", attributes: [.foregroundColor: Theme.buttonBlue]))
             verifyEmailLabel.setAttributedTitle(attributedText, for: .normal)
             verifyEmailLabel.isUserInteractionEnabled = true
         }

@@ -29,7 +29,7 @@ class ProfileImageButton: PopButton {
 //        backgroundColor = .lightGray
         imageView?.contentMode = .scaleAspectFill
         setImage(placeholderProfileImage, for: .normal)
-        tintColor = WKTheme.textColor
+        tintColor = Theme.textColor
 
         addTarget(self, action: #selector(handleTap), for: .touchUpInside)
     }
