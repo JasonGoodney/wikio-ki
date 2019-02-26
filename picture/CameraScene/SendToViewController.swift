@@ -53,14 +53,18 @@ class SendToViewController: UIViewController {
     }()
     
     private var sendToPreviewView: SendToPreviewView!
+    private var image: UIImage? = nil
+    private var videoURL: URL? = nil
     
     init(image: UIImage) {
         self.sendToPreviewView = SendToPreviewView(image: image)
+        self.image = image
         super.init(nibName: nil, bundle: nil)
     }
     
     init(videoURL: URL) {
         self.sendToPreviewView = SendToPreviewView(videoURL: videoURL)
+        self.videoURL = videoURL
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -107,6 +111,19 @@ private extension SendToViewController {
         
         print(sendToUsers.map({ $0.friend.username }))
         
+        let mediaData = image!.jpegData(compressionQuality: Compression.photoQuality)
+        let thumbnailData = image!.jpegData(compressionQuality: Compression.thumbnailQuality)
+        for (friend, chat) in sendToUsers {
+            
+            let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: .photo)
+            let dbs = DatabaseService()
+            dbs.send(message, from: UserController.shared.currentUser!, to: friend, chat: chat, mediaData: mediaData, thumbnailData: thumbnailData, completion: { (error) in
+                if let error = error {
+                    print(error)
+                }
+                print("Sent from DataBaseService")
+            })
+        }
     }
 }
 
