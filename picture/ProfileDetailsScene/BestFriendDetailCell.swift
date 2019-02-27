@@ -33,10 +33,10 @@ class SendToCell: CheckmarkToggleCell {
 }
 
 class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
-    
-    var isChecked = false {
+
+    override var isSelected: Bool {
         didSet {
-            if isChecked {
+            if isSelected {
                 toggleOn()
             } else {
                 toggleOff()

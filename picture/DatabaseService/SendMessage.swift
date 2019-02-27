@@ -13,11 +13,6 @@ import SDWebImage
 
 extension DatabaseService {
     
-    func sendMessage(from currentUser: User, to friend: User, chat: Chat, message: Message, completion: @escaping (Error?) -> Void) {
-        
-        //sendMessage(from: currentUser, to: friend, chat: chat, caption: message.caption, messageType: message.messageType, mediaData: mediaData, thumbnailData: nil, completion: completion)
-    }
-    
     func send(_ message: Message, from currentUser: User, to friend: User, chat: Chat, mediaData: Data?, thumbnailData: Data?, completion: @escaping (Error?) -> Void) {
         
 
@@ -96,5 +91,65 @@ extension DatabaseService {
             print("No image data?")
             return
         }
+    }
+    
+    func sendMessage(_ message: Message, from currentUser: User, to friend: User, chat: Chat, completion: @escaping (Error?) -> Void) {
+        
+        
+        let chatUid = chat.chatUid
+        print("chatUID: \(chatUid)")
+        
+            let dbs = DatabaseService()
+            dbs.save(message, in: chat, completion: { (error) in
+                if let error = error {
+                    completion(error)
+                    return
+                }
+                print("Sent message from \(currentUser.username) to \(friend.username)")
+
+                let fields: [String: Any] = [
+                    Message.Keys.status: message.status.databaseValue(),
+                    Message.Keys.mediaURL: message.mediaURL as Any,
+                    Message.Keys.mediaThumbnailURL: message.mediaThumbnailURL as Any,
+                    Message.Keys.timestamp: message.timestamp as Any
+                ]
+                
+                dbs.update(message, in: chatUid, withFields: fields, completion: { (error) in
+                    if let error = error {
+                        completion(error)
+                        return
+                    }
+                    
+                    
+                    chat.unread?[friend.uid] = true
+                    chat.status = .delivered
+                    chat.isOpened = false
+                    chat.lastMessageSent = message.uid
+                    chat.lastSenderUid = currentUser.uid
+                    chat.isNewFriendship = false
+                    chat.isSending = false
+                    //chat.status = .sending
+                    chat.lastChatUpdateTimestamp = Date().timeIntervalSince1970
+                    chat.lastMessageSentType = message.messageType
+                    
+                    dbs.updateDocument(Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid), withFields: chat.dictionary(), completion: { (error) in
+                        if let error = error {
+                            completion(error)
+                            return
+                        }
+                        let friendsUnreadCollection = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chatUid).collection(friend.uid)
+                        friendsUnreadCollection.document(message.uid).setData(message.dictionary(), completion: { (error) in
+                            if let error = error {
+                                completion(error)
+                                return
+                            }
+                            print("Everything uploaded and set")
+                            completion(nil)
+                            
+                        })
+                        
+                    })
+                })
+        })
     }
 }

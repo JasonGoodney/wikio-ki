@@ -536,10 +536,15 @@ extension FriendsListViewController: UITableViewDataSource {
         
         return friendsListCell
     }
+    
+    
 }
 
 // MARK: - UITableViewDelegate
 extension FriendsListViewController: UITableViewDelegate {
+    
+    
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let messagesViewController = MessagesViewController()

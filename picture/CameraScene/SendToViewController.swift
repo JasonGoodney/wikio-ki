@@ -14,7 +14,9 @@ class SendToViewController: UIViewController {
         case preview = 0, bestFriends, recents, friends
     }
     
-    private var selectionsCount = 0
+    private var selectionsCount: Int {
+        return selectedNames.count
+    }
     private var selectedNames: Set<String> = []
     
     private lazy var tableView: UITableView = {
@@ -55,6 +57,10 @@ class SendToViewController: UIViewController {
     private var sendToPreviewView: SendToPreviewView!
     private var image: UIImage? = nil
     private var videoURL: URL? = nil
+    private var mediaData: Data? = nil
+    private var thumbnailData: Data? = nil
+    
+    private var selectedCells: [SendToCell] = []
     
     init(image: UIImage) {
         self.sendToPreviewView = SendToPreviewView(image: image)
@@ -76,6 +82,24 @@ class SendToViewController: UIViewController {
         super.viewDidLoad()
 
         setupLayout()
+        
+        if let image = image {
+            mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
+            thumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+        } else if let videoURL = videoURL {
+            let compressor = Compressor()
+            let outputURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
+            compressor.compressFile(urlToCompress: videoURL, outputURL: outputURL) { (url) in
+                do {
+                    guard let mediaData = try? Data(contentsOf: url) else { return }
+                    print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
+                    self.mediaData = mediaData
+                    self.thumbnailData = mediaData
+                } catch let error {
+                    print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                }
+            }
+        }
     }
     
 }
@@ -111,19 +135,40 @@ private extension SendToViewController {
         
         print(sendToUsers.map({ $0.friend.username }))
         
-        let mediaData = image!.jpegData(compressionQuality: Compression.photoQuality)
-        let thumbnailData = image!.jpegData(compressionQuality: Compression.thumbnailQuality)
-        for (friend, chat) in sendToUsers {
-            
-            let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: .photo)
-            let dbs = DatabaseService()
-            dbs.send(message, from: UserController.shared.currentUser!, to: friend, chat: chat, mediaData: mediaData, thumbnailData: thumbnailData, completion: { (error) in
+        var type: MessageType = .none
+        if image != nil {
+            type = .photo
+        } else if videoURL != nil {
+            type = .video
+        }
+        
+        self.view.window!.rootViewController?.dismiss(animated: false) {
+            let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: type)
+            StorageService.saveMediaToStorage(data: self.mediaData!, thumbnailData: self.thumbnailData!, for: message, completion: { (message, error) in
                 if let error = error {
                     print(error)
+                    return
                 }
-                print("Sent from DataBaseService")
+                print("Media Uploaded")
+                guard let message = message else {
+                    print("Message is nil")
+                    return
+                }
+                for (friend, chat) in sendToUsers {
+                    
+                    let dbs = DatabaseService()
+                    print("Sending to \(friend.username)")
+                    dbs.send(message, from: UserController.shared.currentUser!, to: friend, chat: chat, mediaData: self.mediaData, thumbnailData: self.thumbnailData, completion: { (error) in
+                        if let error = error {
+                            print(error)
+                        }
+                        print("Sent from DataBaseService")
+                    })
+                }
             })
+            
         }
+
     }
 }
 
@@ -174,6 +219,7 @@ extension SendToViewController: UITableViewDataSource {
         
         return cell
     }
+    
 }
 
 // MARK: - UITableViewDelegate
@@ -186,27 +232,17 @@ extension SendToViewController: UITableViewDelegate {
         guard let cell = tableView.cellForRow(at: indexPath) as? SendToCell else {
             return
         }
-        cell.isChecked = !cell.isChecked
+        guard let name = cell.textLabel?.text else { return }
         
-        let visibleCells = tableView.visibleCells
-        visibleCells.forEach({
-            guard let otherCell = $0 as? SendToCell else { return }
-            if let name = cell.textLabel?.text, name == otherCell.textLabel?.text  {
-                otherCell.isChecked = cell.isChecked
-                
-                if otherCell.isChecked {
-                    selectionsCount += 1
-                    selectedNames.insert(name)
-                } else {
-                    selectionsCount -= 1
-                    selectedNames.remove(name)
-                }
-            }
-            
-        })
+        cell.isSelected = !cell.isSelected
         
+        if cell.isSelected {
+            selectedNames.insert(name)
+        } else {
+            selectedNames.remove(name)
+        }
+
         if selectionsCount > 0 {
-//            sendButton.isHidden = false
             UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
                 self.sendButton.alpha = 1
             }, completion: nil)
@@ -215,6 +251,16 @@ extension SendToViewController: UITableViewDelegate {
                 self.sendButton.alpha = 0
             }, completion: nil)
         }
+        
+        
+        guard let sameCell = tableView.visibleCells.filter({
+            $0 != cell && name == $0.textLabel?.text
+        }).first else { return }
+        
+        sameCell.isSelected = cell.isSelected
+        
+        let sameCellIndexPath = tableView.indexPath(for: sameCell)!
+        tableView.reloadRows(at: [indexPath, sameCellIndexPath], with: .none)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -274,7 +320,7 @@ extension SendToViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
+
         let cornerRadius = 12
         var corners: UIRectCorner = []
         
@@ -313,5 +359,17 @@ extension SendToViewController: UITableViewDelegate {
                 break
             }
         }
+        
+        if indexPath.section == 0 {
+            return
+        }
+        
+        guard let name = cell.textLabel?.text else { return }
+        if selectedNames.contains(name) {
+            cell.isSelected = true
+        } else {
+            cell.isSelected = false
+        }
+        
     }
 }
