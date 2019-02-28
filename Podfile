@@ -12,6 +12,7 @@ target 'picture' do
   pod 'Firebase/Auth'
   pod 'Firebase/Storage'
   pod 'Firebase/Core'
+  pod 'Firebase/Messaging'
   
   # Other
   pod 'SDWebImage'
@@ -19,5 +20,7 @@ target 'picture' do
   pod 'SwiftyCam'
   pod 'Digger'
   pod 'NVActivityIndicatorView'
+  pod 'SVProgressHUD'
+  pod 'ColorSlider'
   
 end

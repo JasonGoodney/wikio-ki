@@ -20,7 +20,7 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "icons8-multiply-90").withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(unblockButtonTapped), for: .touchUpInside)
-        button.tintColor = WKTheme.darkGray
+        button.tintColor = Theme.darkGray
         return button
     }()
     

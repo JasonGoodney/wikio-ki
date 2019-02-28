@@ -26,7 +26,7 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
     let timestampLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 11, weight: .light)
-        label.textColor = WKTheme.darkGray
+        label.textColor = Theme.darkGray
         return label
     }()
     
@@ -44,11 +44,11 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
     }()
     
     let openMessageView: OpenMessageView = {
-        let view = OpenMessageView(frame: .zero)
+        let view = OpenMessageView()
         view.layer.cornerRadius = 10
         view.layer.borderWidth = 0.75
-        view.layer.borderColor = WKTheme.gainsboro.cgColor
-        view.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        view.layer.borderColor = Theme.gainsboro.cgColor
+        //view.heightAnchor.constraint(equalToConstant: 56).isActive = true
         return view
     }()
     
@@ -72,13 +72,13 @@ class MessagesCell: UICollectionViewCell, ReuseIdentifiable {
   
         if sender.uid == UserController.shared.currentUser?.uid {
             usernameLabel.text = "ME"
-            usernameLabel.textColor = WKTheme.meColor
-            separatorView.backgroundColor = WKTheme.meColor
+            usernameLabel.textColor = Theme.meColor
+            separatorView.backgroundColor = Theme.meColor
             
         } else {
             usernameLabel.text = sender.username.uppercased()
-            usernameLabel.textColor = WKTheme.friendColor
-            separatorView.backgroundColor = WKTheme.friendColor
+            usernameLabel.textColor = Theme.friendColor
+            separatorView.backgroundColor = Theme.friendColor
         }
         
         openMessageView.configure(withMessage: message)
@@ -101,12 +101,15 @@ private extension MessagesCell {
         let separatorHeight: CGFloat = 56
         let topStackViewHeight: CGFloat = cellHeight - separatorHeight - 8
         
-        topStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: messagesStackView.topAnchor, trailing: trailingAnchor, padding: .init(top: 4, left: 7, bottom: 4, right: 16), size: .init(width: 0, height: topStackViewHeight))
-        
-        separatorView.anchor(top: topStackView.bottomAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil, padding: .init(top: 4, left: 8, bottom: 0, right: 0), size: .init(width: 2, height: separatorHeight))
-        
-        
-        messagesStackView.anchor(top: separatorView.topAnchor, leading: separatorView.trailingAnchor, bottom: separatorView.bottomAnchor, trailing: trailingAnchor, padding: .init(top: 8, left: 8, bottom: 8, right: 16))
+        topStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: messagesStackView.topAnchor, trailing: trailingAnchor,
+                            padding: .init(top: 4, left: 7, bottom: 4, right: 16), size: .init(width: 0, height: topStackViewHeight))
+
+        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: nil,
+                             padding: .init(top: 0, left: 8, bottom: 0, right: 0), size: .init(width: 2, height: 0))
+
+
+        messagesStackView.anchor(top: separatorView.topAnchor, leading: separatorView.trailingAnchor, bottom: separatorView.bottomAnchor, trailing: trailingAnchor,
+                                 padding: .init(top: 8, left: 8, bottom: 8, right: 16))
 
     }
 }

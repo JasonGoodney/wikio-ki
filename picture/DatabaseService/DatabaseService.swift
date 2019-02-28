@@ -23,6 +23,10 @@ class DatabaseService {
         return Firestore.firestore().collection(Collection.users).document(path).collection(Collection.sentRequests)
     }
     
+    static func chatReference(forPath path: String) -> DocumentReference {
+        return Firestore.firestore().collection(Collection.chats).document(path)
+    }
+    
     enum Collection {
         static let chats = "chats"
         static let messages = "messages"
@@ -70,6 +74,20 @@ class DatabaseService {
     func updateDocument(_ document: DocumentReference, withFields fields: [String: Any], completion: @escaping ErrorCompletion) {
         
         document.setData(fields, merge: true) { (error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            
+            print("Updated fields for \(document.path)")
+            completion(nil)
+        }
+    }
+    
+    func updateData(_ document: DocumentReference, withFields fields: [String: Any], completion: @escaping ErrorCompletion) {
+        
+        document.updateData(fields) { (error) in
             if let error = error {
                 print(error)
                 completion(error)

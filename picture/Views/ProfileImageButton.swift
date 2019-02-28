@@ -19,8 +19,8 @@ class ProfileImageButton: PopButton {
     weak var delegate: ProfileImageButtonDelegate?
     
     init(height: CGFloat, width: CGFloat, enabled: Bool = false) {
+//        super.init(frame: CGRect(x: 0, y: 0, width: width, height: height))
         super.init(frame: .zero)
-        
         isUserInteractionEnabled = enabled
         heightAnchor.constraint(equalToConstant: height).isActive = true
         widthAnchor.constraint(equalToConstant: width).isActive = true
@@ -29,7 +29,7 @@ class ProfileImageButton: PopButton {
 //        backgroundColor = .lightGray
         imageView?.contentMode = .scaleAspectFill
         setImage(placeholderProfileImage, for: .normal)
-        tintColor = WKTheme.textColor
+        tintColor = Theme.textColor
 
         addTarget(self, action: #selector(handleTap), for: .touchUpInside)
     }

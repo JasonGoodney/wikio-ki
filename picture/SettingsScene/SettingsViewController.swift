@@ -18,6 +18,11 @@ enum SettingsType: String {
     case email
     case profilePhoto
     case password
+    
+    case privacyPolicy
+    case termsOfService
+    case openSource
+    
     case clearCache
     case resetPassword
     case logout
@@ -29,11 +34,11 @@ enum SettingsType: String {
 class SettingsViewController: UITableViewController, LoginFlowHandler {
     
     private var cacheSizeInMB: Double {
-        return (Double(DiggerCache.downloadedFilesSize()) / MB.binarySize).rounded(.down)
+        return (Double(DiggerCache.downloadedFilesSize()) / BinarySize.MB).rounded(.down)
     }
     
     private var sdCacheSizeInMB: Double {
-        return (Double(SDImageCache.shared().getSize()) / MB.binarySize).rounded(.down)
+        return (Double(SDImageCache.shared().getSize()) / BinarySize.MB).rounded(.down)
     }
     
     private var didChangeProfilePhoto = false
@@ -43,14 +48,18 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         return UserController.shared.currentUser
     }
     
-    private let sectionHeaders: [String] = ["", "My Account", "Account Actions"]
+    private let sectionHeaders: [String] = ["", "My Account", "About", "Account Actions"]
     private lazy var sectionInfoDetails: [[SectionInfo]] = [
         [],
         [
             (title: "Username", value: user?.username ?? "", type: .username),
-            //(title: "UID", value: user?.uid ?? "", type: .none),
             (title: "Email", value: user?.email ?? "", type: .email),
             (title: "Password", value: "", type: .password),
+        ],
+        [
+            (title: "Privacy Policy", value: "", type: .privacyPolicy),
+            (title: "Terms of Service", value: "", type: .termsOfService),
+            (title: "Open Source Libraries", value: "", type: .openSource),
         ],
         [
             (title: "Clear Cache", value: "\(cacheSizeInMB + sdCacheSizeInMB) MB", type: .clearCache),
@@ -78,7 +87,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
     private lazy var changeProfileImageButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Change Profile Photo", for: .normal)
-        button.setTitleColor(WKTheme.buttonBlue, for: .normal)
+        button.setTitleColor(Theme.buttonBlue, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(handleEditProfileImage), for: .touchUpInside)
         return button
@@ -150,7 +159,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             case .email where Auth.auth().currentUser != nil && !(Auth.auth().currentUser?.isEmailVerified)!:
                 let warningView = UIImageView(frame: .init(x: 0, y: 0, width: 16, height: 16))
                 warningView.image = #imageLiteral(resourceName: "icons8-error").withRenderingMode(.alwaysTemplate)
-                warningView.tintColor = WKTheme.warningYellow
+                warningView.tintColor = Theme.warningYellow
                 cell.accessoryView = warningView
             case .username:
                 cell.accessoryType = .none
@@ -182,8 +191,25 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             let changePasswordVC = ChangePasswordViewController.init(navigationTitle: "Update Password", descriptionText: "To set a new password, please enter your current password first.", textFieldText: "", textFieldPlaceholder: "Current password")
             navigationController?.pushViewController(changePasswordVC, animated: true)
             
+        // MARK: - About
+        case .privacyPolicy:
+            let aboutVC = AboutViewController()
+            aboutVC.type = .privacyPolicy
+            navigationController?.pushViewController(aboutVC, animated: true)
+        case .termsOfService:
+            let aboutVC = AboutViewController()
+            aboutVC.type = .termsOfService
+            navigationController?.pushViewController(aboutVC, animated: true)
             
         // MARK: - Account Actions
+        case .clearCache:
+            alert(alertTitle: "Clear Cache", alertMessage: "Are you sure you want to clear your cache?", actionTitle: "Clear") { (clear) in
+                if clear {
+                    DiggerCache.cleanDownloadFiles()
+                    DiggerCache.cleanDownloadTempFiles()
+                    SDWebImageManager.shared().imageCache?.clearMemory()
+                }
+            }
         case .blocked:
             let blockUsersVC = BlockedUsersViewController()
             navigationController?.pushViewController(blockUsersVC, animated: true)
@@ -197,11 +223,24 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             let resetPasswordVC = ResetPasswordViewController.init(navigationTitle: "Reset Password", descriptionText: "Enter the email associated with your\nWikio Ki account.", textFieldText: "", textFieldPlaceholder: "Confirm email")
             navigationController?.pushViewController(resetPasswordVC, animated: true)
         case .logout:
-            logoutActionSheet { (success) in
-                if success {
-                    self.handleLogout()
+            if !(Auth.auth().currentUser?.isEmailVerified)! {
+                verifyLogoutActionSheet { (logout, verify) in
+                    if logout {
+                        self.handleLogout()
+                    } else if verify {
+                        print("Verify account shit")
+                        let editEmailVC = EditEmailViewController.init(navigationTitle: "Email", descriptionText: "You can use this email address to log in,\nor for password recovery.", textFieldText: detail.value, textFieldPlaceholder: "Email address")
+                        self.navigationController?.pushViewController(editEmailVC, animated: true)
+                    }
                 }
-                
+ 
+            } else {
+                logoutActionSheet { (success) in
+                    if success {
+                        self.handleLogout()
+                    }
+                    
+                }
             }
         case .deleteAccount:
 
@@ -251,10 +290,50 @@ private extension SettingsViewController {
 // MARK: - Actions
 private extension SettingsViewController {
 
-    @objc func handleEditProfileImage() {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        present(imagePickerController, animated: true)
+    @objc private func handleEditProfileImage() {
+        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+            self.openCamera()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            self.openGallery()
+        }))
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    private func openCamera() {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.sourceType = .camera
+            imagePicker.allowsEditing = true
+            self.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    private func openGallery() {
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.allowsEditing = true
+            imagePicker.sourceType = .photoLibrary
+            self.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have permission to access gallery.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     @objc func handleSaveChanges() {

@@ -221,7 +221,7 @@ class AddFriendViewController: UITableViewController {
             guard let docs = snapshot?.documents else { return }
             self.friendRequests = []
             docs.forEach({ (doc) in
-                let data = doc.data() as! [String: Bool]
+                guard let data = doc.data() as? [String: Bool] else { return }
                 let uid = data.keys.first!
                 Firestore.firestore()
                     .collection(DatabaseService.Collection.users).document(uid).getDocument(completion: { (snapshot, error) in
@@ -370,7 +370,7 @@ extension AddFriendViewController: ProfileImageButtonDelegate {
     }
 }
 
-extension AddFriendViewController: PassBackAddFriendStateDelegate {
+extension AddFriendViewController: PassBackDelegate {
     func passBack(from viewController: UIViewController) {
         if let vc = viewController as? ProfileDetailsViewController {
             if vc.passBackAddFriendState == .requested || vc.passBackAddFriendState == .accepted {

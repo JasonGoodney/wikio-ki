@@ -17,7 +17,7 @@ class StorageService {
     
     enum Path {
         static let images = "images/"
-        static let media = "media/"
+        static let media = "media"
     }
     
     /// Singleton instance
@@ -31,7 +31,7 @@ class StorageService {
     
     func upload(data: Data,
                 withName fileName: String,
-                block: @escaping (_ url: String?) -> Void) {
+                block: @escaping (_ url: URL?) -> Void) {
         
         // Create a reference to the file you want to upload
         let fileRef = kMediaStorageRef.child(fileName)
@@ -45,7 +45,7 @@ class StorageService {
     func upload(data: Data,
                 withName fileName: String,
                 atPath path:StorageReference,
-                block: @escaping (_ url: String?) -> Void) {
+                block: @escaping (_ url: URL?) -> Void) {
         
         // Upload the file to the path
         self.currentUploadTask = path.putData(data, metadata: nil) { (metadata, error) in
@@ -64,7 +64,7 @@ class StorageService {
                     block(nil)
                     return
                 }
-                block(url?.absoluteString)
+                block(url)
             }
         }
     }

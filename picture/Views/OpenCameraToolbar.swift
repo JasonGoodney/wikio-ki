@@ -21,9 +21,9 @@ class OpenCameraToolbar: UIToolbar {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "icons8-camera-90").withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("  Camera", for: .normal)
-        button.setTitleColor(WKTheme.buttonBlue, for: .normal)
+        button.setTitleColor(Theme.buttonBlue, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.tintColor = WKTheme.buttonBlue
+        button.tintColor = Theme.buttonBlue
         return button
     }()
     

@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import FirebaseMessaging
+import JGProgressHUD
 
 typealias ErrorCompletion = (Error?) -> ()
 
@@ -31,14 +33,28 @@ class RegisterViewModel {
                 return
             }
             
-            self.saveImageToFirebase(completion: { (error) in
+            Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
                 if let error = error {
                     print(error)
                     return
                 }
-                print("Saved image to firebase")
-                completion(nil)
+                print("Sent email verifcation to: \(Auth.auth().currentUser!.email)")
+//                let hud = JGProgressHUD(style: .dark)
+//                hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+//                hud.textLabel.text = "Email verification sent"
+//                hud.show(in: view)
+//                hud.dismiss(afterDelay: 2)
             })
+            
+            let filename = UUID().uuidString
+            let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
+            let ref = Storage.storage().reference(withPath: "\(StorageService.Path.media)/\(Auth.auth().currentUser!.uid)/\(filename)")
+            StorageService.shared.upload(data: imageData, withName: filename, atPath: ref, block: { (url) in
+                self.bindableIsRegistering.value = false
+                let imageUrl = url?.absoluteString ?? ""
+                self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
+            })
+
         }
     }
     
@@ -66,11 +82,15 @@ class RegisterViewModel {
     
     private func saveInfoToFirestore(imageUrl: String = "", completion: @escaping ErrorCompletion) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        guard let fcmToken = Messaging.messaging().fcmToken else { return }
+        
         let docData = [
             "username": username?.lowercased() ?? "",
             "uid": uid,
             "profilePhotoUrl": imageUrl,
-            "email": email?.lowercased() ?? ""
+            "email": email?.lowercased() ?? "",
+            "fcmToken": fcmToken
         ]
         Firestore.firestore().collection(DatabaseService.Collection.users).document(uid).setData(docData) { (error) in
             if let error = error {

@@ -29,7 +29,7 @@ class UnreadView: UIView {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 11, weight: .medium)
         label.textColor = .white
-        label.backgroundColor = WKTheme.buttonBlue
+        label.backgroundColor = Theme.buttonBlue
         label.textAlignment = .center
         let height: CGFloat = 20
         label.heightAnchor.constraint(equalToConstant: height).isActive = true
@@ -53,4 +53,6 @@ class UnreadView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError()
     }
+    
+    
 }

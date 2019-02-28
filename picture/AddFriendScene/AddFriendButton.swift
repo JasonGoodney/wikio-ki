@@ -31,19 +31,19 @@ class AddFriendButton: PopButton {
     
     private let plusImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "icons8-plus_math-1").withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = WKTheme.textColor
+        imageView.image = #imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = Theme.textColor
         imageView.isUserInteractionEnabled = false
         imageView.isExclusiveTouch = false
         return imageView
     }()
     
-    private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
+    private let sendingIndicatorView = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 13, height: 13), type: .lineSpinFadeLoader, color: Theme.textColor, padding: nil)
     
     let textLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        label.textColor = WKTheme.textColor
+        label.textColor = Theme.textColor
         label.isUserInteractionEnabled = false
         label.isExclusiveTouch = false
         return label
@@ -73,7 +73,7 @@ class AddFriendButton: PopButton {
         
         titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         layer.borderWidth = 1
-        layer.borderColor = WKTheme.textColor.cgColor
+        layer.borderColor = Theme.textColor.cgColor
         titleEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         heightAnchor.constraint(equalToConstant: 34).isActive = true
         

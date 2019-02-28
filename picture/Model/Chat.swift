@@ -9,37 +9,43 @@
 import Foundation
 import FirebaseFirestore
 
+typealias UID = String
+
 class Chat {
     
-    let uid: String
-    let memberUids: [String]
+    let uid: UID
+    let memberUids: [UID]
     var lastMessageSent: String
     var lastMessageSentType: MessageType
     var lastChatUpdateTimestamp: TimeInterval
-    var lastSenderUid: String {
-        didSet {
-            let sentToUid = memberUids.first(where: { $0 != lastSenderUid })!
-            let unreadCount = unread?[sentToUid] ?? 0
-            unread?[sentToUid] = unreadCount + 1
-        }
-    }
-    var isOpened: Bool {
-        didSet {
-            if isOpened {
-                let openedByUid = memberUids.first(where: { $0 != lastSenderUid })!
-                let unreadCount = unread?[openedByUid]
-                unread?[openedByUid] = unreadCount! > 0 ? unreadCount! - 1 : 0
-            }
-        }
-    }
+    var lastSenderUid: UID
+//    {
+//        didSet {
+//            let sentToUid = memberUids.first(where: { $0 != lastSenderUid })!
+//            let unreadCount = unread?[sentToUid] ?? 0
+//            unread?[sentToUid] = unreadCount + 1
+//        }
+//    }
+    var isOpened: Bool
+//    {
+//        didSet {
+//            if isOpened {
+//                let openedByUid = memberUids.first(where: { $0 != lastSenderUid })!
+//                let unreadCount = unread?[openedByUid]!.count
+//                unread?[openedByUid] = unreadCount! > 0 ? unreadCount! - 1 : 0
+//            }
+//        }
+//    }
     var isNewFriendship: Bool
     var areFriends: Bool
     var areMutualBestFriends: Bool
-    var unread: [String: Int]?
-    var membersActiveInChat: [String: Bool]?
+    var unread: [UID: Bool]?
+    
     var isSending: Bool
     var status: MessageStatus
     
+    var latestMessage: Message?
+    var currentUserUnreads: [Message] = []
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }
         return "\(min(memberUids[0], memberUids[1]))_\(max(memberUids[0], memberUids[1]))"
@@ -59,6 +65,7 @@ class Chat {
         static let unread = "unread"
         static let isSending = "isSending"
         static let status = "status"
+     
     }
     
     init(dictionary: [String: Any]) {
@@ -71,8 +78,9 @@ class Chat {
         self.isNewFriendship = dictionary[Keys.isNewFriendship] as? Bool ?? false
         self.areFriends = dictionary[Keys.areFriends] as? Bool ?? false
         self.areMutualBestFriends = dictionary[Keys.areMutualBestFriends] as? Bool ?? false
-        self.unread = dictionary[Keys.unread] as? [String: Int] ?? [:]
+        self.unread = dictionary[Keys.unread] as? [UID: Bool] ?? [:]
         self.isSending = dictionary[Keys.isSending] as? Bool ?? false
+        
         
         if dictionary[Keys.lastMessageSentType] as? String == MessageType.photo.databaseValue() {
             self.lastMessageSentType = .photo
