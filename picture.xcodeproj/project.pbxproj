@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1DA38F8C79850F3CA486F8EC /* Pods_picture.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A4A583030759959581799D /* Pods_picture.framework */; };
 		A75ED217A945C681FB6CD78A /* Pods_picture.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A4A583030759959581799D /* Pods_picture.framework */; };
 		D715B51C21E7EE0D008A5E80 /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715B51B21E7EE0D008A5E80 /* ChangePasswordViewController.swift */; };
 		D715B51F21E84F29008A5E80 /* AuthValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715B51E21E84F29008A5E80 /* AuthValidation.swift */; };
@@ -347,7 +346,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A75ED217A945C681FB6CD78A /* Pods_picture.framework in Frameworks */,
-				1DA38F8C79850F3CA486F8EC /* Pods_picture.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
