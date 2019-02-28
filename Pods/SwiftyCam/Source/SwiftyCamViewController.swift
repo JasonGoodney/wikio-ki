@@ -1085,7 +1085,7 @@ extension SwiftyCamViewController : AVCaptureFileOutputRecordingDelegate {
 // Mark: UIGestureRecognizer Declarations
 
 extension SwiftyCamViewController {
-
+   
 	/// Handle pinch gesture
 
 	@objc fileprivate func zoomGesture(pinch: UIPinchGestureRecognizer) {

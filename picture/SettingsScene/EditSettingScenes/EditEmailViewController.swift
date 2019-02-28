@@ -42,7 +42,7 @@ class EditEmailViewController: EditSettingViewController {
             verifyEmailLabel.isUserInteractionEnabled = false
         } else {
             let attributedText = NSMutableAttributedString(string: "Verify your email address.  ", attributes: [.foregroundColor: labelTextColor])
-            attributedText.append(NSAttributedString(string: "Tap here.", attributes: [.foregroundColor: WKTheme.buttonBlue]))
+            attributedText.append(NSAttributedString(string: "Tap here.", attributes: [.foregroundColor: Theme.buttonBlue]))
             verifyEmailLabel.setAttributedTitle(attributedText, for: .normal)
             verifyEmailLabel.isUserInteractionEnabled = true
         }
@@ -63,7 +63,9 @@ class EditEmailViewController: EditSettingViewController {
                 hud.textLabel.text = "Sending"
                 hud.show(in: self.view)
                 print("sending email verification to \(email)")
-                Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
+                let auth = AuthService()
+                
+                auth.sendEmailVerifiction(currentUser: UserController.shared.firebaseUser!, completion: { (error) in
                     if let error = error {
                         hud.dismiss()
                         print("Error sending email: \(error)")

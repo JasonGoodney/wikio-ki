@@ -12,8 +12,10 @@ import FirebaseFirestore
 import AVKit
 
 class MessagesViewController: UIViewController {
-    
+
     private var newMessageListener: ListenerRegistration?
+    
+    var chatWithFriend: ChatWithFriend?
     var chat: Chat?
     var friend: Friend? {
         didSet {
@@ -23,6 +25,15 @@ class MessagesViewController: UIViewController {
     private let spacing: CGFloat = 5
     private let cellId = MessagesCell.reuseIdentifier
     private var messages: [Message] = []
+    internal var statusBarHidden = false
+    
+    override var prefersStatusBarHidden: Bool {
+        return statusBarHidden
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .slide
+    }
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -66,7 +77,10 @@ class MessagesViewController: UIViewController {
 
         let data = photo?.jpegData(compressionQuality: Compression.photoQuality)
         let thumbnailData = photo?.jpegData(compressionQuality: Compression.thumbnailQuality)
-        dbs.sendMessage(from: UserController.shared.currentUser!, to: friend!, chat: chat!, caption: nil, messageType: .photo, mediaData: data, thumbnailData: thumbnailData) { (error) in
+        
+        let message = Message(senderUid: UserController.shared.currentUser!.uid, caption: "Test", status: .sending, messageType: .photo)
+        
+        dbs.send(message, from: UserController.shared.currentUser!, to: friend!, chat: chat!, mediaData: data, thumbnailData: thumbnailData) { (error) in
             if let error = error {
                 print(error)
                 return
@@ -215,8 +229,27 @@ class MessagesViewController: UIViewController {
         
     }
     
+    func setStatusBar(hidden: Bool, duration: TimeInterval = 0.25) {
+        
+        statusBarHidden = hidden
+        
+        if hidden {
+            UIApplication.shared.keyWindow?.windowLevel = UIWindow.Level.statusBar
+        } else {
+            UIApplication.shared.keyWindow?.windowLevel = UIWindow.Level.normal
+        }
+        
+        UIView.animate(withDuration: duration, animations: {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }) { (success: Bool) in
+            
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        setStatusBar(hidden: false)
         
         self.navigationController?.navigationBar.setBackgroundImage(nil, for: UIBarMetrics.default)
         self.navigationController?.navigationBar.shadowImage = nil
@@ -231,8 +264,6 @@ class MessagesViewController: UIViewController {
                 })
             }
         }
-        
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -297,8 +328,8 @@ class MessagesViewController: UIViewController {
     
     @objc private func profileImageButtonTapped() {
         guard let friend = friend else { return }
-        let profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: friend.isBestFriend, addFriendState: .accepted)
-        navigationController?.pushViewController(profileDetailsViewController, animated: true)
+        //let profileDetailsViewController = ProfileDetailsViewController(user: friend, isBestFriend: friend.isBestFriend, addFriendState: .accepted)
+        //navigationController?.pushViewController(profileDetailsViewController, animated: true)
     }
 }
 
@@ -326,10 +357,12 @@ private extension MessagesViewController {
         navigationItem.titleView = titleLabel
         navigationController?.navigationBar.tintColor = .black
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: profileImageButton)
+        navigationItem.rightBarButtonItems = [sendPhotoButton, UIBarButtonItem(customView: profileImageButton)]
         
-        navigationItem.rightBarButtonItem?.customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
+        navigationItem.rightBarButtonItems?[1].customView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileImageButtonTapped)))
     }
+    
+    
 }
 
 extension MessagesViewController: UICollectionViewDataSource {
@@ -367,25 +400,61 @@ extension MessagesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? MessagesCell else { return }
         
-        let message = messages[indexPath.row]
+        var message = messages[indexPath.row]
 
         if message.status == .sending {
             cell.messageIsSendingWarning()
-            return
+            
+            resendMessageAlert { (resend, delete) in
+                if resend {
+                    guard let savedMessage = FileManager.default.load(fromPath: message.uid) else {
+                        print("Message was never saved")
+                        return
+                    }
+                    message = savedMessage
+                    let dbs = DatabaseService()
+                    
+                    dbs.send(message, from: UserController.shared.currentUser!, to: self.friend!, chat: self.chat!, mediaData: message.mediaData, thumbnailData: message.mediaData, completion: { (error) in
+                        if let error = error {
+                            print("Failed to resend message: \(error)")
+                            return
+                        }
+                        print("Resent message")
+                        return
+                    })
+                }
+                if delete {
+                    print("Will delete message from firebase")
+                    let dbs = DatabaseService()
+                    dbs.delete(message, in: self.chat!, completion: { (error) in
+                        if let error = error {
+                            print("Failed to delete message: \(error)")
+                            return
+                        }
+                        print("Unsent message deleted")
+                        self.messages.remove(at: indexPath.row)
+                        DispatchQueue.main.async {
+                            self.collectionView.deleteItems(at: [indexPath])
+                        }
+                        return
+                    })
+                    return
+                }
+            }
         }
+        else {
+        let viewMessagesVC = OpenedMessageViewController(message: message, chatWithFriend: chatWithFriend)
+        viewMessagesVC.modalPresentationStyle = .overFullScreen
         
-        let viewMessagesVC = OpenedMessageViewController(message: message)
- 
-        guard let url = URL(string: message.mediaURL!) else { return }
-        present(viewMessagesVC, animated: false) {
+        setStatusBar(hidden: true)
+        
+        present(viewMessagesVC, animated: true) {
             DispatchQueue.main.async {
                 guard let currentUser = UserController.shared.currentUser, let friend = self.friend else { return }
                 if message.senderUid != currentUser.uid, !message.isOpened {
                     message.isOpened = true
                     self.chat?.isOpened = true
                     let dbs = DatabaseService()
-
-                    let chatUid = "\(min(currentUser.uid, friend.uid))_\(max(currentUser.uid, friend.uid))"
 
                     if let chat = self.chat {
                         dbs.opened(message, in: chat, completion: { (error) in
@@ -396,9 +465,9 @@ extension MessagesViewController: UICollectionViewDelegate {
                             print("Message was opened and firebase was updated")
                         })
                     }
-                    //self.collectionView.reloadItems(at: [indexPath])
                 }
             }
+        }
         }
     }
 }
@@ -415,14 +484,17 @@ extension MessagesViewController: OpenCameraToolbarDelegate {
     func didTapOpenCameraButton() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cameraViewController = storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
-        cameraViewController.friend = friend
-        cameraViewController.chat = chat
+//        cameraViewController.friend = friend
+//        cameraViewController.chat = chat
+        cameraViewController.chatWithFriend = chatWithFriend
         present(cameraViewController, animated: true, completion: nil)
     }
 }
 
+// MARK: - MessageCellDelegate
 extension MessagesViewController: MessageCellDelegate {
     func loadMedia(for cell: MessagesCell, message: Message) {
         
     }
 }
+

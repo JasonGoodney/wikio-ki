@@ -93,15 +93,43 @@ extension DatabaseService {
                 let dict = doc.data()
                 let chat = Chat(dictionary: dict)
                 chats.append(chat)
+                
+                
+                
             })
             
             completion(chats, nil)
         }
     }
     
+    func fetchUnreadMessages(in chat: Chat, completion: @escaping (Error?) -> Void) {
+        Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(UserController.shared.currentUser!.uid).order(by: "timestamp", descending: false).getDocuments { (snapshot, error) in
+            if let error = error {
+                print(error)
+                completion(error)
+                return
+            }
+            
+            guard let docs = snapshot?.documents else {
+                completion(error)
+                return
+            }
+            
+            docs.forEach({ (doc) in
+                let message = Message(dictionary: doc.data())
+                chat.currentUserUnreads.append(message)
+            })
+            
+            completion(nil)
+        }
+    }
+    
     func fetchLatestMessage(in chat: Chat, completion: @escaping (Message?, Error?) -> Void) {
         let chatUid = Chat.chatUid(for: chat.memberUids[0], and: chat.memberUids[1])
-        Firestore.firestore().collection(Collection.messages).document(chatUid).getDocument { (snapshot, error) in
+        Firestore.firestore().collection(Collection.chats).document(chatUid)
+            .collection(Collection.messages).document(chat.lastMessageSent)
+            .getDocument { (snapshot, error) in
+                
             if let error = error {
                 print(error)
                 completion(nil, error)
@@ -109,11 +137,14 @@ extension DatabaseService {
             }
             
             guard let data = snapshot?.data() else {
+                completion(nil, error)
                 return
             }
-            let dict: [String: Any] = data[chat.lastMessageSent] as! [String : Any]
-            let message = Message(dictionary: dict)
+                
+            
+            let message = Message(dictionary: data)
             completion(message, nil)
+            
         }
     }
     
@@ -166,16 +197,21 @@ extension DatabaseService {
                     
                     let queryDocsSet = Set(queryDocs)
                 
-                let messagesSet: Set<Message> = Set(queryDocs.map({ (snapshot) -> Message? in
-                    return Message(dictionary: snapshot.data())
-                })) as! Set<Message>
+                    let messagesSet: Set<Message> = Set(queryDocs.map({ (snapshot) -> Message? in
+                        return Message(dictionary: snapshot.data())
+                    })) as! Set<Message>
                 
                     messagesSet.forEach({ (message) in
                         //let message = Message(dictionary: doc.data())
                         let index = MessageController.shared.messages.insertionIndexOf(elem: message, isOrderedBefore: { (a, b) -> Bool in
                             return a.timestamp < b.timestamp
                         })
-                        MessageController.shared.messages.insert(message, at: index)
+                        
+                        if message.status == .sending && message.senderUid != currentUser.uid {
+                            return
+                        } else {
+                            MessageController.shared.messages.insert(message, at: index)
+                        }
                     })
                 
                 

@@ -21,7 +21,7 @@ class StatusIndicatorView: UIView {
     
     private lazy var statusStackView = UIStackView(arrangedSubviews: [statusIndicator, sendingIndicatorView])
     
-    private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: WKTheme.textColor, padding: nil)
+    private let sendingIndicatorView = NVActivityIndicatorView(frame: .zero, type: .lineSpinFadeLoader, color: Theme.textColor, padding: nil)
 
     
     private let statusIndicator: UIImageView = {
@@ -71,11 +71,11 @@ class StatusIndicatorView: UIView {
         }
         
         if type == .photo {
-            statusIndicator.tintColor = WKTheme.photo
+            statusIndicator.tintColor = Theme.photo
         } else if type == .video {
-            statusIndicator.tintColor = WKTheme.video
+            statusIndicator.tintColor = Theme.video
         } else {
-            statusIndicator.tintColor = WKTheme.textColor
+            statusIndicator.tintColor = Theme.textColor
         }
     }
     

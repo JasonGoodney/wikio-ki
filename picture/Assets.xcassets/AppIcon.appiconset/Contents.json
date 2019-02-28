@@ -3,7 +3,7 @@
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "Wikio Ki app icon-20@2x-1.png",
+      "filename" : "Wikio Ki app icon-20@2x.png",
       "scale" : "2x"
     },
     {
@@ -15,13 +15,13 @@
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "Wikio Ki app icon-30.png",
+      "filename" : "Wikio Ki app icon-29@1x.png",
       "scale" : "1x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "Wikio Ki app icon-29@2x-1.png",
+      "filename" : "Wikio Ki app icon-29@2x.png",
       "scale" : "2x"
     },
     {
@@ -33,7 +33,7 @@
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "Wikio Ki app icon-40@2x-1.png",
+      "filename" : "Wikio Ki app icon-40@2x.png",
       "scale" : "2x"
     },
     {
@@ -57,43 +57,43 @@
     {
       "size" : "20x20",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-20.png",
+      "filename" : "Wikio Ki app icon-20@1x.png",
       "scale" : "1x"
     },
     {
       "size" : "20x20",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-20@2x.png",
+      "filename" : "Wikio Ki app icon-20@2x-1.png",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-29.png",
+      "filename" : "Wikio Ki app icon-29@1x-1.png",
       "scale" : "1x"
     },
     {
       "size" : "29x29",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-29@2x.png",
+      "filename" : "Wikio Ki app icon-29@2x-1.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-40.png",
+      "filename" : "Wikio Ki app icon-40@1x.png",
       "scale" : "1x"
     },
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-40@2x.png",
+      "filename" : "Wikio Ki app icon-40@2x-1.png",
       "scale" : "2x"
     },
     {
       "size" : "76x76",
       "idiom" : "ipad",
-      "filename" : "Wikio Ki app icon-76.png",
+      "filename" : "Wikio Ki app icon-76@1x.png",
       "scale" : "1x"
     },
     {

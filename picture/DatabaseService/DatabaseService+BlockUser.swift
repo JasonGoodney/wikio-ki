@@ -14,6 +14,7 @@ extension DatabaseService {
     func block(user: User, completion: @escaping ErrorCompletion) {
         guard let currentUser = UserController.shared.currentUser else { return }
         UserController.shared.allChatsWithFriends.removeAll(where: { $0.friend == user })
+        
         changeUserChat(isActive: false, between: currentUser, andFriend: user)
         
         let blockData: [String: Any] = [user.uid: true]

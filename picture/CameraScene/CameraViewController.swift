@@ -10,19 +10,37 @@ import UIKit
 import SwiftyCam
 
 class CameraViewController: SwiftyCamViewController {
+    private var initialTouchPoint: CGPoint = CGPoint(x: 0,y: 0)
+    
+    static func fromStoryboard() -> CameraViewController {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: "CameraViewController") as! CameraViewController
+    }
 
     private let blurViewController = LoadingViewController(withHud: false)
     
-    @IBOutlet weak var captureButton: SwiftyRecordButton!
+    @IBOutlet weak var captureButton: RecordButton!
     @IBOutlet weak var flashButton: PopButton!
     @IBOutlet weak var flipCameraButton: PopButton!
     
-    var chat: Chat?
-    var friend: User?
+    var chatWithFriend: ChatWithFriend? {
+        didSet {
+            chat = chatWithFriend?.chat
+            friend = chatWithFriend?.friend
+        }
+    }
+    private var chat: Chat?
+    private var friend: User?
+
+    var progressTimer : Timer!
+    var progress : CGFloat! = 0
+    
+    private var longPressGesture: UILongPressGestureRecognizer!
+    private lazy var dismissPanGesture = UIPanGestureRecognizer(target: self, action: #selector(dismissPanGestureRecognizerHandler(_:)))
     
     private lazy var cancelButton: PopButton = {
         let button = PopButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "icons8-multiply-90"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-multiply-90").withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(cancelButtonTapped(_:)), for: .touchUpInside)
         button.tintColor = .white
         return button
@@ -36,15 +54,45 @@ class CameraViewController: SwiftyCamViewController {
         return label
     }()
     
+    private lazy var sendPhotoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Test", for: .normal)
+        button.addTarget(self, action: #selector(sendPhoto), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    @objc private func sendPhoto() {
+        let photo = UIImage(named: "IMG_1536")
+        let dbs = DatabaseService()
+        
+        let data = photo?.jpegData(compressionQuality: Compression.photoQuality)
+        let thumbnailData = photo?.jpegData(compressionQuality: Compression.thumbnailQuality)
+        
+        let message = Message(senderUid: UserController.shared.currentUser!.uid, caption: "Test", status: .sending, messageType: .photo)
+        dismiss(animated: true) {
+            
+            dbs.send(message, from: UserController.shared.currentUser!, to: self.friend!, chat: self.chat!, mediaData: data, thumbnailData: thumbnailData) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                print("Sent photo for testing")
+            }
+        }
+    }
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         updateView()
         
         shouldPrompToAppSettings = true
-        maximumVideoDuration = 6.0
-        shouldUseDeviceOrientation = true
-        allowAutoRotate = true
+        maximumVideoDuration = 10.0
+        shouldUseDeviceOrientation = false
+        allowAutoRotate = false
         audioEnabled = true
+        swipeToZoom = false
         swipeToZoomInverted = true
         cameraDelegate = self
         
@@ -57,15 +105,19 @@ class CameraViewController: SwiftyCamViewController {
         captureButton.addShadow()
         flashButton.addShadow()
         flipCameraButton.addShadow()
+
+        view.addGestureRecognizer(dismissPanGesture)
+        dismissPanGesture.maximumNumberOfTouches = 1
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        showButtons()
         
-        if chat != nil && chat!.status != .sending {
-            blurViewController.remove()
-        }
+        navigationController?.isNavigationBarHidden = true
+        
+        setStatusBar(hidden: true)
+        showButtons()
+        dismissPanGesture.isEnabled = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -75,7 +127,12 @@ class CameraViewController: SwiftyCamViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+                
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        showButtons()
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -95,18 +152,73 @@ class CameraViewController: SwiftyCamViewController {
     @objc func cancelButtonTapped(_ sender: PopButton) {
         sender.pop {
             self.dismiss(animated: true, completion: nil)
+            self.setStatusBar(hidden: false)
         }
+    }
+    
+    @objc private func dismissPanGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
+        let touchPoint = sender.location(in: self.view?.window)
         
+        if sender.state == UIGestureRecognizer.State.began {
+            initialTouchPoint = touchPoint
+        } else if sender.state == UIGestureRecognizer.State.changed {
+            if touchPoint.y - initialTouchPoint.y > 0 {
+                self.view.frame = CGRect(x: 0, y: touchPoint.y - initialTouchPoint.y, width: self.view.frame.size.width, height: self.view.frame.size.height)
+                
+                
+                
+            }
+        } else if sender.state == UIGestureRecognizer.State.ended || sender.state == UIGestureRecognizer.State.cancelled {
+            if touchPoint.y - initialTouchPoint.y > 100 {
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true)
+                    self.setStatusBar(hidden: false)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.setStatusBar(hidden: true)
+                    
+                }
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
+                    
+                })
+            }
+        }
     }
 
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if (gestureRecognizer == panGesture && otherGestureRecognizer == dismissPanGesture) {
+            return true
+        }
+
+        return false
+    }
 }
 
 // MARK: - UI
 private extension CameraViewController {
     func updateView() {
-        view.addSubviews(cancelButton, sendToLabel)
-        //setupConstraints()
-        cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0, widthConstant: 44, heightConstant: 44)
+        view.addSubviews([cancelButton, sendToLabel])
+
+        cancelButton.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 16, left: 16, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+//        cancelButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
+        
+        //captureButton.anchorCenterXToSuperview()
+//        captureButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: nil)
+        
+        
+        flashButton.anchor(top: nil, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16), size: .init(width: buttonSize, height: buttonSize))
+        flashButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
+        
+        flipCameraButton.anchor(top: nil, leading: nil, bottom: flashButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 16), size: .init(width: buttonSize, height: buttonSize))
+        
+        
+        #if targetEnvironment(simulator)
+            view.addSubview(sendPhotoButton)
+            sendPhotoButton.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 16, left: 0, bottom: 0, right: 16))
+        #endif
+        
         
         sendToLabel.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
         sendToLabel.anchorCenterXToSuperview()
@@ -122,19 +234,14 @@ private extension CameraViewController {
         cancelButton.tintColor = .white
     }
     
-    func setupConstraints() {
-        captureButton.anchor(nil, left: nil, bottom: view.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 20, rightConstant: 0, widthConstant: 75, heightConstant: 75)
-        captureButton.translatesAutoresizingMaskIntoConstraints = false
-        captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    func setStatusBar(hidden: Bool, duration: TimeInterval = 0.25) {
         
-        flipCameraButton.anchor(nil, left: nil, bottom: nil, right: captureButton.leftAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 50, widthConstant: 30, heightConstant: 23)
-        flipCameraButton.translatesAutoresizingMaskIntoConstraints = false
-        flipCameraButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
-        
-        flashButton.anchor(nil, left: captureButton.rightAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 50, bottomConstant: 0, rightConstant: 0, widthConstant: 18, heightConstant: 30)
-        flashButton.translatesAutoresizingMaskIntoConstraints = false
-        flashButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
+        let statusBarWindow = UIApplication.shared.value(forKey: "statusBarWindow") as? UIWindow
+        UIView.animate(withDuration: duration) {
+            statusBarWindow?.alpha = hidden ? 0.0 : 1.0
+        }
     }
+    
 }
 
 // UI Animations
@@ -149,6 +256,7 @@ extension CameraViewController {
     }
     
     fileprivate func showButtons() {
+        
         flipCameraButton.setImage(#imageLiteral(resourceName: "icons8-switch_camera"), for: .normal)
         UIView.animate(withDuration: 0.25) {
             self.flashButton.alpha = 1.0
@@ -182,7 +290,7 @@ extension CameraViewController {
         } else {
             flashButton.setImage(#imageLiteral(resourceName: "icons8-flash_off"), for: UIControl.State())
         }
-    }
+     }
 }
 
 // MARK: - SwiftyCamViewControllerDelegate
@@ -202,30 +310,34 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         let newVC = PreviewMediaViewController(image: photo)
         newVC.friend = friend
         newVC.chat = chat
-        add(blurViewController)
-        self.present(newVC, animated: false, completion: nil)
+        //self.present(newVC, animated: false, completion: nil)
+        navigationController?.pushViewController(newVC, animated: false)
+        dismissPanGesture.isEnabled = false
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
         print("Did Begin Recording")
-        captureButton.growButton()
+        swipeToZoom = true
+        captureButton.growButton(maximumVideoDuration)
         hideButtons()
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
         print("Did finish Recording")
+        swipeToZoom = false
         captureButton.shrinkButton()
-        //showButtons()
-//        swiftyCam.buttonDidEndLongPress()
-        
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
         let newVC = PreviewMediaViewController(videoURL: url)
         newVC.friend = friend
         newVC.chat = chat
-        add(blurViewController)
-        self.present(newVC, animated: false, completion: nil)
+        
+//        add(newVC)
+        showButtons()
+        dismissPanGesture.isEnabled = false
+//        self.present(newVC, animated: false, completion: nil)
+        navigationController?.pushViewController(newVC, animated: false)
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFocusAtPoint point: CGPoint) {
@@ -246,6 +358,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didSwitchCameras camera: SwiftyCamViewController.CameraSelection) {
         print("Camera did change to \(camera.rawValue)")
+        flipCameraButton.pop()
         if camera == .front {
             flipCameraButton.setImage(#imageLiteral(resourceName: "icons8-camera_icon_with_face"), for: .normal)
         } else {

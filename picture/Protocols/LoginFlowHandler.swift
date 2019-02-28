@@ -15,7 +15,6 @@ protocol LoginFlowHandler {
 }
 
 extension LoginFlowHandler {
-    typealias FirebaseUser = FirebaseAuth.User
     
     func handleLogin(withWindow window: UIWindow? = UIApplication.shared.keyWindow, completion: @escaping (FirebaseUser?) -> Void) {
         if let _ = Auth.auth().currentUser {

@@ -65,15 +65,10 @@ class ViewMessageCell: UICollectionViewCell, ReuseIdentifiable {
     }
     
     func configureProperties(with message: Message) {
-        usernameLabel.text = message.user?.username
+//        usernameLabel.text = message.user?.username
+        
         if let url = URL(string: message.mediaURL ?? "") {
-//            let hud = JGProgressHUD(style: .dark)
-            
-//            let blurEffect = UIBlurEffect(style: .dark)
-//            blurredEffectView = UIVisualEffectView(effect: blurEffect)
-            //            let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
-            
-            
+
             blurredEffectView.frame = self.bounds
             addSubview(blurredEffectView)
             vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)

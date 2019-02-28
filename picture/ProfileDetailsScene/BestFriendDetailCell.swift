@@ -8,7 +8,41 @@
 
 import UIKit
 
-class BestFriendDetailCell: UITableViewCell, ReuseIdentifiable {
+class BestFriendDetailCell: CheckmarkToggleCell {}
+
+class SendToCell: CheckmarkToggleCell {
+    
+    let separatorView = UIView()
+    func separatorView(isHidden: Bool) {
+        separatorView.isHidden = isHidden
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        separatorView.backgroundColor = Theme.ultraLightGray
+        addSubview(separatorView)
+        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: 0, height: 1))
+        
+        selectionStyle = .none
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
+class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
+
+    override var isSelected: Bool {
+        didSet {
+            if isSelected {
+                toggleOn()
+            } else {
+                toggleOff()
+            }
+        }
+    }
 
     private lazy var selectionButton: PopButton = {
         let button = PopButton()
@@ -32,13 +66,13 @@ class BestFriendDetailCell: UITableViewCell, ReuseIdentifiable {
     
     func toggleOn() {
         selectionButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
-        selectionButton.tintColor = WKTheme.buttonBlue
+        selectionButton.tintColor = Theme.buttonBlue
         selectionButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
     }
     
     func toggleOff() {
         selectionButton.setImage(#imageLiteral(resourceName: "icons8-circled").withRenderingMode(.alwaysTemplate), for: .normal)
-        selectionButton.tintColor = WKTheme.gainsboro
+        selectionButton.tintColor = Theme.gainsboro
         selectionButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
     }
     

@@ -127,4 +127,71 @@ extension UIViewController {
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
     }
+    
+    func alert(alertTitle: String? = nil, alertMessage: String? = nil, actionTitle: String? = "OK", actionStyle: UIAlertAction.Style? = .default, cancelTitle: String = "Cancel", completion: @escaping (Bool) -> Void) {
+        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        
+        let destructiveAction = UIAlertAction(title: actionTitle, style: actionStyle ?? .default) { _ in
+            completion(true)
+        }
+        
+        let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { (_) in
+            completion(false)
+        }
+        
+        alertController.addAction(destructiveAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func actionSheet(alertTitle: String? = nil, alertMessage: String? = nil, actions: [UIAlertAction], completion: @escaping (UserDestructionType) -> Void) {
+        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .actionSheet)
+        
+        actions.forEach({ alertController.addAction($0) })
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func verifyLogoutActionSheet(completion: @escaping (_ logout: Bool, _ verify: Bool) -> Void) {
+        let alertController = UIAlertController(title: "Email Not Verified", message: "Quickly verify your email so if you forget your password while logged out, you can reset it.", preferredStyle: .actionSheet)
+        
+        let verifyAction = UIAlertAction(title: "Verify Email", style: .default) { (_) in
+            completion(false, true)
+        }
+        let logoutAction = UIAlertAction(title: "Logout", style: .destructive) { (_) in
+            completion(true, false)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
+            completion(false, false)
+        }
+        
+        alertController.addAction(verifyAction)
+        alertController.addAction(logoutAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func resendMessageAlert(completion: @escaping (_ resend: Bool, _ delete: Bool) -> Void) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let resendAction = UIAlertAction(title: "Retry", style: .default) { (_) in
+            completion(true, false)
+        }
+        
+        let deleteAction = UIAlertAction(title: "Delete Message", style: .destructive) { (_) in
+            completion(false, true)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
+            completion(false, false)
+        }
+        
+        alertController.addAction(resendAction)
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
 }

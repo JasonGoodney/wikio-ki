@@ -20,7 +20,7 @@ class RoundRectTextField: UITextField {
         
         layer.cornerRadius = height / 2
         layer.borderWidth = 1
-        layer.borderColor = WKTheme.gainsboro.cgColor
+        layer.borderColor = Theme.gainsboro.cgColor
         backgroundColor = .white
     }
     

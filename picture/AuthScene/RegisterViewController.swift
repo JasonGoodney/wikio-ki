@@ -60,8 +60,8 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         button.imageView?.contentMode = .scaleAspectFill
         button.clipsToBounds = true
         button.layer.borderWidth = 1
-        button.layer.borderColor = WKTheme.gainsboro.cgColor
-        button.tintColor = WKTheme.gainsboro
+        button.layer.borderColor = Theme.gainsboro.cgColor
+        button.tintColor = Theme.gainsboro
         return button
     }()
     
@@ -168,8 +168,8 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         
         goToLoginButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
-        let attributedText = NSMutableAttributedString(string: "Have an account already?  ", attributes: [.foregroundColor: WKTheme.textColor])
-        attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: WKTheme.buttonBlue]))
+        let attributedText = NSMutableAttributedString(string: "Have an account already?  ", attributes: [.foregroundColor: Theme.textColor])
+        attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: Theme.buttonBlue]))
         
         // #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)
         
@@ -210,7 +210,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
             guard let isFormValid = isFormValid else { return }
             self.registerButton.isEnabled = isFormValid
             if isFormValid {
-                self.registerButton.backgroundColor = WKTheme.buttonBlue
+                self.registerButton.backgroundColor = Theme.buttonBlue
                 self.registerButton.setTitleColor(.white, for: .normal)
             } else {
                 self.registerButton.backgroundColor = .lightGray
@@ -283,10 +283,50 @@ private extension RegisterViewController {
         }
     }
     
-    @objc func handleSelectPhoto() {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        present(imagePickerController, animated: true)
+    @objc private func handleSelectPhoto() {
+        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+            self.openCamera()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            self.openGallery()
+        }))
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    private func openCamera() {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.sourceType = .camera
+            imagePicker.allowsEditing = true
+            self.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    private func openGallery() {
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.allowsEditing = true
+            imagePicker.sourceType = .photoLibrary
+            self.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have permission to access gallery.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     @objc func handleTapDismiss() {
@@ -318,9 +358,8 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
         guard let selectedImage = info[.originalImage] as? UIImage else { return }
         registerViewModel.bindableImage.value = selectedImage
         registerViewModel.profilePhoto = selectedImage
-        dismiss(animated: true) {
-            self.selectPhotoButton.layer.borderWidth = 0
-        }
+        self.selectPhotoButton.layer.borderWidth = 0
+        dismiss(animated: true)
     }
 }
 

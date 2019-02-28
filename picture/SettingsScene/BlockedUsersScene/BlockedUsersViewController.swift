@@ -17,7 +17,7 @@ class BlockedUsersViewController: UIViewController {
         label.text = "No one blocked"
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.textColor = WKTheme.darkGray
+        label.textColor = Theme.darkGray
         return label
     }()
     
