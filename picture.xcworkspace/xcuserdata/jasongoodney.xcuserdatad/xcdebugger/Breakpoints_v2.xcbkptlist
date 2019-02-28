@@ -17,38 +17,6 @@
             endingLineNumber = "271"
             landmarkName = "didTapCancelReceivedRequest(cell:user:state:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Bool) -&gt; () in picture.AddFriendViewController.didTapCancelReceivedRequest(cell: picture.AddFriendCell, user: picture.User, state: picture.AddFriendState) -&gt; ()"
-                  moduleName = "picture"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/AddFriendScene/AddFriendViewController.swift"
-                  timestampString = "570320223.397043"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "271"
-                  endingLineNumber = "271"
-                  offsetFromSymbolStart = "461">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 (Swift.Bool) -&gt; () in picture.AddFriendViewController.didTapCancelReceivedRequest(cell: picture.AddFriendCell, user: picture.User, state: picture.AddFriendState) -&gt; ()"
-                  moduleName = "picture"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/AddFriendScene/AddFriendViewController.swift"
-                  timestampString = "570320223.400714"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "272"
-                  endingLineNumber = "272"
-                  offsetFromSymbolStart = "31">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -65,6 +33,38 @@
             endingLineNumber = "128"
             landmarkName = "removeFriendRequest(to:from:completion:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;__C.FIRQuerySnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in picture.DatabaseService.removeFriendRequest(to: picture.User, from: picture.User, completion: (Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
+                  timestampString = "573073287.898753"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "128"
+                  endingLineNumber = "128"
+                  offsetFromSymbolStart = "636">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (__C.FIRQueryDocumentSnapshot) -&gt; Swift.Bool in closure #1 (Swift.Optional&lt;__C.FIRQuerySnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in picture.DatabaseService.removeFriendRequest(to: picture.User, from: picture.User, completion: (Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
+                  timestampString = "573073287.9025151"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "129"
+                  endingLineNumber = "129"
+                  offsetFromSymbolStart = "44">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -81,6 +81,38 @@
             endingLineNumber = "133"
             landmarkName = "removeFriendRequest(to:from:completion:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;__C.FIRQuerySnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in picture.DatabaseService.removeFriendRequest(to: picture.User, from: picture.User, completion: (Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
+                  timestampString = "573073287.911502"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "133"
+                  endingLineNumber = "133"
+                  offsetFromSymbolStart = "852">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 (Swift.Optional&lt;__C.FIRQuerySnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in picture.DatabaseService.removeFriendRequest(to: picture.User, from: picture.User, completion: (Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Friend.swift"
+                  timestampString = "573073287.915377"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "134"
+                  endingLineNumber = "134"
+                  offsetFromSymbolStart = "48">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
