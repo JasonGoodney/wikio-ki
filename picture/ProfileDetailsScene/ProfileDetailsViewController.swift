@@ -273,7 +273,7 @@ extension ProfileDetailsViewController: UITableViewDataSource {
             switch indexPath.section {
             case 1:
                 let cell = tableView.dequeueReusableCell(withIdentifier: BestFriendDetailCell.reuseIdentifier, for: indexPath) as! BestFriendDetailCell
-                isBestFriend ? cell.toggleOn() : cell.toggleOff()
+                cell.isSelected = isBestFriend
                 cell.textLabel?.text = detail.title
                 return cell
                 
@@ -299,6 +299,7 @@ extension ProfileDetailsViewController: UITableViewDelegate {
         case .bestFriend:
             let cell = tableView.cellForRow(at: indexPath) as! BestFriendDetailCell
             isBestFriend = !isBestFriend
+            
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
             self.changeBestFriendStatus(isBestFriend: isBestFriend) { (error) in
                 if let error = error {
@@ -315,7 +316,6 @@ extension ProfileDetailsViewController: UITableViewDelegate {
                         UserController.shared.bestFriendUids.removeAll(where: { $0 == self.user.uid })
                     }
                     
-                    tableView.reloadRows(at: [indexPath], with: .automatic)
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     
                     self.bestFriendStateChanged = true

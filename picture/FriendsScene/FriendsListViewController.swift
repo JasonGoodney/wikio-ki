@@ -273,6 +273,8 @@ class FriendsListViewController: UIViewController {
         deselectCell()
         
         setStatusBar(hidden: false)
+        navigationController?.setToolbarHidden(false, animated: false)
+        
         if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
             DispatchQueue.main.async {
                 self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
@@ -297,6 +299,7 @@ class FriendsListViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationController?.setToolbarHidden(true, animated: false)
     }
     
     override func viewDidDisappear(_ animated: Bool) {

@@ -8,7 +8,17 @@
 
 import UIKit
 
-class BestFriendDetailCell: CheckmarkToggleCell {}
+class BestFriendDetailCell: CheckmarkToggleCell {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        selectionStyle = .none
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
 
 class SendToCell: CheckmarkToggleCell {
     

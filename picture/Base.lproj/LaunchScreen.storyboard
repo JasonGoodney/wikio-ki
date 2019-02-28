@@ -18,21 +18,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="xd_icon_launchscreen" translatesAutoresizingMaskIntoConstraints="NO" id="S8l-oY-JNR">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Wikio Ki app icon-1024" translatesAutoresizingMaskIntoConstraints="NO" id="TCl-0o-r3S">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <viewLayoutGuide key="safeArea" id="OjT-bV-fGP"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.56862745098039214" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="FyL-8A-pHp"/>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OEH-hx-Vq8"/>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Tj7-i6-Syq"/>
-                            <constraint firstAttribute="trailing" secondItem="S8l-oY-JNR" secondAttribute="trailing" id="bfT-ny-JBk"/>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="dlc-y7-Dvi"/>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="gwl-XL-aUl"/>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="lbc-4R-NZ7"/>
-                            <constraint firstItem="S8l-oY-JNR" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="yGz-Fc-js6"/>
+                            <constraint firstItem="TCl-0o-r3S" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Fi8-wI-DOB"/>
+                            <constraint firstItem="TCl-0o-r3S" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="fMZ-dw-ELa"/>
+                            <constraint firstItem="TCl-0o-r3S" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="foy-NS-oao"/>
+                            <constraint firstItem="TCl-0o-r3S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="nuO-Vy-o1x"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -43,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="xd_icon_launchscreen" width="1024" height="1024"/>
+        <image name="Wikio Ki app icon-1024" width="1024" height="1024"/>
     </resources>
 </document>
