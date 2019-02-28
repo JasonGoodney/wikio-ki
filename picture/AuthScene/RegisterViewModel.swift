@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseMessaging
+import JGProgressHUD
 
 typealias ErrorCompletion = (Error?) -> ()
 
@@ -32,13 +33,18 @@ class RegisterViewModel {
                 return
             }
             
-//            Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
-//                if let error = error {
-//                    print(error)
-//                    return
-//                }
-//                print("Sent email verifcation to: \(Auth.auth().currentUser!.email)")
-//            })
+            Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                print("Sent email verifcation to: \(Auth.auth().currentUser!.email)")
+//                let hud = JGProgressHUD(style: .dark)
+//                hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+//                hud.textLabel.text = "Email verification sent"
+//                hud.show(in: view)
+//                hud.dismiss(afterDelay: 2)
+            })
             
             let filename = UUID().uuidString
             let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()

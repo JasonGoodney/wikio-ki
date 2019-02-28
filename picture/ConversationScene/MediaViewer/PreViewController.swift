@@ -88,6 +88,11 @@ class PreViewController: UIViewController {
         return .slide
     }
     
+    deinit {
+        print("PreView deinit")
+        DiggerManager.shared.cancelAllTasks()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

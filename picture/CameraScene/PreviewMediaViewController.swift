@@ -433,7 +433,7 @@ class PreviewMediaViewController: UIViewController {
         } else {
             guard let currentUser = UserController.shared.currentUser,
                 let friend = friend else { return }
-            let caption = captionTextView.text ?? ""
+            
             let imageEdits = editContainerView.screenshot()
             chat?.isSending = true
             
@@ -453,7 +453,7 @@ class PreviewMediaViewController: UIViewController {
                     
                     NotificationCenter.default.post(name: .sendingMesssage, object: nil)
                     
-                    let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: .photo)
+                    let message = Message(senderUid: currentUser.uid, status: .sending, messageType: .photo)
                     StorageService.saveMediaToStorage(data: mediaData, thumbnailData: thumbnailData, for: message, completion: { (message, error) in
                         if let error = error {
                             print(error)
@@ -481,13 +481,15 @@ class PreviewMediaViewController: UIViewController {
 
                 DispatchQueue.main.async {
                     
+                    self.chat?.isSending = true
+                    self.chat?.lastSenderUid = UserController.shared.currentUser!.uid
+                    
+                    NotificationCenter.default.post(name: .sendingMesssage, object: nil)
+                    
                     UIApplication.shared.isNetworkActivityIndicatorVisible = true
                     
                     self.view.window!.rootViewController?.dismiss(animated: false) {
-                        self.chat?.isSending = true
-                        self.chat?.lastSenderUid = UserController.shared.currentUser!.uid
                         
-                        NotificationCenter.default.post(name: .sendingMesssage, object: nil)
                         UIApplication.shared.setStatusBar(hidden: false)
                     
                         process.videoWithCompression(url: videoURL, inView: self.view, image: imageEdits) { (data, error) in

@@ -116,6 +116,24 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     @objc private func handleForgotPassword() {
         print("🤶\(#function)")
+        passwordResetAlert { (email) in
+            guard let email = email else { return }
+            
+            let hud = JGProgressHUD(style: .dark)
+            hud.textLabel.text = "Sending password reset email."
+            hud.show(in: self.view)
+            Auth.auth().sendPasswordReset(withEmail: email) { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                print("Password reset link sent to: \(email)")
+                hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                hud.textLabel.text = "Email sent."
+                hud.dismiss(afterDelay: 2)
+            }
+        }
+        
     }
 
     override func viewDidLoad() {
@@ -220,5 +238,28 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     func setupTapGesture() {
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTapDismiss)))
+    }
+    
+    func passwordResetAlert(completion: @escaping (String?) -> Void) {
+        let alertController = UIAlertController(title: "Forgot password?", message: "Enter your email.", preferredStyle: .alert)
+        
+        alertController.addTextField { (tf) in
+            tf.placeholder = "Email"
+            tf.keyboardType = .emailAddress
+        }
+        
+        let okAction = UIAlertAction(title: "Send", style: .default) { (_) in
+            guard let email = alertController.textFields?[0].text, email != "" else { return }
+            completion(email)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
+            completion(nil)
+        }
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
 }
