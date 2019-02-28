@@ -18,7 +18,7 @@ class LoginController: UIViewController, LoginFlowHandler {
     
     var delegate: LoginControllerDelegate?
     
-    private let titleLabel = NavigationTitleLabel(title: "Log in to Wikio Ki")
+    private let titleLabel = NavigationTitleLabel(title: "Log in to \(Bundle.appName())")
     
     private let emailTextField: RoundRectTextField = {
         let textField = RoundRectTextField()

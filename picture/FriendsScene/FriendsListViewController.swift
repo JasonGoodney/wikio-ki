@@ -65,7 +65,7 @@ class FriendsListViewController: UIViewController {
         return view
     }()
     
-    private let titleLabel = NavigationTitleLabel(title: "XD")
+    private let titleLabel = NavigationTitleLabel(title: Bundle.appName())
     
     private lazy var addFriendButton: PopButton = {
         let button = PopButton(frame: CGRect(x: 0, y: 0, width: 32, height: 32))

@@ -38,6 +38,7 @@
 		D74890F821BC86DE005AAF6B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D74890F621BC86DE005AAF6B /* LaunchScreen.storyboard */; };
 		D748910521BC93AF005AAF6B /* apple-app-site-association in Resources */ = {isa = PBXBuildFile; fileRef = D748910421BC93AF005AAF6B /* apple-app-site-association */; };
 		D74B71EE21FD3F65004C994A /* SendingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */; };
+		D74CDA66222863A00064F9D3 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74CDA65222863A00064F9D3 /* Bundle.swift */; };
 		D74F7E2421D0683900B5EF28 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */; };
 		D74F7E2621D06AD500B5EF28 /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */; };
 		D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */; };
@@ -253,6 +254,7 @@
 		D748910121BC90B3005AAF6B /* picture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = picture.entitlements; sourceTree = "<group>"; };
 		D748910421BC93AF005AAF6B /* apple-app-site-association */ = {isa = PBXFileReference; lastKnownFileType = text; path = "apple-app-site-association"; sourceTree = "<group>"; };
 		D74B71ED21FD3F65004C994A /* SendingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingIndicatorView.swift; sourceTree = "<group>"; };
+		D74CDA65222863A00064F9D3 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		D74F7E2721D0709300B5EF28 /* NavigationTitleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitleLabel.swift; sourceTree = "<group>"; };
@@ -559,6 +561,7 @@
 				D7F0EA3321F6E7B400B9522E /* UIImage+Rotate.swift */,
 				D74585F722278AD100781713 /* UINavigationController.swift */,
 				D74585F922278DF200781713 /* UIApplication.swift */,
+				D74CDA65222863A00064F9D3 /* Bundle.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -998,6 +1001,7 @@
 				D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */,
 				D7591F1221C2CE5C00B3EAAD /* ReplyFooterView.swift in Sources */,
 				D79524F0220757BE00455E6F /* SendToViewController.swift in Sources */,
+				D74CDA66222863A00064F9D3 /* Bundle.swift in Sources */,
 				D779408321F97A2100A69C0A /* SendMessage.swift in Sources */,
 				D72D792C21D0913900FB5327 /* LoginViewModel.swift in Sources */,
 				D72F166621D556BD0009D43D /* AddFriendState.swift in Sources */,
