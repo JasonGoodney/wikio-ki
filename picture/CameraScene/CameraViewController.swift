@@ -40,7 +40,7 @@ class CameraViewController: SwiftyCamViewController {
     
     private lazy var cancelButton: PopButton = {
         let button = PopButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "icons8-back-filled-96").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "icons8-multiply-90").withRenderingMode(.alwaysTemplate), for: .normal)
         button.addTarget(self, action: #selector(cancelButtonTapped(_:)), for: .touchUpInside)
         button.tintColor = .white
         return button
@@ -82,7 +82,7 @@ class CameraViewController: SwiftyCamViewController {
             }
         }
     }
-    
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         updateView()
@@ -113,9 +113,11 @@ class CameraViewController: SwiftyCamViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.isNavigationBarHidden = true
+        
         setStatusBar(hidden: true)
         showButtons()
-        
+        dismissPanGesture.isEnabled = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -125,8 +127,7 @@ class CameraViewController: SwiftyCamViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        setStatusBar(hidden: false)
+                
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -151,6 +152,7 @@ class CameraViewController: SwiftyCamViewController {
     @objc func cancelButtonTapped(_ sender: PopButton) {
         sender.pop {
             self.dismiss(animated: true, completion: nil)
+            self.setStatusBar(hidden: false)
         }
     }
     
@@ -199,20 +201,26 @@ private extension CameraViewController {
     func updateView() {
         view.addSubviews([cancelButton, sendToLabel])
 
-        cancelButton.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
-        cancelButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
+        cancelButton.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 16, left: 16, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+//        cancelButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
         
-        flashButton.anchor(top: nil, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
+        //captureButton.anchorCenterXToSuperview()
+//        captureButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: nil)
+        
+        
+        flashButton.anchor(top: nil, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16), size: .init(width: buttonSize, height: buttonSize))
         flashButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
-        flipCameraButton.anchor(top: nil, leading: nil, bottom: flashButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 16))
+        
+        flipCameraButton.anchor(top: nil, leading: nil, bottom: flashButton.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 16), size: .init(width: buttonSize, height: buttonSize))
+        
         
         #if targetEnvironment(simulator)
             view.addSubview(sendPhotoButton)
-            sendPhotoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 16, left: 0, bottom: 0, right: 16))
+            sendPhotoButton.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 16, left: 0, bottom: 0, right: 16))
         #endif
         
         
-        sendToLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
+        sendToLabel.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
         sendToLabel.anchorCenterXToSuperview()
         
         if let friend = friend {
@@ -302,8 +310,9 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         let newVC = PreviewMediaViewController(image: photo)
         newVC.friend = friend
         newVC.chat = chat
-        ///add(blurViewController)
-        self.present(newVC, animated: false, completion: nil)
+        //self.present(newVC, animated: false, completion: nil)
+        navigationController?.pushViewController(newVC, animated: false)
+        dismissPanGesture.isEnabled = false
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
@@ -317,20 +326,18 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         print("Did finish Recording")
         swipeToZoom = false
         captureButton.shrinkButton()
-        
-//        swiftyCam.buttonDidEndLongPress()
-        
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
         let newVC = PreviewMediaViewController(videoURL: url)
         newVC.friend = friend
         newVC.chat = chat
-        //add(blurViewController)
-        //add(newVC)
         
-
-        self.present(newVC, animated: false, completion: nil)
+//        add(newVC)
+        showButtons()
+        dismissPanGesture.isEnabled = false
+//        self.present(newVC, animated: false, completion: nil)
+        navigationController?.pushViewController(newVC, animated: false)
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFocusAtPoint point: CGPoint) {

@@ -22,10 +22,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="develop" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="develop" customModuleProvider="target">
                                 <rect key="frame" x="150" y="572" width="75" height="75"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="75" id="gae-RY-H2R"/>
+                                    <constraint firstAttribute="height" constant="75" id="xQy-MK-xqj"/>
+                                </constraints>
                                 <viewLayoutGuide key="safeArea" id="wp4-mt-cDR"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Wt-LL-pSy" customClass="PopButton" customModule="develop" customModuleProvider="target">
@@ -47,7 +50,10 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="mb4-YZ-0o0"/>
+                        <constraints>
+                            <constraint firstItem="vrb-Oa-GFr" firstAttribute="top" secondItem="WFD-E9-7bq" secondAttribute="bottom" constant="20" id="foL-kr-R6i"/>
+                            <constraint firstItem="WFD-E9-7bq" firstAttribute="centerX" secondItem="SDd-m9-VeH" secondAttribute="centerX" id="yAA-SG-yLo"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="captureButton" destination="WFD-E9-7bq" id="YvZ-id-gr7"/>

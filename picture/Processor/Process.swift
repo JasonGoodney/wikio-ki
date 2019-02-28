@@ -11,7 +11,7 @@ import AVFoundation
 
 class Process {
     
-    func addOverlay(url: URL, inView view: UIView, image: UIImage, imageFrame: CGRect, completion: @escaping (URL?) -> Void) {
+    func addOverlay(url: URL, image: UIImage, completion: @escaping (URL?) -> Void) {
 
         let videoWidth: CGFloat = VideoResolution.width
         let videoHeight: CGFloat = VideoResolution.height
@@ -61,22 +61,22 @@ class Process {
         }
     }
     
-    func video(url: URL, inView view: UIView, caption: UITextView? = nil, completion: @escaping (Data?, Error?) -> Void) {
+    func videoWithCompression(url: URL, inView view: UIView, image: UIImage? = nil, completion: @escaping (Data?, Error?) -> Void) {
         
         let compressor = Compressor()
         let outputURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
         
-        if let captionTextView = caption {
+        
+        if let image = image {
             
             let videoWidth: CGFloat = VideoResolution.width
             let videoHeight: CGFloat = VideoResolution.height
-            
-            let height: CGFloat = 36 * (videoHeight / view.frame.height)
+        
+            let height: CGFloat = videoHeight
             let width = videoWidth
-            let y: CGFloat = videoHeight - (captionTextView.center.y * (videoHeight / view.frame.height))
             
             let size = CGSize(width: width, height: height)
-            let placement = Placement.custom(x: 0, y: y, size: size)
+            let placement = Placement.custom(x: 0, y: 0, size: size)
             
             let config = MergeConfiguration.init(frameRate: 30, directory: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0], quality: .high, placement: placement)
             
@@ -84,13 +84,10 @@ class Process {
             let asset = AVAsset(url: url)
             
             let thumbnail = generateThumbnail(for: asset)
-            let processor = ImageProcessor()
-            let image = processor.addOverlay(captionTextView, to: thumbnail!, size: view.frame.size)
+ 
             let thumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
             
-            let caption = captionTextView.text ?? ""
-            
-            merge.overlayVideo(video: asset, overlayImage: captionTextView.asImage(), completion: { (url) in
+            merge.overlayVideo(video: asset, overlayImage: image, completion: { (url) in
                 guard let url = url else { return }
                 
                 let videoData = try! Data(contentsOf: url)

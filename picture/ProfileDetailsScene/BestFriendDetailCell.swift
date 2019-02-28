@@ -22,7 +22,7 @@ class SendToCell: CheckmarkToggleCell {
         
         separatorView.backgroundColor = Theme.ultraLightGray
         addSubview(separatorView)
-        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: frame.width, height: 1))
+        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: 0, height: 1))
         
         selectionStyle = .none
     }

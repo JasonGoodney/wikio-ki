@@ -19,8 +19,8 @@ class ProfileImageButton: PopButton {
     weak var delegate: ProfileImageButtonDelegate?
     
     init(height: CGFloat, width: CGFloat, enabled: Bool = false) {
-        super.init(frame: CGRect(x: 0, y: 0, width: width, height: height))
-        
+//        super.init(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        super.init(frame: .zero)
         isUserInteractionEnabled = enabled
         heightAnchor.constraint(equalToConstant: height).isActive = true
         widthAnchor.constraint(equalToConstant: width).isActive = true

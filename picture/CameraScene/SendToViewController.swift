@@ -7,9 +7,27 @@
 //
 
 import UIKit
+import AVKit
 
 class SendToViewController: UIViewController {
     
+    // Pass back properties
+    weak var delegate: PassBackDelegate?
+    
+    var passBackMediaData: Data? = nil {
+        didSet {
+            mediaData = passBackMediaData
+            thumbnailData = passBackMediaData
+        }
+    }
+    
+    var passBackSelectedNames: Set<String>? = nil {
+        didSet {
+            selectedNames = passBackSelectedNames ?? []
+        }
+    }
+    
+    // Properties
     enum TableSection: Int {
         case preview = 0, bestFriends, recents, friends
     }
@@ -24,6 +42,7 @@ class SendToViewController: UIViewController {
         view.delegate = self
         view.dataSource = self
         view.register(SendToCell.self, forCellReuseIdentifier: SendToCell.reuseIdentifier)
+        view.register(SendToPreviewViewCell.self, forCellReuseIdentifier: SendToPreviewViewCell.reuseIdentifier)
         view.tableFooterView = UIView()
         view.separatorStyle = .none
         view.backgroundColor = Theme.ultraLightGray
@@ -54,23 +73,36 @@ class SendToViewController: UIViewController {
         return button
     }()
     
-    private var sendToPreviewView: SendToPreviewView!
     private var image: UIImage? = nil
+    
     private var videoURL: URL? = nil
-    private var mediaData: Data? = nil
+    private var containerView: UIView? = nil
+    
+    private var mediaData: Data? = nil {
+        didSet {
+            if selectionsCount > 0 {
+                UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
+                    DispatchQueue.main.async {
+                        self.sendButton.alpha = 1
+                    }
+                }, completion: nil)
+            }
+        }
+    }
     private var thumbnailData: Data? = nil
     
     private var selectedCells: [SendToCell] = []
     
+    private let previewSizeRatio: CGFloat = 0.25
+    
     init(image: UIImage) {
-        self.sendToPreviewView = SendToPreviewView(image: image)
         self.image = image
         super.init(nibName: nil, bundle: nil)
     }
     
-    init(videoURL: URL) {
-        self.sendToPreviewView = SendToPreviewView(videoURL: videoURL)
+    init(videoURL: URL, containerView: UIView) {
         self.videoURL = videoURL
+        self.containerView = containerView
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -83,23 +115,72 @@ class SendToViewController: UIViewController {
 
         setupLayout()
         
-        if let image = image {
-            mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
-            thumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-        } else if let videoURL = videoURL {
-            let compressor = Compressor()
-            let outputURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
-            compressor.compressFile(urlToCompress: videoURL, outputURL: outputURL) { (url) in
-                do {
-                    guard let mediaData = try? Data(contentsOf: url) else { return }
-                    print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
-                    self.mediaData = mediaData
-                    self.thumbnailData = mediaData
-                } catch let error {
-                    print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.isNavigationBarHidden = true
+        setStatusBar(hidden: false, duration: 0)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        setStatusBar(hidden: true, duration: 0)
+    }
+    
+    func setStatusBar(hidden: Bool, duration: TimeInterval = 0.25) {
+        
+        let statusBarWindow = UIApplication.shared.value(forKey: "statusBarWindow") as? UIWindow
+        UIView.animate(withDuration: duration) {
+            statusBarWindow?.alpha = hidden ? 0.0 : 1.0
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        //if mediaData == nil {
+            if let image = image {
+                mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
+                thumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
+            } else if let videoURL = videoURL {
+                let compressor = Compressor()
+                let outputURL = URL(fileURLWithPath: NSTemporaryDirectory() + UUID().uuidString + ".MP4")
+                let process = Process()
+                let image = containerView?.screenshot()
+                if let image = image {
+                    
+                    process.addOverlay(url: videoURL, image: image) { (url) in
+                        guard let url = url else { return }
+                        compressor.compressFile(urlToCompress: url, outputURL: outputURL) { (url) in
+                            do {
+                                guard let mediaData = try? Data(contentsOf: url) else { return }
+                                print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
+                                self.mediaData = mediaData
+                                self.thumbnailData = mediaData
+                            } catch let error {
+                                print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                            }
+                        }
+                    }
+                } else {
+                    compressor.compressFile(urlToCompress: videoURL, outputURL: outputURL) { (url) in
+                        do {
+                            guard let mediaData = try? Data(contentsOf: url) else { return }
+                            print("File size after compression: \(Double(mediaData.count / 1048576)) mb")
+                            self.mediaData = mediaData
+                            self.thumbnailData = mediaData
+                        } catch let error {
+                            print("🎅🏻\nThere was an error in \(#function): \(error)\n\n\(error.localizedDescription)\n🎄")
+                        }
+                    }
                 }
             }
-        }
+//        } else {
+//            print("Media already set")
+//        }
     }
     
 }
@@ -117,14 +198,15 @@ private extension SendToViewController {
         sendButton.anchor(top: nil, leading: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 24, right: 0), size: .init(width: 200, height: 56))
         sendButton.layer.cornerRadius = 28
         sendButton.anchorCenterXToSuperview()
-        
-        sendToPreviewView.layer.cornerRadius = 12
-        sendToPreviewView.clipsToBounds = true
-        sendToPreviewView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(cancelButtonTapped)))
+
     }
     
     @objc func cancelButtonTapped() {
-        dismiss(animated: false)
+//        dismiss(animated: false)
+        passBackMediaData = mediaData
+        passBackSelectedNames = selectedNames
+        delegate?.passBack(from: self)
+        navigationController?.popViewController(animated: false)
     }
     
     @objc func sendButtonTapped() {
@@ -143,6 +225,14 @@ private extension SendToViewController {
         }
         
         self.view.window!.rootViewController?.dismiss(animated: false) {
+            self.setStatusBar(hidden: false)
+            for (_, chat) in sendToUsers {
+                chat.isSending = true
+                chat.lastSenderUid = UserController.shared.currentUser!.uid
+            }
+            
+            NotificationCenter.default.post(name: .sendingMesssage, object: nil)
+            
             let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: type)
             StorageService.saveMediaToStorage(data: self.mediaData!, thumbnailData: self.thumbnailData!, for: message, completion: { (message, error) in
                 if let error = error {
@@ -154,11 +244,13 @@ private extension SendToViewController {
                     print("Message is nil")
                     return
                 }
+                
                 for (friend, chat) in sendToUsers {
-                    
+                    chat.isSending = true
+                    chat.lastSenderUid = UserController.shared.currentUser!.uid
                     let dbs = DatabaseService()
                     print("Sending to \(friend.username)")
-                    dbs.send(message, from: UserController.shared.currentUser!, to: friend, chat: chat, mediaData: self.mediaData, thumbnailData: self.thumbnailData, completion: { (error) in
+                    dbs.sendMessage(message, from: UserController.shared.currentUser!, to: friend, chat: chat, completion: { (error) in
                         if let error = error {
                             print(error)
                         }
@@ -193,7 +285,16 @@ extension SendToViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            return UITableViewCell()
+            let cell = tableView.dequeueReusableCell(withIdentifier: SendToPreviewViewCell.reuseIdentifier, for: indexPath) as! SendToPreviewViewCell
+            let size = CGSize(width: view.frame.width * previewSizeRatio, height: view.frame.height * previewSizeRatio)
+            if let videoURL = videoURL, let containerView = containerView {
+                let screenshot = containerView.screenshot()
+                cell.configureVideo(videoURL, screenshot)
+                cell.playFromBeginning()
+            } else if let image = image {
+                cell.configurePhoto(image, size: size)
+            }
+            return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: SendToCell.reuseIdentifier, for: indexPath) as! SendToCell
         
@@ -227,6 +328,7 @@ extension SendToViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
+            cancelButtonTapped()
             return
         }
         guard let cell = tableView.cellForRow(at: indexPath) as? SendToCell else {
@@ -242,7 +344,7 @@ extension SendToViewController: UITableViewDelegate {
             selectedNames.remove(name)
         }
 
-        if selectionsCount > 0 {
+        if selectionsCount > 0 && (mediaData != nil && thumbnailData != nil) {
             UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
                 self.sendButton.alpha = 1
             }, completion: nil)
@@ -283,11 +385,7 @@ extension SendToViewController: UITableViewDelegate {
         case .friends where UserController.shared.allChatsWithFriends.count > 0:
             label.text = "Friends"
         case .preview:
-            headerView.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: view.frame.height * 0.25)
-            headerView.addSubview(sendToPreviewView)
-            sendToPreviewView.frame = CGRect(x: 0, y: 0, width: view.frame.width * 0.25, height: view.frame.height * 0.25)
-            sendToPreviewView.center = headerView.center
-            return headerView
+            return nil
             
         default:
             print("SECTION ERROR 🤶\(#function)")
@@ -299,8 +397,6 @@ extension SendToViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let tableSection = TableSection(rawValue: section)!
         switch tableSection {
-        case .preview:
-            return view.frame.height * 0.25
         case .bestFriends where !UserController.shared.bestFriendsChats.isEmpty:
             return 56
         case .recents where !UserController.shared.recentChatsWithFriends.isEmpty:
@@ -314,7 +410,7 @@ extension SendToViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
-            return 0
+            return view.frame.height * previewSizeRatio
         }
         return 56
     }

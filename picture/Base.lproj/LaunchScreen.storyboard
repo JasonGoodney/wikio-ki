@@ -20,6 +20,7 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="xd_icon_launchscreen" translatesAutoresizingMaskIntoConstraints="NO" id="S8l-oY-JNR">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <viewLayoutGuide key="safeArea" id="OjT-bV-fGP"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.56862745098039214" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -28,6 +29,10 @@
                             <constraint firstItem="S8l-oY-JNR" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OEH-hx-Vq8"/>
                             <constraint firstItem="S8l-oY-JNR" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Tj7-i6-Syq"/>
                             <constraint firstAttribute="trailing" secondItem="S8l-oY-JNR" secondAttribute="trailing" id="bfT-ny-JBk"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="dlc-y7-Dvi"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="gwl-XL-aUl"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="lbc-4R-NZ7"/>
+                            <constraint firstItem="S8l-oY-JNR" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="yGz-Fc-js6"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

@@ -14,6 +14,12 @@ let buttonSize: CGFloat = 44
 
 class PreviewMediaViewController: UIViewController {
     
+    // Pass forward properties
+    private var passForwardMediaData: Data? = nil
+    private var passForwardSelectedIndexPaths: [IndexPath]? = nil
+    private var passForwardSelectedNames: Set<String>? = nil
+    
+    // Properties
     var chat: Chat?
     var friend: User? {
         didSet {
@@ -246,6 +252,8 @@ class PreviewMediaViewController: UIViewController {
         return gesture
     }()
     
+    
+    
     init(videoURL: URL) {
         self.videoURL = videoURL
         super.init(nibName: nil, bundle: nil)
@@ -280,6 +288,11 @@ class PreviewMediaViewController: UIViewController {
         
         view.addGestureRecognizer(captionResponderTapGesture)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -343,11 +356,13 @@ class PreviewMediaViewController: UIViewController {
     
     // MARK: - Actions
     @objc func cancel() {
-        dismiss(animated: false, completion: nil)
-            if image != nil {
-            } else if videoURL != nil {
-                self.remove()
-            }
+        //self.remove()
+        navigationController?.popViewController(animated: false)
+//        dismiss(animated: false, completion: nil)
+//            if image != nil {
+//            } else if videoURL != nil {
+//                self.remove()
+//            }
     }
     
     func imageFromView(_ myView: UIView) -> UIImage {
@@ -386,118 +401,132 @@ class PreviewMediaViewController: UIViewController {
     }
     
     @objc func sendButtonTapped(_ sender: UIButton) {
+        
         if chat == nil {
             var sendToVC: SendToViewController
+            
             if let image = image {
                 let imageEdits = editContainerView.screenshot()
                 let editedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
                 sendToVC = SendToViewController(image: editedImage)
-                present(sendToVC, animated: false, completion: nil)
+                sendToVC.delegate = self
+                sendToVC.passBackSelectedNames = passForwardSelectedNames
+                sendToVC.passBackMediaData = passForwardMediaData
+                //present(sendToVC, animated: false, completion: nil)
+                navigationController?.pushViewController(sendToVC, animated: false)
             } else if let videoURL = videoURL {
-                sendToVC = SendToViewController(videoURL: videoURL)
-                present(sendToVC, animated: false, completion: nil)
+                let process = Process()
+                let imageEdits = editContainerView.screenshot()
+                
+                
+                // Pass the image or editContainerView to SendToViewController
+                
+                sendToVC = SendToViewController(videoURL: videoURL, containerView: editContainerView)
+                sendToVC.delegate = self
+                sendToVC.passBackSelectedNames = self.passForwardSelectedNames
+                sendToVC.passBackMediaData = self.passForwardMediaData
+                //                present(sendToVC, animated: false, completion: nil)   
+                self.navigationController?.pushViewController(sendToVC, animated: false)
+                
             }
             return
-        }
-        
-        let hud = JGProgressHUD(style: .dark)
-        
-        guard let currentUser = UserController.shared.currentUser,
-            let friend = friend else { return }
-        
-        //chat?.status = .sending
-        chat?.isSending = true
-        
-        var messageCaption: String? = nil
-        var mediaData: Data? = nil
-        var messageThumbnailData: Data? = nil
-        
-        if let sketch = image, sketchView.hasDrawing {
-            let processor = ImageProcessor()
-            image = processor.addOverlay(sketchView, to: sketch, size: view.frame.size)
-        }
-        
-        if captionTextView.text != "", let caption = captionTextView.text, let image = image {
-            messageCaption = caption
-            let processor = ImageProcessor()
+        } else {
+            guard let currentUser = UserController.shared.currentUser,
+                let friend = friend else { return }
+            let caption = captionTextView.text ?? ""
+            let imageEdits = editContainerView.screenshot()
+            chat?.isSending = true
             
-            let image = processor.addOverlay(captionTextView, to: image, size: view.frame.size)
-            mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
-            messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-
-            self.dismiss(animated: false)
-            self.presentingViewController?.dismiss(animated: false) {
-                let dbs = DatabaseService()
-                let message = Message(senderUid: currentUser.uid, caption: caption, status: .sending, messageType: .photo)
+            if let image = image {
                 
-                dbs.send(message, from: currentUser, to: friend, chat: self.chat!, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = error.localizedDescription
-                        hud.show(in: self.view)
-                    }
-                    print("Sent from DataBaseService")
-                })
-            }
-            
-        } else if let image = image {
-            mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
-            messageThumbnailData = image.jpegData(compressionQuality: Compression.thumbnailQuality)
-
-            
-            self.dismiss(animated: false)
-            self.presentingViewController?.dismiss(animated: false) {
-                let dbs = DatabaseService()
-                let message = Message(senderUid: currentUser.uid, status: .sending, messageType: .photo)
+                let editedImage = image.imageMontage(img: imageEdits, bgColor: nil, size: view.frame.size)
+                let mediaData = editedImage.jpegData(compressionQuality: Compression.photoQuality)!
+                let thumbnailData = editedImage.jpegData(compressionQuality: Compression.thumbnailQuality)!
                 
-                dbs.send(message, from: currentUser, to: friend, chat: self.chat!, mediaData: mediaData, thumbnailData: messageThumbnailData, completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                        hud.textLabel.text = error.localizedDescription
-                        hud.show(in: self.view)
-                    }
-                    print("Sent from DataBaseService")
-                })
-            }
-            
-        } else if let videoURL = videoURL {
-            let process = Process()
-            let caption: UITextView? = captionTextView.text != "" ? captionTextView : nil
-            let captionText = caption?.text
-            DispatchQueue.main.async {
                 
-                UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                self.dismiss(animated: false, completion: nil)
-                self.presentingViewController?.dismiss(animated: false, completion: {
-            
-            process.video(url: videoURL, inView: self.view, caption: caption) { (data, error) in
-                if let error = error {
-                    print(error)
-                    return
-                }
-                
-                guard let data = data else { return }
-                
-                        let dbs = DatabaseService()
-                        let message = Message(senderUid: currentUser.uid, caption: captionText, status: .sending, messageType: .video)
+                self.view.window!.rootViewController?.dismiss(animated: false) {
+                    UIApplication.shared.setStatusBar(hidden: false)
+                    
+                    self.chat?.isSending = true
+                    self.chat?.lastSenderUid = UserController.shared.currentUser!.uid
+                    
+                    
+                    NotificationCenter.default.post(name: .sendingMesssage, object: nil)
+                    
+                    let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: .photo)
+                    StorageService.saveMediaToStorage(data: mediaData, thumbnailData: thumbnailData, for: message, completion: { (message, error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                        print("Media Uploaded")
+                        guard let message = message else {
+                            print("Message is nil")
+                            return
+                        }
                         
-                        dbs.send(message, from: currentUser, to: friend, chat: self.chat!, mediaData: data, thumbnailData: data, completion: { (error) in
+                        let dbs = DatabaseService()
+                        print("Sending to \(friend.username)")
+                        dbs.sendMessage(message, from: UserController.shared.currentUser!, to: friend, chat: self.chat!, completion: { (error) in
                             if let error = error {
                                 print(error)
-                                hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                hud.textLabel.text = error.localizedDescription
-                                hud.show(in: self.view)
                             }
                             print("Sent from DataBaseService")
-                            UIApplication.shared.isNetworkActivityIndicatorVisible = false
                         })
-                        // self.presentingViewController?.dismiss(animated: false)
+                    })
+                }
+
+            } else if let videoURL = videoURL {
+                let process = Process()
+
+                DispatchQueue.main.async {
+                    
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                    
+                    self.view.window!.rootViewController?.dismiss(animated: false) {
+                        self.chat?.isSending = true
+                        self.chat?.lastSenderUid = UserController.shared.currentUser!.uid
+                        
+                        NotificationCenter.default.post(name: .sendingMesssage, object: nil)
+                        UIApplication.shared.setStatusBar(hidden: false)
+                    
+                        process.videoWithCompression(url: videoURL, inView: self.view, image: imageEdits) { (data, error) in
+                            if let error = error {
+                                print(error)
+                                return
+                            }
+                            
+                            guard let data = data else { return }
+                            
+                            
+                            
+                            let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: .video)
+                            StorageService.saveMediaToStorage(data: data, thumbnailData: data, for: message, completion: { (message, error) in
+                                if let error = error {
+                                    print(error)
+                                    return
+                                }
+                                print("Media Uploaded")
+                                guard let message = message else {
+                                    print("Message is nil")
+                                    return
+                                }
+                                
+                                let dbs = DatabaseService()
+                                print("Sending to \(friend.username)")
+                                dbs.sendMessage(message, from: UserController.shared.currentUser!, to: friend, chat: self.chat!, completion: { (error) in
+                                    if let error = error {
+                                        print(error)
+                                    }
+                                    print("Sent from DataBaseService")
+                                })
+                            })
+                        }
                     }
-                })
+                }
             }
         }
+ 
     }
     
     private func playFromBeginning() {
@@ -663,6 +692,7 @@ class PreviewMediaViewController: UIViewController {
         captionTextView.isHidden = captionTextView.text == ""
         sendButton.isHidden = true
         captionResponderTapGesture.isEnabled = false
+        sendToLabel.isHidden = true
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = true
         }
@@ -681,6 +711,7 @@ class PreviewMediaViewController: UIViewController {
         toggleDrawingButton.setImage(drawImage, for: .normal)
         sendButton.isHidden = false
         captionResponderTapGesture.isEnabled = true
+        sendToLabel.isHidden = false
         if videoURL != nil {
             toggleVideoSoundButton.isHidden = false
         }
@@ -758,7 +789,7 @@ class PreviewMediaViewController: UIViewController {
             
             let process = Process()
             let editsImage = editContainerView.screenshot()
-            process.addOverlay(url: videoURL, inView: self.view, image: editsImage, imageFrame: editContainerView.frame) { (url) in
+            process.addOverlay(url: videoURL, image: editsImage) { (url) in
                     guard let url = url else { return }
                     
                     PHPhotoLibrary.shared().performChanges({
@@ -828,7 +859,6 @@ private extension PreviewMediaViewController {
 
         sendButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 8, right: 8))
         
-        
         sendToLabel.centerYAnchor.constraint(equalTo: sendButton.centerYAnchor).isActive = true
         sendToLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: sendButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: right))
         
@@ -843,10 +873,10 @@ private extension PreviewMediaViewController {
         let drawingToolsStackView = UIStackView(arrangedSubviews: [penButton, eraserButton])
         drawingToolsStackView.spacing = 16
         view.addSubview(drawingToolsStackView)
-        drawingToolsStackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
+        drawingToolsStackView.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
         drawingToolsStackView.anchorCenterXToSuperview()
   
-        undoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: top, left: left, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+        undoButton.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: top, left: left, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
 
     }
 }
@@ -959,5 +989,15 @@ extension PreviewMediaViewController: SketchViewDelegate {
         })
         
         
+    }
+}
+
+// MARK: - PassBackDelegate
+extension PreviewMediaViewController: PassBackDelegate {
+    func passBack(from viewController: UIViewController) {
+        if let vc = viewController as? SendToViewController {
+            passForwardMediaData = vc.passBackMediaData
+            passForwardSelectedNames = vc.passBackSelectedNames
+        }
     }
 }

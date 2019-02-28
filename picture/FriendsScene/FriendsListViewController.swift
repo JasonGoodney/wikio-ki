@@ -27,6 +27,8 @@ extension Collection {
 
 class FriendsListViewController: UIViewController {
     
+    let notificationCenter = NotificationCenter.default
+    
     // Firebase Listeners
     var friendRequestListener: ListenerRegistration?
     var friendshipChangedListener: ListenerRegistration?
@@ -79,29 +81,19 @@ class FriendsListViewController: UIViewController {
     }()
 
     private let cameraButton = UIButton()
-    
-//    private lazy var cameraButton: PopButton = {
-//        let side: CGFloat = 56
-//        let button = PopButton(frame: CGRect(x: 0, y: 0, width: side, height: side))
-//        button.heightAnchor.constraint(equalToConstant: side).isActive = true
-//        button.widthAnchor.constraint(equalToConstant: side).isActive = true
-//        button.layer.cornerRadius = side / 2
-//        button.layer.borderColor = Theme.gainsboro.cgColor
-//        button.layer.borderWidth = 4
-//        button.backgroundColor = UIColor.white
-//        button.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
-//        return button
-//    }()
-    
+
     deinit {
         friendRequestListener?.remove()
         friendshipChangedListener?.remove()
         chatUpdateListener?.remove()
         newMessageListener?.remove()
+        notificationCenter.removeObserver(self)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        notificationCenter.addObserver(self, selector: #selector(reloadDataForSending), name: Notification.Name.sendingMesssage, object: nil)
 
         let appDelegate = AppDelegate()
         appDelegate.attemptRegisterForNotifications(UIApplication.shared)
@@ -275,12 +267,12 @@ class FriendsListViewController: UIViewController {
         }
 
     }
- 
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         deselectCell()
         
-        
+        setStatusBar(hidden: false)
         if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
             DispatchQueue.main.async {
                 self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
@@ -301,7 +293,7 @@ class FriendsListViewController: UIViewController {
         super.viewDidAppear(animated)
 
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
@@ -341,6 +333,11 @@ class FriendsListViewController: UIViewController {
             self.reloadData()
             
         })
+    }
+    
+    @objc private func reloadDataForSending() {
+        print("🤶\(#function)")
+        reloadData()
     }
     
     private func reloadData() {
@@ -528,23 +525,16 @@ extension FriendsListViewController: UITableViewDataSource {
             print("SECTION ERROR 🤶\(#function)")
         }
         
-        
         friendsListCell.delegate = self
         friendsListCell.profileImageView.delegate = self
         
-        
-        
         return friendsListCell
     }
-    
-    
 }
 
 // MARK: - UITableViewDelegate
 extension FriendsListViewController: UITableViewDelegate {
-    
-    
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let messagesViewController = MessagesViewController()
@@ -787,8 +777,9 @@ extension FriendsListViewController: FriendsListCellDelegate {
         }
         
         setStatusBar(hidden: true)
-        cameraViewController.modalPresentationStyle = .overFullScreen
-        present(cameraViewController, animated: false, completion: nil)
+        let cameraNavVC = UINavigationController(rootViewController: cameraViewController)
+        cameraNavVC.modalPresentationStyle = .overFullScreen
+        present(cameraNavVC, animated: false, completion: nil)
     }
 }
 
@@ -913,5 +904,4 @@ extension FriendsListViewController {
         })
     }
 }
-
 

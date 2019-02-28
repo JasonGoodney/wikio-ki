@@ -1,57 +1,57 @@
 //
-//  SendToPreviewView.swift
+//  SendToPreviewViewCell.swift
 //  picture
 //
-//  Created by Jason Goodney on 2/25/19.
+//  Created by Jason Goodney on 2/27/19.
 //  Copyright © 2019 Jason Goodney. All rights reserved.
 //
 
 import UIKit
 import AVKit
 
-class SendToPreviewView: UIView {
-    
-    // MARK: - Properties
-    private var image: UIImage? = nil
-    private var player: AVPlayer? = nil
+class SendToPreviewViewCell: UITableViewCell, ReuseIdentifiable {
 
     // MARK: - Views
-    private let imageView: UIImageView = {
+    private let photoView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
+        view.layer.cornerRadius = 12
         view.clipsToBounds = true
         return view
     }()
     
-    private let videoView = UIView()
-    
-    init(image: UIImage) {
-        super.init(frame: .zero)
+    private var videoView: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 12
+        view.clipsToBounds = true
+        return view
+    }()
+
+    var player: AVPlayer?
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        configure(image)
-    }
-    
-    init(videoURL: URL) {
-        super.init(frame: .zero)
-        addSubview(videoView)
-        videoView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
-        self.configure(videoURL)
+        backgroundColor = .clear
+        selectionStyle = .none
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    private func configure(_ image: UIImage) {
-        addSubview(imageView)
-        imageView.image = image
-        imageView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
+    func configurePhoto(_ image: UIImage, size: CGSize) {
+        addSubview(photoView)
+        photoView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
+        photoView.image = image
     }
     
-    private func configure(_ videoURL: URL) {
+    func configureVideo(_ videoURL: URL, _ image: UIImage) {
+        addSubview(videoView)
+
+        videoView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
         
+        videoView.layer.cornerRadius = 12
         let playerItem = CachingPlayerItem(url: videoURL, customFileExtension: "mp4")
-        //        guard let downloadURL = NSURL(string: message.mediaURL!) as? URL else { return }
         self.player = AVPlayer(playerItem: playerItem)
         
         player?.automaticallyWaitsToMinimizeStalling = false
@@ -78,7 +78,13 @@ class SendToPreviewView: UIView {
             print(error)
         }
         
-        playFromBeginning()
+        
+        videoView.addSubview(photoView)
+        photoView.image = image
+        
+        photoView.anchor(top: videoView.topAnchor, leading: videoView.leadingAnchor, bottom: videoView.bottomAnchor, trailing: videoView.trailingAnchor)
+        
+        photoView.clipsToBounds = true
         
     }
     
@@ -86,17 +92,17 @@ class SendToPreviewView: UIView {
         playFromBeginning()
     }
     
-    private func playFromBeginning() {
+    func playFromBeginning() {
         if self.player != nil {
             self.player!.seek(to: CMTime.zero)
             self.player!.play()
         }
     }
     
-    private func pause() {
+    func pause() {
         if self.player != nil {
             player?.pause()
         }
     }
-    
+
 }
