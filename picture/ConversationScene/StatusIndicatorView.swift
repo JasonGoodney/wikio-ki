@@ -67,6 +67,8 @@ class StatusIndicatorView: UIView {
             statusIndicator.image = isOpened ? receivedOpened : receivedUnopened
 
         } else if status == .none {
+            sendingIndicatorView.stopAnimating()
+            statusIndicator.isHidden = false
             statusIndicator.image = isNewFriendship ? newFriendship : tapToChat
         }
         

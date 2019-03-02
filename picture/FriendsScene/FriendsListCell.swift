@@ -148,7 +148,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
             cameraButton.tintColor = Theme.textColor
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
-            detailsLabel.text = "Sending - Do not close 🙏"
+            detailsLabel.text = "Sending - Don't close 🙏"
             statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
             return
         }

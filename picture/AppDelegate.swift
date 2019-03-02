@@ -38,6 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         //NotificationCenter.default.addObserver(self, selector: #selector(removeBlurEffect), name: UIApplication.didBecomeActiveNotification, object: nil)
         //NotificationCenter.default.addObserver(self, selector: #selector(addBlurEffect), name: UIApplication.willResignActiveNotification, object: nil)
     
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+//        UIApplication.shared.applicationIconBadgeNumber = 0 
         return true
     }
 
@@ -98,6 +100,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         
         // Print full message.
         print(userInfo)
+        
+        if let aps = userInfo["aps"] as? NSDictionary {
+            if let alert = aps["alert"] as? NSDictionary {
+                if let badge = alert["badge"] as? NSString, badge.integerValue == 1 {
+                    UIApplication.shared.incrementBadgeNumber()
+                }
+            }
+        }
         
         completionHandler(UIBackgroundFetchResult.newData)
     }

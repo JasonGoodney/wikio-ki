@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-const spawn = require('child-process-promise').spawn;
+// const spawn = require('child-process-promise').spawn;
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -10,9 +10,6 @@ admin.initializeApp();
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
-exports.helloWorld = functions.https.onRequest((request, response) => {
-    response.send("Hello from Firebase!");
-});
 
 function send(message) {
     // Send a message to the device corresponding to the provided
@@ -28,12 +25,42 @@ function send(message) {
         });
 }
 
-function isReceiver(user, lastSenderUid) { 
-    return user.uid !== lastSenderUid;
+async function getUser(uid, store) {
+    let user = await store.collection('users').doc(uid)
+        .get()
+        .then(doc => {
+            if (!doc.exists) {
+                let error = "Document does not exist!";
+                throw error;
+            } 
+            return doc.data();
+        })
+        .catch(reason => {
+            console.log(reason);
+        })
+    return user;
+}
+
+async function badgeCount(userId) {
+    
+    var db = admin.firestore();
+    
+    let count = db.collection("chats").where(`unread.${userId}`, "==", true)
+        .get()
+        .then((querySnapshot) => {
+            console.log("snap size:", querySnapshot.size);
+            return querySnapshot.size;
+            
+        })
+        .catch((error) => {
+            console.log("Error getting documents: ", error);
+            return 0;
+        })
+    return count;
 }
 
 // Listen for events
-var badgeCount = 0;
+
 exports.observeNewMessage = functions.firestore
     .document('chats/{chatUid}').onUpdate((change, context) => {
         var chatUid = context.params.chatUid;
@@ -51,75 +78,56 @@ exports.observeNewMessage = functions.firestore
         const lastSenderUid = chat.lastSenderUid;
         const memberUids = chat.memberUids;
         const receiverUid = memberUids.filter(uid => uid !== lastSenderUid)[0];
-        
-        var unreadCount = parseInt(chat.unread[receiverUid]);
+                
         const store = admin.firestore();
         // Handle Push Notifications
         if (chat.isSending === false && chat.status === "DELIVERED") {
             
+            let receiver = getUser(receiverUid, store);
+            let sender = getUser(lastSenderUid, store);
+
+            var badge = 0;
             
-            store.collection('users').doc(receiverUid).get().then(doc => {
-            if (doc.exists) {
-                const receiver = doc.data();
-                
+            if (chat.unread[receiverUid] === true && chatBefore.unread[receiverUid] === false) {
+                badge = 1;
+            }
+            Promise.all([receiver, sender])
+                .then(values => {
+                    const receiver = values[0];
+                    const sender = values[1];
 
-                store.collection('users').doc(lastSenderUid).get().then(doc => {
-                    if (doc.exists) {
-                        var sender = doc.data();
+                    console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
+                    console.log('fmctoken ' + receiver.fcmToken);
 
-                        
-                        console.log(`Notification from ${sender.username}(${lastSenderUid}) to ${receiver.username}(${receiverUid})`);
-                        console.log('fmctoken ' + receiver.fcmToken);
-                        var message = {
-                            token: receiver.fcmToken,
-                            // notification: {
-                            //     title: 'FUCK',
-                            //     body: 'from ' + sender.username,
-                            // },
-                            data: {
-                                chat: chatUid,
-                            },
-                            apns: {
-                                payload: {
-                                    aps: {
-                                        'content-available': 1,
-                                        alert: {
-                                            // title: 'fuck fuch fuck',
-                                            body: 'from ' + sender.username,
-                                            badge: unreadCount,
-                                            
-                                        },
-                                    }
+                    const message = {
+                        token: receiver.fcmToken,
+
+                        data: {
+                            chat: chatUid,
+                        },
+                        apns: {
+                            payload: {
+                                aps: {
+                                    'content-available': 1,
+                                    alert: {
+                                        body: 'from ' + sender.username,
+                                        badge: `${badge}`,
+                                        categoryIdentifier: "wikio-ki",
+                                        sound: "default"
+                                    },
                                 }
                             }
                         }
-                        
-                        send(message);
-                        return;
                     }
-                    else {
-                        console.log(`DOCUMENT /users/${lastSenderUid} DOES NOT EXIST`);
-                        return;
-                    }
-                }).catch(reason => {
-                    console.log(reason)
-
+                    console.log(message);
+                    send(message);
+                    return;
                 })
-                return;
-            }
-            else {
-                console.log(`DOCUMENT /users/${sendToUid} DOES NOT EXIST`);
-                return;
-            }
-        }).catch(reason => {
-            console.log(reason)
-
-        })
-        }
-
-        
+                .catch(reason => {
+                    console.log(reason);
+                })
+        }  
 });
-
 
 function increase(unreadCount, ref, unreadKey) {
     ref.update({
@@ -252,52 +260,52 @@ exports.sendPushNotifications = functions.https.onRequest((req, res) => {
  * ImageMagick.
  */
 // [START generateThumbnailTrigger]
-exports.generateThumbnail = functions.storage.object().onFinalize(async (object) => {
-    // [END generateThumbnailTrigger]
-      // [START eventAttributes]
-      const fileBucket = object.bucket; // The Storage bucket that contains the file.
-      const filePath = object.name; // File path in the bucket.
-      const contentType = object.contentType; // File content type.
-      const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
-      // [END eventAttributes]
+// exports.generateThumbnail = functions.storage.object().onFinalize(async (object) => {
+//     // [END generateThumbnailTrigger]
+//       // [START eventAttributes]
+//       const fileBucket = object.bucket; // The Storage bucket that contains the file.
+//       const filePath = object.name; // File path in the bucket.
+//       const contentType = object.contentType; // File content type.
+//       const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
+//       // [END eventAttributes]
     
-      // [START stopConditions]
-      // Exit if this is triggered on a file that is not an image.
-      if (!contentType.startsWith('image/')) {
-        return console.log('This is not an image.');
-      }
+//       // [START stopConditions]
+//       // Exit if this is triggered on a file that is not an image.
+//       if (!contentType.startsWith('image/')) {
+//         return console.log('This is not an image.');
+//       }
     
-      // Get the file name.
-      const fileName = path.basename(filePath);
-      // Exit if the image is already a thumbnail.
-      if (fileName.startsWith('thumb_')) {
-        return console.log('Already a Thumbnail.');
-      }
-      // [END stopConditions]
+//       // Get the file name.
+//       const fileName = path.basename(filePath);
+//       // Exit if the image is already a thumbnail.
+//       if (fileName.startsWith('thumb_')) {
+//         return console.log('Already a Thumbnail.');
+//       }
+//       // [END stopConditions]
     
-      // [START thumbnailGeneration]
-      // Download file from bucket.
-      const bucket = admin.storage().bucket(fileBucket);
-      const tempFilePath = path.join(os.tmpdir(), fileName);
-      const metadata = {
-        contentType: contentType,
-      };
+//       // [START thumbnailGeneration]
+//       // Download file from bucket.
+//       const bucket = admin.storage().bucket(fileBucket);
+//       const tempFilePath = path.join(os.tmpdir(), fileName);
+//       const metadata = {
+//         contentType: contentType,
+//       };
       
-      await bucket.file(filePath).download({destination: tempFilePath});
-      console.log('Image downloaded locally to', tempFilePath);
-      // Generate a thumbnail using ImageMagick.
-      await spawn('convert', [tempFilePath, '-thumbnail', '200x200>', tempFilePath]);
-      console.log('Thumbnail created at', tempFilePath);
-      // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
-      const thumbFileName = `thumb_${fileName}`;
-      const thumbFilePath = path.join(path.dirname(filePath), thumbFileName);
-      // Uploading the thumbnail.
-      await bucket.upload(tempFilePath, {
-        destination: thumbFilePath,
-        metadata: metadata,
-      });
-      // Once the thumbnail has been uploaded delete the local file to free up disk space.
-      return fs.unlinkSync(tempFilePath);
-      // [END thumbnailGeneration]
-});
-// [END generateThumbnail]
+//       await bucket.file(filePath).download({destination: tempFilePath});
+//       console.log('Image downloaded locally to', tempFilePath);
+//       // Generate a thumbnail using ImageMagick.
+//       await spawn('convert', [tempFilePath, '-thumbnail', '200x200>', tempFilePath]);
+//       console.log('Thumbnail created at', tempFilePath);
+//       // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
+//       const thumbFileName = `thumb_${fileName}`;
+//       const thumbFilePath = path.join(path.dirname(filePath), thumbFileName);
+//       // Uploading the thumbnail.
+//       await bucket.upload(tempFilePath, {
+//         destination: thumbFilePath,
+//         metadata: metadata,
+//       });
+//       // Once the thumbnail has been uploaded delete the local file to free up disk space.
+//       return fs.unlinkSync(tempFilePath);
+//       // [END thumbnailGeneration]
+// });
+// // [END generateThumbnail]

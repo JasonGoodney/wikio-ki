@@ -39,7 +39,15 @@ class Chat {
     var isNewFriendship: Bool
     var areFriends: Bool
     var areMutualBestFriends: Bool
-    var unread: [UID: Bool]?
+    var unread: [UID: Bool]? {
+        didSet {
+            if let currentUserUnread = unread?[UserController.shared.currentUser!.uid] {
+                if currentUserUnread == false {
+                    UIApplication.shared.decrementBadgeNumber()
+                }
+            }
+        }
+    }
     
     var isSending: Bool
     var status: MessageStatus

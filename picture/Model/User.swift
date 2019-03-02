@@ -18,6 +18,8 @@ class User {
     var profilePhotoUrl: String
     let uid: String
     
+    var fcmToken: String? = nil
+    
     var friendsUids: Set<String> = []
     
     var profilePhoto: UIImage?
@@ -25,6 +27,7 @@ class User {
     enum Keys {
         static let profilePhotoUrl = "profilePhotoUrl"
         static let email = "email"
+        static let fcmToken = "fcmToken"
     }
     
     init(dictionary: [String: Any]) {
@@ -33,6 +36,7 @@ class User {
         self.profilePhotoUrl = dictionary["profilePhotoUrl"] as? String ?? ""
         self.uid = dictionary["uid"] as? String ?? ""
         self.score = dictionary["score"] as? Int ?? 0
+        self.fcmToken = dictionary[Keys.fcmToken] as? String ?? nil
     }
     
     init(username: String, email: String = "", score: Int = 0, uid: String = "", profilePhotoUrl: String = "") {

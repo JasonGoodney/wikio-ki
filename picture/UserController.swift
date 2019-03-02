@@ -15,7 +15,24 @@ class UserController: LoginFlowHandler {
     
     static let shared = UserController(); private init() {}
 
-    var currentUser: User?
+    var currentUser: User? {
+        didSet {
+            if let user = currentUser, user.fcmToken == nil {
+                guard let fcmToken = Messaging.messaging().fcmToken else { return }
+                let dbs = DatabaseService()
+                
+                let fields = [User.Keys.fcmToken: fcmToken]
+                dbs.updateData(DatabaseService.userReference(forPathUid: currentUser!.uid), withFields: fields) { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    
+                    print("Add fcmToken for user")
+                }
+            }
+        }
+    }
     
     var firebaseUser: FirebaseUser?
     
@@ -100,6 +117,23 @@ class UserController: LoginFlowHandler {
                 
                 
             }
+        }
+    }
+    
+    func badgeCount(completion: @escaping (Int) -> Void) {
+        print("Query: unread.\(UserController.shared.currentUser!.uid)")
+        Firestore.firestore().collection(DatabaseService.Collection.chats).whereField("unread.\(UserController.shared.currentUser!.uid)", isEqualTo: true).getDocuments { (snapshot, error) in
+            if let error = error {
+                print(error)
+                completion(0)
+                return
+            }
+            
+            if let docs = snapshot?.documents {
+                UIApplication.shared.applicationIconBadgeNumber = docs.count
+                completion(docs.count)
+            }
+            completion(0)
         }
     }
     

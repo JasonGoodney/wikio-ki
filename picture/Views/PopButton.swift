@@ -15,7 +15,9 @@ class PopButton: UIButton {
         
         layer.cornerRadius = buttonSize / 2
         
-        adjustsImageWhenHighlighted = false        
+        adjustsImageWhenHighlighted = false
+        
+        imageView?.contentMode = .scaleAspectFit 
     }
     
     required init?(coder aDecoder: NSCoder) {

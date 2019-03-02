@@ -185,6 +185,7 @@ class PreViewController: UIViewController {
                                          Chat.Keys.status: chat.status.databaseValue()]
             
             if self.items.filter({ $0.isOpened == false }).isEmpty {
+                chat.unread?[UserController.shared.currentUser!.uid] = false
                 let key = "unread.\(UserController.shared.currentUser!.uid)"
                 fields[key] = false
             }

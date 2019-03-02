@@ -27,6 +27,10 @@ class DatabaseService {
         return Firestore.firestore().collection(Collection.chats).document(path)
     }
     
+    static func userReference(forPathUid uid: String) -> DocumentReference {
+        return Firestore.firestore().collection(Collection.users).document(uid)
+    }
+    
     enum Collection {
         static let chats = "chats"
         static let messages = "messages"
