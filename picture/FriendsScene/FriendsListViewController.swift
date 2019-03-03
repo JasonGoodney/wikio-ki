@@ -540,8 +540,6 @@ extension FriendsListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let messagesViewController = MessagesViewController()
-        
         var dataSource: [ChatWithFriend] = []
         
         switch indexPath.section {
@@ -569,13 +567,7 @@ extension FriendsListViewController: UITableViewDelegate {
             friend.isBestFriend = true
         }
         
-        let chat = dataSource[indexPath.row].chat
-        
-        messagesViewController.friend = friend
-        messagesViewController.chat = chat
-        messagesViewController.chatWithFriend = chatWithFriend
-        
-         if let unreads = UserController.shared.unreads[chatWithFriend.chat.chatUid], unreads.count > 0 {
+        if let unreads = UserController.shared.unreads[chatWithFriend.chat.chatUid], unreads.count > 0 {
             print("Didselect chat: \(chatWithFriend.chat)")
             chatWithFriend.chat.currentUserUnreads = unreads
             let viewMessageVC = PreViewController()
