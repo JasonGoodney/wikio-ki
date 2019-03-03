@@ -117,7 +117,7 @@ extension DatabaseService {
             
             docs.forEach({ (doc) in
                 let message = Message(dictionary: doc.data())
-                chat.currentUserUnreads.append(message)
+                chat.currentUserUnreads?.append(message)
             })
             
             completion(nil)

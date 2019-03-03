@@ -26,7 +26,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "573197480.809189"
+            timestampString = "573281846.382901"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "178"
@@ -42,13 +42,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AppDelegate.swift"
-            timestampString = "573197480.809774"
+            timestampString = "573281846.382984"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "204"
             endingLineNumber = "204"
-            landmarkName = "messaging(_:didReceive:)"
-            landmarkType = "7">
+            landmarkName = "AppDelegate"
+            landmarkType = "21">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/UserController.swift"
-            timestampString = "573197480.811059"
+            timestampString = "573281846.3830481"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "badgeCount(completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -73,14 +73,14 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "picture/Model/Chat.swift"
-            timestampString = "573197480.811245"
+            filePath = "picture/AppDelegate.swift"
+            timestampString = "573281846.383178"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
-            landmarkName = "unread"
-            landmarkType = "24">
+            startingLineNumber = "104"
+            endingLineNumber = "104"
+            landmarkName = "application(_:didReceiveRemoteNotification:fetchCompletionHandler:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -89,46 +89,62 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "picture/Model/Chat.swift"
-            timestampString = "573197480.811385"
+            filePath = "picture/FriendsScene/FriendsListViewController.swift"
+            timestampString = "573281846.384919"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
-            landmarkName = "unread"
-            landmarkType = "24">
+            startingLineNumber = "869"
+            endingLineNumber = "869"
+            landmarkName = "fetchChatsWithFriends(completion:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "picture/Model/Chat.swift"
-            timestampString = "573197480.811507"
+            filePath = "picture/DatabaseService/DatabaseService+Fetch.swift"
+            timestampString = "573281846.385519"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
-            landmarkName = "unread"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "picture/Model/Chat.swift"
-            timestampString = "573197480.811622"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
-            landmarkName = "unread"
-            landmarkType = "24">
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "fetchUnreadMessages(in:completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;__C.FIRQuerySnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in picture.DatabaseService.fetchUnreadMessages(in: picture.Chat, completion: (Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Fetch.swift"
+                  timestampString = "573281847.171218"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "118"
+                  endingLineNumber = "118"
+                  offsetFromSymbolStart = "624">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (__C.FIRQueryDocumentSnapshot) -&gt; () in closure #1 (Swift.Optional&lt;__C.FIRQuerySnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in picture.DatabaseService.fetchUnreadMessages(in: picture.Chat, completion: (Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "picture"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jasongoodney/Developer/ios/picture/picture/DatabaseService/DatabaseService+Fetch.swift"
+                  timestampString = "573281847.176169"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "36">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

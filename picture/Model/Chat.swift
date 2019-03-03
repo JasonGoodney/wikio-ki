@@ -19,41 +19,17 @@ class Chat {
     var lastMessageSentType: MessageType
     var lastChatUpdateTimestamp: TimeInterval
     var lastSenderUid: UID
-//    {
-//        didSet {
-//            let sentToUid = memberUids.first(where: { $0 != lastSenderUid })!
-//            let unreadCount = unread?[sentToUid] ?? 0
-//            unread?[sentToUid] = unreadCount + 1
-//        }
-//    }
     var isOpened: Bool
-//    {
-//        didSet {
-//            if isOpened {
-//                let openedByUid = memberUids.first(where: { $0 != lastSenderUid })!
-//                let unreadCount = unread?[openedByUid]!.count
-//                unread?[openedByUid] = unreadCount! > 0 ? unreadCount! - 1 : 0
-//            }
-//        }
-//    }
     var isNewFriendship: Bool
     var areFriends: Bool
     var areMutualBestFriends: Bool
-    var unread: [UID: Bool]? {
-        didSet {
-            if let currentUserUnread = unread?[UserController.shared.currentUser!.uid] {
-                if currentUserUnread == false {
-                    UIApplication.shared.decrementBadgeNumber()
-                }
-            }
-        }
-    }
+    var unread: [UID: Bool]?
     
     var isSending: Bool
     var status: MessageStatus
     
     var latestMessage: Message?
-    var currentUserUnreads: [Message] = []
+    var currentUserUnreads: [Message]? = nil
     var chatUid: String {
         guard memberUids.count == 2 else { return "" }
         return "\(min(memberUids[0], memberUids[1]))_\(max(memberUids[0], memberUids[1]))"

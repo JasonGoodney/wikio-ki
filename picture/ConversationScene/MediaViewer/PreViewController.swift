@@ -136,7 +136,7 @@ class PreViewController: UIViewController {
         }
         
     }
-
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         DispatchQueue.main.async {
@@ -145,16 +145,13 @@ class PreViewController: UIViewController {
             self.progressBar.isPaused = true
             self.resetPlayer()
         }
+    
     }
 
     func dismiss() {
         dismiss(animated: true) {
             let dbs = DatabaseService()
             let openedMessages = self.items.filter({ $0.isOpened })
-
-            guard var unreads = self.chatWithFriend?.chat.currentUserUnreads else {
-                fatalError("No unread field")
-            }
 
             for i in 0 ..< openedMessages.count {
                 let message = openedMessages[i]
@@ -165,15 +162,8 @@ class PreViewController: UIViewController {
                         return
                     }
                     print("Deleted opened message: \(message.uid)")
-
-                    if unreads.indices.contains(i) {
-                        unreads.remove(at: i)
-                    }
                 })
             }
-
-
-
 
             guard let chat = self.chatWithFriend?.chat else { return }
             let docRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid)
@@ -186,6 +176,7 @@ class PreViewController: UIViewController {
             
             if self.items.filter({ $0.isOpened == false }).isEmpty {
                 chat.unread?[UserController.shared.currentUser!.uid] = false
+                UIApplication.shared.decrementBadgeNumber()
                 let key = "unread.\(UserController.shared.currentUser!.uid)"
                 fields[key] = false
             }
@@ -200,6 +191,7 @@ class PreViewController: UIViewController {
                 print("Updated \(chat.chatUid) chat")
             })
             
+            print("Dismissed")
         }
     }
     

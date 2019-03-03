@@ -575,14 +575,15 @@ extension FriendsListViewController: UITableViewDelegate {
         messagesViewController.chat = chat
         messagesViewController.chatWithFriend = chatWithFriend
         
-         if chatWithFriend.chat.currentUserUnreads.count > 0 {
+         if let unreads = UserController.shared.unreads[chatWithFriend.chat.chatUid], unreads.count > 0 {
+            print("Didselect chat: \(chatWithFriend.chat)")
+            chatWithFriend.chat.currentUserUnreads = unreads
             let viewMessageVC = PreViewController()
             viewMessageVC.chatWithFriend = chatWithFriend
             viewMessageVC.modalPresentationStyle = .overFullScreen
             viewMessageVC.modalPresentationCapturesStatusBarAppearance = true
-            present(viewMessageVC, animated: false) {
+            present(viewMessageVC, animated: true) {
                 
-                    
             }
         } else {
             print("No new messages")
@@ -826,7 +827,8 @@ extension FriendsListViewController {
             
             _ = 0
             for chatUid in userChats {
-//                let chatUid = userChats[i]
+                
+                UserController.shared.unreads[chatUid] = []
                 
                 dbs.fetchChat(chatUid, completion: { (chat, error) in
                     if let error = error {
@@ -836,8 +838,6 @@ extension FriendsListViewController {
                     }
 
                     guard let chat = chat else { print("chat does not exists"); return }
-                    
-
                     
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {
@@ -865,29 +865,27 @@ extension FriendsListViewController {
                                                 let message = Message(dictionary: $0.document.data())
                                                 switch $0.type {
                                                 case .added:
-                                                    let insertionIndex = chat.currentUserUnreads.insertionIndexOf(elem: message, isOrderedBefore: { $0.timestamp < $1.timestamp })
-                                                    chatWithFriend.chat.currentUserUnreads.insert(message, at: insertionIndex)
-                                                    guard let cwfIndex = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.chatUid == chatWithFriend.chat.chatUid }) else {
-                                                        print("No index")
-                                                        return }
-                                                    UserController.shared.allChatsWithFriends[cwfIndex] = chatWithFriend
-                                                    print("New message: \(UserController.shared.allChatsWithFriends[cwfIndex].chat.currentUserUnreads.count)")
-                                                    //                                            DispatchQueue.main.async {
-                                                    //                                                self.tableView.reloadData()
-                                                //                                            }
+                                                    
+                                                    guard let insertionIndex = UserController.shared.unreads[chat.chatUid]?.insertionIndexOf(elem: message, isOrderedBefore: { $0.timestamp < $1.timestamp }) else {
+                                                        print("No insertion index")
+                                                        return
+                                                    }
+                                                    
+                                                    UserController.shared.unreads[chat.chatUid]?.insert(message, at: insertionIndex)
+                                                    
+                                                    print("New message: \(UserController.shared.unreads[chat.chatUid]?.count) unread messages")
+                                                    
                                                 case .modified:
                                                     print("Message modified")
                                                 case .removed:
-                                                    chatWithFriend.chat.currentUserUnreads.removeFirst()
-                                                    guard let cwfIndex = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.chatUid == chatWithFriend.chat.chatUid }) else {
-                                                        print("No index")
-                                                        return }
-                                                    UserController.shared.allChatsWithFriends[cwfIndex] = chatWithFriend
-                                                    print("Deleted message: \(UserController.shared.allChatsWithFriends[cwfIndex].chat.currentUserUnreads.count)")
+                                                    
+                                                    UserController.shared.unreads[chat.chatUid]?.removeFirst()
+
+//                                                    print("Removed chat: \(UserController.shared.allChatsWithFriends[cwfIndex].chat)")
+                                                    print("Deleted: \(UserController.shared.unreads[chat.chatUid]?.count) messages unread")
+
+
                                                 }
-                                                //                                        DispatchQueue.main.async {
-                                                //                                            self.tableView.reloadData()
-                                                //                                        }
                                             })
                                         }
                                     })

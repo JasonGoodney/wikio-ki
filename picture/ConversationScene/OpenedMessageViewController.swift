@@ -198,8 +198,8 @@ class OpenedMessageViewController: UIViewController {
     var currentIndex = 0
     @objc func dismissGestureTapped(_ recognizer: UITapGestureRecognizer) {
         currentIndex += 1
-        if chatWithFriend?.chat.currentUserUnreads.indices.contains(currentIndex) ?? false {
-            guard let message = chatWithFriend?.chat.currentUserUnreads[currentIndex] else { return }
+        if let unreads = chatWithFriend?.chat.currentUserUnreads, unreads.indices.contains(currentIndex) {
+            let message = unreads[currentIndex]
             let url = URL(string: message.mediaURL!)!
             if message.messageType == .photo {
                 DispatchQueue.main.async {

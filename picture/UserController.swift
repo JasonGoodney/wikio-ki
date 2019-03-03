@@ -34,6 +34,8 @@ class UserController: LoginFlowHandler {
         }
     }
     
+    var unreads: [UID: [Message]] = [:]
+    
     var firebaseUser: FirebaseUser?
     
     var blockedUids: [String] = []

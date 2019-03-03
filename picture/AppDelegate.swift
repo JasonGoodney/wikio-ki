@@ -38,7 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         //NotificationCenter.default.addObserver(self, selector: #selector(removeBlurEffect), name: UIApplication.didBecomeActiveNotification, object: nil)
         //NotificationCenter.default.addObserver(self, selector: #selector(addBlurEffect), name: UIApplication.willResignActiveNotification, object: nil)
     
-        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
 //        UIApplication.shared.applicationIconBadgeNumber = 0 
         return true
     }
@@ -66,6 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -101,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         // Print full message.
         print(userInfo)
         
-        if let aps = userInfo["aps"] as? NSDictionary {
+         if let aps = userInfo["aps"] as? NSDictionary {
             if let alert = aps["alert"] as? NSDictionary {
                 if let badge = alert["badge"] as? NSString, badge.integerValue == 1 {
                     UIApplication.shared.incrementBadgeNumber()
@@ -175,7 +175,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let badge = userInfo["badge"] as? Int {
             print(badge)
             let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
-            UIApplication.shared.applicationIconBadgeNumber = badge + badgeNumber
+//            UIApplication.shared.applicationIconBadgeNumber = badge + badgeNumber
         }
         
         if let chatUid = userInfo["chat"] as? String {
