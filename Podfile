@@ -20,7 +20,6 @@ target 'picture' do
   pod 'SwiftyCam'
   pod 'Digger'
   pod 'NVActivityIndicatorView'
-  pod 'SVProgressHUD'
   pod 'ColorSlider'
   
 end

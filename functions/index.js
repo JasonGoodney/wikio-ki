@@ -86,39 +86,22 @@ exports.observeNewMessage = functions.firestore
             let receiver = getUser(receiverUid, store);
             let sender = getUser(lastSenderUid, store);
 
-            var badge = 0;
+            // var badge = badgeCount(receiverUid);
             
-            if (chat.unread[receiverUid] === true && chatBefore.unread[receiverUid] === false) {
-                badge = 1;
-            }
+            // if (chat.unread[receiverUid] === true && chatBefore.unread[receiverUid] === false) {
+            //     badge = 1;
+            // }
             Promise.all([receiver, sender])
                 .then(values => {
                     const receiver = values[0];
                     const sender = values[1];
+                    // const badge = values[2];
 
                     console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
                     console.log('fmctoken ' + receiver.fcmToken);
 
-                    const message = {
-                        token: receiver.fcmToken,
+                    const message = createMessage(receiver.fcmToken, {chat: chatUid}, `from ${sender.username}`, `${1}`, "default")
 
-                        data: {
-                            chat: chatUid,
-                        },
-                        apns: {
-                            payload: {
-                                aps: {
-                                    'content-available': 1,
-                                    alert: {
-                                        body: 'from ' + sender.username,
-                                        badge: `${badge}`,
-                                        categoryIdentifier: "wikio-ki",
-                                        sound: "default"
-                                    },
-                                }
-                            }
-                        }
-                    }
                     console.log(message);
                     send(message);
                     return;
@@ -128,6 +111,27 @@ exports.observeNewMessage = functions.firestore
                 })
         }  
 });
+
+function createMessage(token, data, body, badge, sound) {
+    return {
+        token: token,
+
+        data: data,
+        apns: {
+            payload: {
+                aps: {
+                    'content-available': 1,
+                    alert: {
+                        body: body,
+                        badge: badge,
+                        categoryIdentifier: "wikio-ki",
+                        sound: sound
+                    },
+                }
+            }
+        }
+    }
+}
 
 function increase(unreadCount, ref, unreadKey) {
     ref.update({
@@ -169,7 +173,6 @@ exports.observeAddedUser = functions.firestore
                         var message = {
                             token: user.fcmToken,
                             notification: {
-
                                 body: requestedBy.username + ' added you!',
                             },
                             data: {
@@ -200,43 +203,43 @@ exports.observeAddedUser = functions.firestore
         })
     });
 
-exports.sendPushNotifications = functions.https.onRequest((req, res) => {
-    // res.send("com'n wtf");
-    console.log("LOGGER --- Trying to send push message");
+// exports.sendPushNotifications = functions.https.onRequest((req, res) => {
+//     // res.send("com'n wtf");
+//     console.log("LOGGER --- Trying to send push message");
 
-    var uid = 'bQGxknT8icZO7Dbhxab5DdTCR6g2';
+//     var uid = 'bQGxknT8icZO7Dbhxab5DdTCR6g2';
 
-    const store = admin.firestore()
-    store.collection('users').doc(uid).get().then(doc => {
-        if (doc.exists) {
-            const user = doc.data();
-            console.log(doc.data())
-            res.send(doc.data())
+//     const store = admin.firestore()
+//     store.collection('users').doc(uid).get().then(doc => {
+//         if (doc.exists) {
+//             const user = doc.data();
+//             console.log(doc.data())
+//             res.send(doc.data())
 
-            const fcmToken = user.fcmToken
+//             const fcmToken = user.fcmToken
 
-            var message = {
-                notification: {
-                    title: 'FUCK',
-                    body: 'fuckity',
-                },
-                token: fcmToken
-            }
+//             var message = {
+//                 notification: {
+//                     title: 'FUCK',
+//                     body: 'fuckity',
+//                 },
+//                 token: fcmToken
+//             }
 
-            send(message)
+//             send(message)
 
-            return;
-        }
-        else {
-            res.send("Nothing")
-            return;
-        }
-    }).catch(reason => {
-        console.log(reason)
-        res.send(reason)
-    })
+//             return;
+//         }
+//         else {
+//             res.send("Nothing")
+//             return;
+//         }
+//     }).catch(reason => {
+//         console.log(reason)
+//         res.send(reason)
+//     })
 
-});
+// });
     // admin.message().sendToDevice(token, payload)
     // This registration token comes from the client FCM SDKs.
     //var fcmToken = 'cfsDr-r1JYA:APA91bG-iq9dCUySp6oKQoFmxEOjgtQs9vxubNN-wj5S2MNjSe6m4WegprBmQS50Po1B4V4Eeumpn0X90DNEENSfYc_s963SdMfSYtE0kLLpTCmTnWjt73quyGX09GWp5p-KHNb4ieEi';

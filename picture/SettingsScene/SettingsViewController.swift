@@ -193,12 +193,15 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
             
         // MARK: - About
         case .privacyPolicy:
-            let aboutVC = AboutViewController()
-            aboutVC.type = .privacyPolicy
+            let aboutVC = AboutViewController(type: .privacyPolicy)
+//            aboutVC.type = .privacyPolicy
             navigationController?.pushViewController(aboutVC, animated: true)
         case .termsOfService:
-            let aboutVC = AboutViewController()
-            aboutVC.type = .termsOfService
+            let aboutVC = AboutViewController(type: .termsOfService)
+//            aboutVC.type = .termsOfService
+            navigationController?.pushViewController(aboutVC, animated: true)
+        case .openSource:
+            let aboutVC = AboutViewController(type: .openSource)
             navigationController?.pushViewController(aboutVC, animated: true)
             
         // MARK: - Account Actions

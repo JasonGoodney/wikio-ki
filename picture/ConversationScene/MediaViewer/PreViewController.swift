@@ -98,6 +98,8 @@ class PreViewController: UIViewController {
         
         setupLayout()
         
+        UIApplication.shared.decrementBadgeNumber(by: items.count)
+        
         for message in items {
             if message.tempCachedURL != nil {
                 return
@@ -176,7 +178,7 @@ class PreViewController: UIViewController {
             
             if self.items.filter({ $0.isOpened == false }).isEmpty {
                 chat.unread?[UserController.shared.currentUser!.uid] = false
-                UIApplication.shared.decrementBadgeNumber()
+                
                 let key = "unread.\(UserController.shared.currentUser!.uid)"
                 fields[key] = false
             }

@@ -155,24 +155,7 @@ class FriendsListViewController: UIViewController {
                         })
                 }
                 
-                self.userChatsListener = Firestore.firestore().collection(DatabaseService.Collection.userChats).document(UserController.shared.currentUser!.uid).addSnapshotListener({ (snapshot, error) in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    guard let doc = snapshot else {
-                        print("No userchats doc")
-                        return
-                    }
-                    let source = doc.metadata.hasPendingWrites ? "Local" : "Server"
-                    if doc.metadata.hasPendingWrites {
-                        print(source)
-                        self.reloadData()
-                    } else {
-                        print(source)
-                        self.handleRefreshFriends()
-                    }
-                })
+                self.handleRefreshFriends()
                 
                 let value = UserController.shared.currentUser?.uid as Any
                 

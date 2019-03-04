@@ -23,12 +23,14 @@ class BlockedUsersViewController: UIViewController {
     
     private let cellId = BlockedUserCell.reuseIdentifier
     private lazy var tableView: UITableView = {
-        let view = UITableView(frame: .zero, style: .grouped)
+        let view = UITableView()// frame: .zero, style: .grouped)
         view.delegate = self
         view.dataSource = self
         view.register(BlockedUserCell.self, forCellReuseIdentifier: cellId)
-        view.separatorStyle = .none
         view.backgroundColor = .white
+//        view.separatorStyle = .none
+        view.separatorInset = .init()
+        view.tableFooterView = UIView()
         return view
     }()
     
@@ -69,11 +71,19 @@ class BlockedUsersViewController: UIViewController {
         
         noOneBlockedLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 24, left: 0, bottom: 0, right: 0))
         
-        tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
+        tableView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
         navigationItem.titleView = titleLabel
     }
 
+    private func reloadData() {
+        if UserController.shared.blockedUids.count == 0 {
+            noOneBlockedLabel.isHidden = false
+            tableView.isHidden = true
+        } else {
+            tableView.reloadData()
+        }
+    }
 }
 
 extension BlockedUsersViewController: UITableViewDataSource {
@@ -120,7 +130,7 @@ extension BlockedUsersViewController: BlockedUserCellDelegate {
                     })
                     print("\(user.username) unblocked")
                     DispatchQueue.main.async {
-                        self.tableView.reloadData()
+                        self.reloadData()
                     }
                 })
                 

@@ -18,15 +18,21 @@ extension UIApplication {
         }
     }
     
-    func decrementBadgeNumber() {
-        if UIApplication.shared.applicationIconBadgeNumber - 1 < 0 {
-            return
+    func decrementBadgeNumber(by count: Int = 1) {
+//        if UIApplication.shared.applicationIconBadgeNumber - 1 < 0 {
+//            return
+//        }
+        var badgeCount = UIApplication.shared.applicationIconBadgeNumber - count
+        
+        if badgeCount < 0 {
+            badgeCount = 0
         }
-        setBadgeIndicator(badgeCount: UIApplication.shared.applicationIconBadgeNumber - 1)
+        
+        setBadgeIndicator(badgeCount: badgeCount)
     }
     
-    func incrementBadgeNumber() {
-        setBadgeIndicator(badgeCount: UIApplication.shared.applicationIconBadgeNumber + 1)
+    func incrementBadgeNumber(by count: Int = 1) {
+        setBadgeIndicator(badgeCount: UIApplication.shared.applicationIconBadgeNumber + count)
     }
     
     fileprivate func setBadgeIndicator(badgeCount: Int) {

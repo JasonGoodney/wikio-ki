@@ -52,7 +52,7 @@ class ProfileDetailsViewController: UIViewController {
         ],
         [
         UserController.shared.blockedUids.contains(user.uid) ? (title: "Unblock", value: "", type: .unblock) : (title: "Block", value: "", type: .block),
-            (title: "Report", value: "", type: .report),
+//            (title: "Report", value: "", type: .report),
             (title: "Remove Friend", value: "", type: .removeFriend),
         ]
     ]

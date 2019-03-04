@@ -53,6 +53,11 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
         stackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 8))
         
         unblockButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        
+        let separatorView = UIView()
+        separatorView.backgroundColor = Theme.gainsboro
+//        addSubview(separatorView)
+//        separatorView.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(), size: .init(width: 0, height: 1))
     }
     
     @objc private func unblockButtonTapped() {
