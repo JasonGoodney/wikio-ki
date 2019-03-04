@@ -25,7 +25,7 @@ class LoginController: UIViewController, LoginFlowHandler {
         textField.placeholder = "Email"
         textField.keyboardType = .emailAddress
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
-        textField.autocapitalizationType = .none
+        
         return textField
     }()
     
@@ -34,6 +34,7 @@ class LoginController: UIViewController, LoginFlowHandler {
         textField.placeholder = "Password"
         textField.isSecureTextEntry = true
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
+        textField.autocapitalizationType = .none
         return textField
     }()
     

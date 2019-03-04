@@ -9,6 +9,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseStorage
+import GoogleMobileAds
 import JGProgressHUD
 import SDWebImage
 import Digger
@@ -31,7 +32,7 @@ enum SettingsType: String {
     case none
 }
 
-class SettingsViewController: UITableViewController, LoginFlowHandler {
+class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDelegate, UITableViewDataSource {
     
     private var cacheSizeInMB: Double {
         return (Double(DiggerCache.downloadedFilesSize()) / BinarySize.MB).rounded(.down)
@@ -70,6 +71,14 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         ]
     ]
     
+    private lazy var tableView: UITableView = {
+        let view = UITableView(frame: .zero, style: .grouped)
+        view.dataSource = self
+        view.delegate = self
+        view.backgroundColor = .white
+        return view
+    }()
+    
     private let titleLabel = NavigationTitleLabel(title: "Settings")
     private let profileImageButton: UIButton = {
         let button = ProfileImageButton(height: 128, width: 128)
@@ -105,10 +114,21 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         return header
     }()
     
+    private lazy var adBannerView: GADBannerView = {
+        let banner = GADBannerView(adSize: kGADAdSizeBanner)
+        banner.adUnitID = Key.AdMob.bannerUnitID
+        banner.rootViewController = self
+        banner.load(GADRequest())
+        banner.delegate = self
+        banner.backgroundColor = .blue
+        return banner
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupLayout()
 
-        tableView = UITableView(frame: .zero, style: .grouped)
         navigationItem.titleView = titleLabel
         navigationItem.rightBarButtonItem = saveChangesButton
         
@@ -139,15 +159,15 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return sectionInfoDetails.count
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return sectionInfoDetails[section].count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .value1, reuseIdentifier: "")
         if indexPath.section != 0 {
             
@@ -176,7 +196,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         let detail = sectionInfoDetails[indexPath.section][indexPath.row]
         
@@ -260,7 +280,7 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         self.deselectCell()
     }
     
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0 {
             return header
         }
@@ -268,14 +288,14 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
         return nil
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
             return nil
         }
         return sectionHeaders[section]
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == 0 {
             return 128 + changeProfileImageButton.bounds.height + totalHeaderVerticalPadding
         }
@@ -285,8 +305,69 @@ class SettingsViewController: UITableViewController, LoginFlowHandler {
 
 // MARK: - UI
 private extension SettingsViewController {
-    func setupNavigationBar() {
+    func setupLayout() {
+        view.addSubviews([tableView])
         
+//        adBannerView.anchor(top: nil, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
+        tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
+        
+//        addBannerViewToView(adBannerView)
+    }
+    func deselectCell() {
+        if let index = self.tableView.indexPathForSelectedRow{
+            self.tableView.deselectRow(at: index, animated: true)
+        }
+    }
+    
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bannerView)
+        if #available(iOS 11.0, *) {
+            // In iOS 11, we need to constrain the view to the safe area.
+            positionBannerViewFullWidthAtBottomOfSafeArea(bannerView)
+        }
+        else {
+            // In lower iOS versions, safe area is not available so we use
+            // bottom layout guide and view edges.
+            positionBannerViewFullWidthAtBottomOfView(bannerView)
+        }
+    }
+    
+    // MARK: - view positioning
+    @available (iOS 11, *)
+    func positionBannerViewFullWidthAtBottomOfSafeArea(_ bannerView: UIView) {
+        // Position the banner. Stick it to the bottom of the Safe Area.
+        // Make it constrained to the edges of the safe area.
+        let guide = view.safeAreaLayoutGuide
+        NSLayoutConstraint.activate([
+            guide.leftAnchor.constraint(equalTo: bannerView.leftAnchor),
+            guide.rightAnchor.constraint(equalTo: bannerView.rightAnchor),
+            guide.bottomAnchor.constraint(equalTo: bannerView.bottomAnchor)
+            ])
+    }
+    
+    func positionBannerViewFullWidthAtBottomOfView(_ bannerView: UIView) {
+        view.addConstraint(NSLayoutConstraint(item: bannerView,
+                                              attribute: .leading,
+                                              relatedBy: .equal,
+                                              toItem: view,
+                                              attribute: .leading,
+                                              multiplier: 1,
+                                              constant: 0))
+        view.addConstraint(NSLayoutConstraint(item: bannerView,
+                                              attribute: .trailing,
+                                              relatedBy: .equal,
+                                              toItem: view,
+                                              attribute: .trailing,
+                                              multiplier: 1,
+                                              constant: 0))
+        view.addConstraint(NSLayoutConstraint(item: bannerView,
+                                              attribute: .bottom,
+                                              relatedBy: .equal,
+                                              toItem: bottomLayoutGuide,
+                                              attribute: .top,
+                                              multiplier: 1,
+                                              constant: 0))
     }
 }
 
@@ -431,5 +512,46 @@ private extension SettingsViewController {
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension SettingsViewController: GADBannerViewDelegate {
+    /// Tells the delegate an ad request loaded an ad.
+    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        print("adViewDidReceiveAd")
+        UIView.animate(withDuration: 1, animations: {
+            bannerView.alpha = 1
+        })
+    }
+    
+    /// Tells the delegate an ad request failed.
+    func adView(_ bannerView: GADBannerView,
+                didFailToReceiveAdWithError error: GADRequestError) {
+        print("adView:didFailToReceiveAdWithError: \(error.localizedDescription)")
+        UIView.animate(withDuration: 1, animations: {
+            bannerView.alpha = 0
+        })
+    }
+    
+    /// Tells the delegate that a full-screen view will be presented in response
+    /// to the user clicking on an ad.
+    func adViewWillPresentScreen(_ bannerView: GADBannerView) {
+        print("adViewWillPresentScreen")
+    }
+    
+    /// Tells the delegate that the full-screen view will be dismissed.
+    func adViewWillDismissScreen(_ bannerView: GADBannerView) {
+        print("adViewWillDismissScreen")
+    }
+    
+    /// Tells the delegate that the full-screen view has been dismissed.
+    func adViewDidDismissScreen(_ bannerView: GADBannerView) {
+        print("adViewDidDismissScreen")
+    }
+    
+    /// Tells the delegate that a user click will open another app (such as
+    /// the App Store), backgrounding the current app.
+    func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
+        print("adViewWillLeaveApplication")
     }
 }

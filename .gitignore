@@ -72,3 +72,5 @@ fastlane/test_output
 
 # node
 node_modules/
+
+Constants.swift

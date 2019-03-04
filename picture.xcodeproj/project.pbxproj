@@ -90,6 +90,7 @@
 		D79524F0220757BE00455E6F /* SendToViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79524EF220757BE00455E6F /* SendToViewController.swift */; };
 		D7977398222C3B02006A2F13 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2EB220CD078007DD089 /* VideoCell.swift */; };
 		D7977399222C3B02006A2F13 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78BB2F6220DDB0F007DD089 /* PhotoCell.swift */; };
+		D797739B222CC9D1006A2F13 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D797739A222CC9D1006A2F13 /* Constants.swift */; };
 		D79A2E5721E7023D00502FF1 /* EditSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5621E7023D00502FF1 /* EditSettingViewController.swift */; };
 		D79A2E5921E7025F00502FF1 /* EditEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5821E7025F00502FF1 /* EditEmailViewController.swift */; };
 		D79A2E5B21E70D1600502FF1 /* SettingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A2E5A21E70D1600502FF1 /* SettingTextField.swift */; };
@@ -292,6 +293,7 @@
 		D79524EB2206526300455E6F /* Cacher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cacher.swift; sourceTree = "<group>"; };
 		D79524ED220691E600455E6F /* FileManager+Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Persist.swift"; sourceTree = "<group>"; };
 		D79524EF220757BE00455E6F /* SendToViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendToViewController.swift; sourceTree = "<group>"; };
+		D797739A222CC9D1006A2F13 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		D79A2E5621E7023D00502FF1 /* EditSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSettingViewController.swift; sourceTree = "<group>"; };
 		D79A2E5821E7025F00502FF1 /* EditEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEmailViewController.swift; sourceTree = "<group>"; };
 		D79A2E5A21E70D1600502FF1 /* SettingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTextField.swift; sourceTree = "<group>"; };
@@ -446,6 +448,7 @@
 			children = (
 				D748910121BC90B3005AAF6B /* picture.entitlements */,
 				D74890ED21BC86DC005AAF6B /* AppDelegate.swift */,
+				D797739A222CC9D1006A2F13 /* Constants.swift */,
 				D778E68D21CDD77D005C6C96 /* Bindable.swift */,
 				D786F67B21D92EBC003DA3C6 /* Alert.swift */,
 				D72D792F21D13ECD00FB5327 /* UserController.swift */,
@@ -831,8 +834,6 @@
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
-				"${BUILT_PRODUCTS_DIR}/Sketch/Sketch.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyCam/SwiftyCam.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
@@ -852,8 +853,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sketch.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyCam.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
@@ -953,6 +952,7 @@
 				D786F67C21D92EBC003DA3C6 /* Alert.swift in Sources */,
 				D73B8AFB21C86B1200DD4CA4 /* Merge.swift in Sources */,
 				D7591F0721C2C23300B3EAAD /* FriendsListCell.swift in Sources */,
+				D797739B222CC9D1006A2F13 /* Constants.swift in Sources */,
 				D73B8AFD21C86DA100DD4CA4 /* CaptionProcessor.swift in Sources */,
 				D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */,
 				D74585F822278AD100781713 /* UINavigationController.swift in Sources */,

@@ -17,7 +17,7 @@ extension UIView {
         subviews.forEach{ self.addSubview($0) }
     }
     
-    func applyShadow(width: CGFloat, height: CGFloat) {
+    func applyShadow(width: CGFloat = 0, height: CGFloat = 0) {
         
             let shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 14.0)
             layer.masksToBounds = false

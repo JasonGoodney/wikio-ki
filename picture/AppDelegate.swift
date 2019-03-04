@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseMessaging
+import GoogleMobileAds
 import Digger
 import SDWebImage
 import UserNotifications
@@ -28,8 +29,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
     var backgroundUploadTask: UIBackgroundTaskIdentifier!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
         FirebaseApp.configure()
-    
+        
+        GADMobileAds.configure(withApplicationID: Key.AdMob.appID)
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
 

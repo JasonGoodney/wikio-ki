@@ -7,6 +7,9 @@ PODS:
   - BoringSSL-GRPC/Interface (0.0.2)
   - ColorSlider (4.3)
   - Digger (0.0.5)
+  - Firebase/AdMob (5.16.0):
+    - Firebase/Core
+    - Google-Mobile-Ads-SDK (~> 7.37)
   - Firebase/Auth (5.16.0):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.3.0)
@@ -72,6 +75,7 @@ PODS:
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 5.2)
     - GTMSessionFetcher/Core (~> 1.1)
+  - Google-Mobile-Ads-SDK (7.38.0)
   - GoogleAppMeasurement (5.5.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -127,12 +131,12 @@ PODS:
   - SDWebImage (4.4.5):
     - SDWebImage/Core (= 4.4.5)
   - SDWebImage/Core (4.4.5)
-  - SVProgressHUD (2.2.5)
   - SwiftyCam (3.0.0)
 
 DEPENDENCIES:
   - ColorSlider
   - Digger
+  - Firebase/AdMob
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Firestore
@@ -141,7 +145,6 @@ DEPENDENCIES:
   - JGProgressHUD
   - NVActivityIndicatorView
   - SDWebImage
-  - SVProgressHUD
   - SwiftyCam
 
 SPEC REPOS:
@@ -159,6 +162,7 @@ SPEC REPOS:
     - FirebaseInstanceID
     - FirebaseMessaging
     - FirebaseStorage
+    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleUtilities
     - "gRPC-C++"
@@ -170,7 +174,6 @@ SPEC REPOS:
     - NVActivityIndicatorView
     - Protobuf
     - SDWebImage
-    - SVProgressHUD
     - SwiftyCam
 
 SPEC CHECKSUMS:
@@ -187,6 +190,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 97ea7a5dca9afd72c79bfcdddb7a44aa1cbb42a1
   FirebaseMessaging: acbd51fe1a172bf29abaaa6e93a60f98bbf8e4f9
   FirebaseStorage: 29075f874c2b3cf61e5221a62c4ceefc809e5412
+  Google-Mobile-Ads-SDK: fec4a72b71a81302d3fd75454df3417c03c50ed5
   GoogleAppMeasurement: 621f3bc6211d5ba548debe01fafad30cf5ab6859
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
   "gRPC-C++": e76441995900ac90e9bd98644ab4733f12521edf
@@ -198,9 +202,8 @@ SPEC CHECKSUMS:
   NVActivityIndicatorView: 4ca19fccc84595a78957336a086d00a49be6ce61
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   SDWebImage: ecc03494e973b93b80213649d32175f8d2d17d4d
-  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SwiftyCam: 67338308e3a5a3545c2aeee17e2c964eba4cf49f
 
-PODFILE CHECKSUM: c506f05e8f5734a9e799907cf71e3a66af346df1
+PODFILE CHECKSUM: 96035dff89e56fc0dabebee9d37e20a1d6fe257a
 
 COCOAPODS: 1.5.3

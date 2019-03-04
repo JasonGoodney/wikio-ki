@@ -13,6 +13,7 @@ target 'picture' do
   pod 'Firebase/Storage'
   pod 'Firebase/Core'
   pod 'Firebase/Messaging'
+  pod 'Firebase/AdMob'
   
   # Other
   pod 'SDWebImage'

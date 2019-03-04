@@ -94,7 +94,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         textField.placeholder = "Email"
         textField.keyboardType = .emailAddress
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
-        textField.autocapitalizationType = .none
+//        textField.autocapitalizationType = .none
         textField.delegate = self
         return textField
     }()
@@ -105,6 +105,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         textField.isSecureTextEntry = true
         textField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
         textField.delegate = self
+        textField.autocapitalizationType = .none
         return textField
     }()
     
