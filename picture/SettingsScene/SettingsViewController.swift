@@ -42,6 +42,10 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         return (Double(SDImageCache.shared().getSize()) / BinarySize.MB).rounded(.down)
     }
     
+    private var cacheString: String {
+        return "\(cacheSizeInMB + sdCacheSizeInMB) MB"
+    }
+    
     private var didChangeProfilePhoto = false
     private let totalHeaderVerticalPadding: CGFloat = 16 + 16 + 16 + 8
     private typealias SectionInfo = (title: String, value: String, type: SettingsType)
@@ -63,7 +67,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
             (title: "Open Source Libraries", value: "", type: .openSource),
         ],
         [
-            (title: "Clear Cache", value: "\(cacheSizeInMB + sdCacheSizeInMB) MB", type: .clearCache),
+            (title: "Clear Cache", value: cacheString, type: .clearCache),
             (title: "Reset Password", value: "", type: .resetPassword),
             (title: "Blocked", value: "", type: .blocked),
             (title: "Log Out", value: "", type: .logout),
@@ -214,11 +218,9 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         // MARK: - About
         case .privacyPolicy:
             let aboutVC = AboutViewController(type: .privacyPolicy)
-//            aboutVC.type = .privacyPolicy
             navigationController?.pushViewController(aboutVC, animated: true)
         case .termsOfService:
             let aboutVC = AboutViewController(type: .termsOfService)
-//            aboutVC.type = .termsOfService
             navigationController?.pushViewController(aboutVC, animated: true)
         case .openSource:
             let aboutVC = AboutViewController(type: .openSource)
@@ -231,6 +233,10 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
                     DiggerCache.cleanDownloadFiles()
                     DiggerCache.cleanDownloadTempFiles()
                     SDWebImageManager.shared().imageCache?.clearMemory()
+                    DispatchQueue.main.async {
+                        let cell = tableView.cellForRow(at: indexPath)
+                        cell?.detailTextLabel?.text = self.cacheString
+                    }
                 }
             }
         case .blocked:

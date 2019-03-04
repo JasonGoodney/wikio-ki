@@ -732,6 +732,13 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
 // MARK: - FriendsListCellDelegate
 extension FriendsListViewController: FriendsListCellDelegate {
     @objc func didTapCameraButton(_ sender: PopButton) {
+        
+        #if targetEnvironment(simulator)
+            let testVC = PreviewMediaViewController(image: UIImage(named: "IMG_1536")!)
+            present(testVC, animated: true, completion: nil)
+            return
+        #endif
+        
         let cameraViewController = CameraViewController.fromStoryboard()
 
         if sender != cameraButton {

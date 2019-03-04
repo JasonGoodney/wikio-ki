@@ -412,7 +412,10 @@ class PreviewMediaViewController: UIViewController {
                 sendToVC.delegate = self
                 sendToVC.passBackSelectedNames = passForwardSelectedNames
                 sendToVC.passBackMediaData = passForwardMediaData
-                //present(sendToVC, animated: false, completion: nil)
+                #if targetEnvironment(simulator)
+                    present(sendToVC, animated: false, completion: nil)
+                    return
+                #endif
                 navigationController?.pushViewController(sendToVC, animated: false)
             } else if let videoURL = videoURL {
                 let process = Process()
@@ -844,42 +847,50 @@ private extension PreviewMediaViewController {
         let right: CGFloat = 16
         let bottom: CGFloat = 16
         
-        editContainerView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
+        let safeAreaTop: CGFloat = 0
+        let safeAreaBottom: CGFloat = 8
+        
+        // Buttons on border
+        sendButton.anchor(top: nil, leading: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: safeAreaBottom, right: 8))
+        
+        saveToCameraRollButton.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: left, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+        saveToCameraRollButton.centerYAnchor.constraint(equalTo: sendButton.centerYAnchor).isActive = true
+        
+        editButtonsStackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: safeAreaTop, left: 0, bottom: 0, right: right))
+        editButtonsStackView.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
+        
+        resignCaptionEditButton.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
+                                       topConstant: safeAreaBottom, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
+        
+        cancelButton.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
+                            topConstant: safeAreaTop, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
+        
+        let drawingToolsStackView = UIStackView(arrangedSubviews: [penButton, eraserButton])
+        drawingToolsStackView.spacing = 16
+        view.addSubview(drawingToolsStackView)
+        drawingToolsStackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: safeAreaTop, left: 0, bottom: 0, right: 0))
+        drawingToolsStackView.anchorCenterXToSuperview()
+        
+        undoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: safeAreaTop, left: left, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+        
+        
+        // Fullscreen views
+        editContainerView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor)
 
         dimView.anchor(view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
         
-        captionTextView.frame = CGRect(x: 0, y: view.frame.midY, width: view.frame.width, height: 36)
+        sketchView.anchor(top: editContainerView.topAnchor, leading: editContainerView.leadingAnchor, bottom: editContainerView.bottomAnchor, trailing: editContainerView.trailingAnchor)
         
-        editButtonsStackView.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: top, left: 0, bottom: 0, right: right))
-        editButtonsStackView.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
-
-        cancelButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
-                            topConstant: top, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
-
-        resignCaptionEditButton.anchor(view.topAnchor, left: view.leftAnchor, bottom: nil, right: nil,
-                                       topConstant: top, leftConstant: left, bottomConstant: 0, rightConstant: 0, widthConstant: buttonSize, heightConstant: buttonSize)
-
-        sendButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 8, right: 8))
+        // Other views
+        captionTextView.frame = CGRect(x: 0, y: view.frame.midY, width: view.frame.width, height: 36)
         
         sendToLabel.centerYAnchor.constraint(equalTo: sendButton.centerYAnchor).isActive = true
         sendToLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: sendButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: right))
-        
-        saveToCameraRollButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: left, bottom: bottom, right: 0))
-        
-        sketchView.anchor(top: editContainerView.topAnchor, leading: editContainerView.leadingAnchor, bottom: editContainerView.bottomAnchor, trailing: editContainerView.trailingAnchor)
 
         colorSlider.anchor(top: editButtonsStackView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0), size: .init(width: 15, height: 150))
         
         colorSlider.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
       
-        let drawingToolsStackView = UIStackView(arrangedSubviews: [penButton, eraserButton])
-        drawingToolsStackView.spacing = 16
-        view.addSubview(drawingToolsStackView)
-        drawingToolsStackView.anchor(top: view.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: top, left: 0, bottom: 0, right: 0))
-        drawingToolsStackView.anchorCenterXToSuperview()
-  
-        undoButton.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: top, left: left, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
-
     }
 }
 

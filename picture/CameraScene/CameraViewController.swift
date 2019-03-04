@@ -200,8 +200,10 @@ class CameraViewController: SwiftyCamViewController {
 private extension CameraViewController {
     func updateView() {
         view.addSubviews([cancelButton, sendToLabel])
-
-        cancelButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 16, left: 16, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
+        
+        let topAnchor: CGFloat = 0
+        
+        cancelButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: topAnchor, left: 16, bottom: 0, right: 0), size: .init(width: buttonSize, height: buttonSize))
 //        cancelButton.centerYAnchor.constraint(equalTo: captureButton.centerYAnchor).isActive = true
         
         //captureButton.anchorCenterXToSuperview()
@@ -220,7 +222,7 @@ private extension CameraViewController {
         #endif
         
         
-        sendToLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
+        sendToLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: topAnchor, left: 0, bottom: 0, right: 0))
         sendToLabel.anchorCenterXToSuperview()
         
         if let friend = friend {
