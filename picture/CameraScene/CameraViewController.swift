@@ -95,6 +95,8 @@ class CameraViewController: SwiftyCamViewController {
         swipeToZoom = false
         swipeToZoomInverted = true
         cameraDelegate = self
+        videoQuality = .high
+        videoGravity = .resizeAspectFill
         
         VideoResolution.size = CGSize(width: 1080, height: 1920)
         
@@ -108,6 +110,8 @@ class CameraViewController: SwiftyCamViewController {
 
         view.addGestureRecognizer(dismissPanGesture)
         dismissPanGesture.maximumNumberOfTouches = 1
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -200,6 +204,8 @@ class CameraViewController: SwiftyCamViewController {
 private extension CameraViewController {
     func updateView() {
         view.addSubviews([cancelButton, sendToLabel])
+        
+        
         
         let topAnchor: CGFloat = 0
         

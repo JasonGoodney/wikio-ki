@@ -14,6 +14,7 @@ admin.initializeApp();
 function send(message) {
     // Send a message to the device corresponding to the provided
     // registration token.
+    console.log("BEGIN SENDING MESSAGE");
     admin.messaging().send(message)
         .then((response) => {
             // Response is a message ID string.
@@ -102,7 +103,7 @@ exports.observeNewMessage = functions.firestore
 
                     const message = createMessage(receiver.fcmToken, {chat: chatUid}, `from ${sender.username}`, `${1}`, "default")
 
-                    console.log(message);
+                    console.log("message:", message);
                     send(message);
                     return;
                 })
@@ -202,60 +203,6 @@ exports.observeAddedUser = functions.firestore
 
         })
     });
-
-// exports.sendPushNotifications = functions.https.onRequest((req, res) => {
-//     // res.send("com'n wtf");
-//     console.log("LOGGER --- Trying to send push message");
-
-//     var uid = 'bQGxknT8icZO7Dbhxab5DdTCR6g2';
-
-//     const store = admin.firestore()
-//     store.collection('users').doc(uid).get().then(doc => {
-//         if (doc.exists) {
-//             const user = doc.data();
-//             console.log(doc.data())
-//             res.send(doc.data())
-
-//             const fcmToken = user.fcmToken
-
-//             var message = {
-//                 notification: {
-//                     title: 'FUCK',
-//                     body: 'fuckity',
-//                 },
-//                 token: fcmToken
-//             }
-
-//             send(message)
-
-//             return;
-//         }
-//         else {
-//             res.send("Nothing")
-//             return;
-//         }
-//     }).catch(reason => {
-//         console.log(reason)
-//         res.send(reason)
-//     })
-
-// });
-    // admin.message().sendToDevice(token, payload)
-    // This registration token comes from the client FCM SDKs.
-    //var fcmToken = 'cfsDr-r1JYA:APA91bG-iq9dCUySp6oKQoFmxEOjgtQs9vxubNN-wj5S2MNjSe6m4WegprBmQS50Po1B4V4Eeumpn0X90DNEENSfYc_s963SdMfSYtE0kLLpTCmTnWjt73quyGX09GWp5p-KHNb4ieEi';
-
-    // See documentation on defining a message payload.
-    // var message = {
-    //     notification: {
-    //         title: "Push Notification TITLE",
-    //         body: "Body of the message"
-    //     },
-    //     data: {
-    //         score: '850',
-    //         time: '2:45'
-    //     },
-    //     token: fcmToken
-    // };
     
 // [START generateThumbnail]
 /**

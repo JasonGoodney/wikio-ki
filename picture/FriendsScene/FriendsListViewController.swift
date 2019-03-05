@@ -855,7 +855,7 @@ extension FriendsListViewController {
                                                     
                                                     UserController.shared.unreads[chat.chatUid]?.insert(message, at: insertionIndex)
                                                     
-                                                    print("New message: \(UserController.shared.unreads[chat.chatUid]?.count) unread messages")
+                                                    print("New message from \(message.senderUid): \(UserController.shared.unreads[chat.chatUid]?.count) unread messages")
                                                     
                                                 case .modified:
                                                     print("Message modified")

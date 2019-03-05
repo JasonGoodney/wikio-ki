@@ -33,18 +33,14 @@ class RegisterViewModel {
                 return
             }
             
-            Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
-                if let error = error {
-                    print(error)
-                    return
-                }
-                print("Sent email verifcation to: \(Auth.auth().currentUser!.email)")
-//                let hud = JGProgressHUD(style: .dark)
-//                hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-//                hud.textLabel.text = "Email verification sent"
-//                hud.show(in: view)
-//                hud.dismiss(afterDelay: 2)
-            })
+//            Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
+//                if let error = error {
+//                    print(error)
+//                    return
+//                }
+//                print("Sent email verifcation to: \(Auth.auth().currentUser!.email)")
+//
+//            })
             
             let filename = UUID().uuidString
             let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
@@ -97,6 +93,19 @@ class RegisterViewModel {
                 completion(error)
                 return
             }
+            
+            let authService = AuthService()
+            if let firebaseUser = UserController.shared.firebaseUser {
+                authService.sendEmailVerifiction(currentUser: firebaseUser, completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    
+                    print("Sent verification email to: \(firebaseUser.email)")
+                })
+            }
+            
             let takenUsernameData = ["username": self.username?.lowercased() ?? ""]
             Firestore.firestore().collection(DatabaseService.Collection.takenUsernames).addDocument(data: takenUsernameData) { (error) in
                 if let error = error {

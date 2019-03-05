@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PPf-vu-qOI">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -19,11 +19,11 @@
                         <viewControllerLayoutGuide type="bottom" id="vrb-Oa-GFr"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="SDd-m9-VeH">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WFD-E9-7bq" customClass="RecordButton" customModule="develop" customModuleProvider="target">
-                                <rect key="frame" x="150" y="572" width="75" height="75"/>
+                                <rect key="frame" x="150" y="683" width="75" height="75"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="75" id="gae-RY-H2R"/>
@@ -54,6 +54,7 @@
                             <constraint firstItem="vrb-Oa-GFr" firstAttribute="top" secondItem="WFD-E9-7bq" secondAttribute="bottom" constant="20" id="foL-kr-R6i"/>
                             <constraint firstItem="WFD-E9-7bq" firstAttribute="centerX" secondItem="SDd-m9-VeH" secondAttribute="centerX" id="yAA-SG-yLo"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="0ko-cQ-5ss"/>
                     </view>
                     <connections>
                         <outlet property="captureButton" destination="WFD-E9-7bq" id="YvZ-id-gr7"/>
@@ -70,7 +71,7 @@
             <objects>
                 <viewController id="3Yv-hi-Iwu" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fhO-MW-Y8m">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="No9-tG-fc4">

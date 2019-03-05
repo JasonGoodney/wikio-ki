@@ -267,7 +267,12 @@ open class SwiftyCamViewController: UIViewController {
 
 	override open func viewDidLoad() {
 		super.viewDidLoad()
-        previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
+        if #available(iOS 11.0, *) {
+            previewLayer = PreviewView(frame: view.safeAreaLayoutGuide.layoutFrame, videoGravity: videoGravity)
+        } else {
+            // Fallback on earlier versions
+            previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
+        }
         previewLayer.center = view.center
         view.addSubview(previewLayer)
         view.sendSubviewToBack(previewLayer)
@@ -797,7 +802,7 @@ open class SwiftyCamViewController: UIViewController {
 
 	fileprivate func processPhoto(_ imageData: Data) -> UIImage {
 		let dataProvider = CGDataProvider(data: imageData as CFData)
-		let cgImageRef = CGImage(jpegDataProviderSource: dataProvider!, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)
+		let cgImageRef = CGImage(jpegDataProviderSource: dataProvider!, decode: nil, shouldInterpolate: false, intent: CGColorRenderingIntent.defaultIntent)
 
 		// Set proper orientation for photo
 		// If camera is currently set to front camera, flip image

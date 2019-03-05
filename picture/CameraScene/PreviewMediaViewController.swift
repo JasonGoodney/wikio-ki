@@ -288,6 +288,11 @@ class PreviewMediaViewController: UIViewController {
         
         view.addGestureRecognizer(captionResponderTapGesture)
         
+        setupNotificationObservers()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -896,19 +901,12 @@ private extension PreviewMediaViewController {
 
 extension PreviewMediaViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if captionIsInSuperview {
-            previousCaptionPoint = captionTextView.frame.origin
-        } else {
-            previousCaptionPoint = CGPoint(x: 0, y: view.frame.midY)
-        }
         handleCaptionResponder()
         textView.textAlignment = .left
         captionCanBeDragged = false
-        captionTextView.frame.origin = CGPoint(x: 0, y: view.frame.midY)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        captionTextView.frame.origin = previousCaptionPoint
         captionCanBeDragged = true
         if textView.text?.last == " " {
             textView.text?.removeLast()
@@ -938,6 +936,48 @@ extension PreviewMediaViewController: UITextViewDelegate {
         let changedText = currentText.replacingCharacters(in: stringRange, with: text)
         
         return changedText.count <= characterLimit
+    }
+}
+
+// MARK: - Keyboard Handlers
+private extension PreviewMediaViewController {
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func handleKeyboardShow(notification: Notification) {
+
+        if captionIsInSuperview {
+            previousCaptionPoint = captionTextView.frame.origin
+        } else {
+            if let keyboardSize = ((notification as NSNotification).userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+                let y = captionEditingPosition(keyboardSize)
+                previousCaptionPoint = CGPoint(x: 0, y: y)
+            }
+        }
+        
+        updatePosition(notification)
+
+    }
+    
+    @objc func handleKeyboardHide(notification: Notification) {
+        if previousCaptionPoint == nil {
+            return
+        }
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.captionTextView.frame.origin = self.previousCaptionPoint
+        })
+    }
+    
+    func updatePosition(_ notification: Notification) {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.captionTextView.frame.origin.y = captionEditingPosition(keyboardSize)
+        }
+    }
+    
+    func captionEditingPosition(_ keyboardSize: CGRect) -> CGFloat {
+        return self.view.safeAreaLayoutGuide.layoutFrame.height - keyboardSize.height - (self.captionTextView.frame.size.height)
     }
 }
 
