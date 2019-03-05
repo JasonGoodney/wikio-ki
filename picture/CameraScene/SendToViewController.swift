@@ -273,7 +273,7 @@ extension SendToViewController: UITableViewDataSource {
         let tableSection = TableSection(rawValue: section)!
         switch tableSection {
         case .preview:
-            return 1
+            return 0
         case .bestFriends:
             return UserController.shared.bestFriendsChats.count
         case .recents:
@@ -298,7 +298,8 @@ extension SendToViewController: UITableViewDataSource {
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: SendToCell.reuseIdentifier, for: indexPath) as! SendToCell
         
-        cell.toggleOff()
+        
+        cell.isSelected = false
         
         var friend: Friend!
         
@@ -334,6 +335,7 @@ extension SendToViewController: UITableViewDelegate {
         guard let cell = tableView.cellForRow(at: indexPath) as? SendToCell else {
             return
         }
+        
         guard let name = cell.textLabel?.text else { return }
         
         cell.isSelected = !cell.isSelected
@@ -343,7 +345,7 @@ extension SendToViewController: UITableViewDelegate {
         } else {
             selectedNames.remove(name)
         }
-
+        
         if selectionsCount > 0 && (mediaData != nil && thumbnailData != nil) {
             UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
                 self.sendButton.alpha = 1
@@ -354,15 +356,18 @@ extension SendToViewController: UITableViewDelegate {
             }, completion: nil)
         }
         
-        
-        guard let sameCell = tableView.visibleCells.filter({
+        if let sameCell = tableView.visibleCells.filter({
             $0 != cell && name == $0.textLabel?.text
-        }).first else { return }
-        
-        sameCell.isSelected = cell.isSelected
-        
-        let sameCellIndexPath = tableView.indexPath(for: sameCell)!
-        tableView.reloadRows(at: [indexPath, sameCellIndexPath], with: .none)
+        }).first as? SendToCell {
+
+            sameCell.isSelected = cell.isSelected
+
+            let sameCellIndexPath = tableView.indexPath(for: sameCell)!
+//            tableView.reloadRows(at: [sameCellIndexPath], with: .none)
+        } else {
+        }
+        tableView.reloadRows(at: [indexPath], with: .none)
+
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -416,6 +421,8 @@ extension SendToViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        guard let cell = cell as? SendToCell else { return }
 
         let cornerRadius = 12
         var corners: UIRectCorner = []

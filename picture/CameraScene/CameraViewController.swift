@@ -111,6 +111,7 @@ class CameraViewController: SwiftyCamViewController {
         view.addGestureRecognizer(dismissPanGesture)
         dismissPanGesture.maximumNumberOfTouches = 1
         
+        view.layer.cornerRadius = 10
         
     }
     

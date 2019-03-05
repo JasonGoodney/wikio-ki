@@ -40,6 +40,25 @@ class SendToCell: CheckmarkToggleCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+    
+    override func toggleOff() {
+    
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseIn], animations: {
+            self.selectionButton.setImage(#imageLiteral(resourceName: "icons8-circled").withRenderingMode(.alwaysTemplate), for: .normal)
+            self.selectionButton.tintColor = Theme.gainsboro
+            self.textLabel?.textColor = .black
+            self.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        }, completion: nil)
+    }
+    
+    override func toggleOn() {
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseIn], animations: {
+            self.selectionButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
+            self.selectionButton.tintColor = Theme.buttonBlue
+            self.textLabel?.textColor = Theme.buttonBlue
+            self.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        }, completion: nil)
+    }
 }
 
 class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
@@ -54,36 +73,37 @@ class CheckmarkToggleCell: UITableViewCell, ReuseIdentifiable {
         }
     }
 
-    private lazy var selectionButton: PopButton = {
+    fileprivate lazy var selectionButton: PopButton = {
         let button = PopButton()
         button.isUserInteractionEnabled = false
         return button
     }()
     
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        addSubview(selectionButton)
-        
-        selectionButton.anchorCenterYToSuperview()
-        selectionButton.anchor(top: nil, leading: nil, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16), size: .init(width: 32, height: 32))
+        setupLayout()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func toggleOn() {
         selectionButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
         selectionButton.tintColor = Theme.buttonBlue
-        selectionButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
     }
     
     func toggleOff() {
         selectionButton.setImage(#imageLiteral(resourceName: "icons8-circled").withRenderingMode(.alwaysTemplate), for: .normal)
         selectionButton.tintColor = Theme.gainsboro
-        selectionButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+    }
+    
+    private func setupLayout() {
+        
+        addSubview(selectionButton)
+        selectionButton.anchorCenterYToSuperview()
+        selectionButton.anchor(top: nil, leading: nil, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16), size: .init(width: 32, height: 32))
     }
     
 }
