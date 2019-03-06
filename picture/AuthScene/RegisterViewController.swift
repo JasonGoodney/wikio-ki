@@ -285,6 +285,7 @@ private extension RegisterViewController {
     }
     
     @objc private func handleSelectPhoto() {
+        handleTapDismiss()
         let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
             self.openCamera()

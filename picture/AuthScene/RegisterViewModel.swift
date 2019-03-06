@@ -81,6 +81,13 @@ class RegisterViewModel {
         ]
         Firestore.firestore().collection(DatabaseService.Collection.users).document(uid).setData(docData) { (error) in
             if let error = error {
+                Auth.auth().currentUser?.delete(completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    print("There was an error. Deleting account.")
+                })
                 completion(error)
                 return
             }
@@ -89,6 +96,13 @@ class RegisterViewModel {
             if let user = Auth.auth().currentUser {
                 authService.sendEmailVerifiction(currentUser: user, completion: { (error) in
                     if let error = error {
+                        Auth.auth().currentUser?.delete(completion: { (error) in
+                            if let error = error {
+                                print(error)
+                                return
+                            }
+                            print("There was an error. Deleting account.")
+                        })
                         print(error)
                         return
                     }
