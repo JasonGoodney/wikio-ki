@@ -734,9 +734,12 @@ extension FriendsListViewController: FriendsListCellDelegate {
     @objc func didTapCameraButton(_ sender: PopButton) {
         
         #if targetEnvironment(simulator)
-            let testVC = PreviewMediaViewController(image: UIImage(named: "IMG_1536")!)
-            present(testVC, animated: true, completion: nil)
-            return
+            if sender == cameraButton {
+                
+                let testVC = PreviewMediaViewController(image: UIImage(named: "IMG_1536")!)
+                present(testVC, animated: true, completion: nil)
+                return
+            } 
         #endif
         
         let cameraViewController = CameraViewController.fromStoryboard()
@@ -863,7 +866,6 @@ extension FriendsListViewController {
                                                     
                                                     UserController.shared.unreads[chat.chatUid]?.removeFirst()
 
-//                                                    print("Removed chat: \(UserController.shared.allChatsWithFriends[cwfIndex].chat)")
                                                     print("Deleted: \(UserController.shared.unreads[chat.chatUid]?.count) messages unread")
 
 

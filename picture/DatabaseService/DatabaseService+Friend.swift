@@ -187,6 +187,10 @@ extension DatabaseService {
         
         let chatUid = Chat.chatUid(for: UserController.shared.currentUser!, and: friend)
         
+        if let unreads = UserController.shared.unreads[friend.uid], !unreads.isEmpty {
+            UIApplication.shared.decrementBadgeNumber(by: unreads.count)
+        }
+        
         // Delete the userChat references
         Firestore.firestore().collection(Collection.userChats).document(currentUser.uid)
             .updateData([chatUid: FieldValue.delete()]) { (error) in
@@ -232,6 +236,8 @@ extension DatabaseService {
                                         return
                                     }
                                     print("removed \(chatUid) chat")
+                                    
+                                
                                     
                                     completion(nil)
                                 }

@@ -152,56 +152,78 @@ exports.observeAddedUser = functions.firestore
     .document('/users/{uid}/friendRequests/{autoUid}')
     .onCreate((snap, context) => {
 
-        var uid = context.params.uid;
+        var addedUid = context.params.uid;
         var autoUid = context.params.autoUid
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
         const data = snap.data();
         const requestUid = Object.keys(data)[0];
         // access a particular field as you would any JS property
-        console.log('User: ' + uid + ' added by: ' + requestUid);
+        console.log('User: ' + addedUid + ' added by: ' + requestUid);
 
         // perform desired operations ...
-        const store = admin.firestore()
-        store.collection('users').doc(uid).get().then(doc => {
-            if (doc.exists) {
-                const user = doc.data();
-                console.log(doc.data());
+        const store = admin.firestore();
 
-                store.collection('users').doc(requestUid).get().then(doc => {
-                    if (doc.exists) {
-                        var requestedBy = doc.data();
-                        var message = {
-                            token: user.fcmToken,
-                            notification: {
-                                body: requestedBy.username + ' added you!',
-                            },
-                            data: {
-                                requestedByUid: requestedBy.uid
-                            }
-                        }
+        let added = getUser(addedUid, store);
+        let requestedBy = getUser(requestUid, store);
 
-                        send(message);
-                        return;
-                    }
-                    else {
-                        console.log(`DOCUMENT /users/${uid} DOES NOT EXIST`);
-                        return;
-                    }
-                }).catch(reason => {
-                    console.log(reason)
+        Promise.all([added, requestedBy])
+            .then(values => {
+                const added = values[0];
+                const requestedBy = values[1];
 
-                })
+                // console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
+                // console.log('fmctoken ' + receiver.fcmToken);
+
+                const message = createMessage(added.fcmToken, {requestedByUid: requestedBy.uid}, `${requestedBy.username} added you!`, `${0}`, "default")
+
+                // console.log("message:", message);
+                send(message);
                 return;
-            }
-            else {
-                console.log(`DOCUMENT /users/${uid} DOES NOT EXIST`);
-                return;
-            }
-        }).catch(reason => {
-            console.log(reason)
+            })
+            .catch(reason => {
+                console.log(reason);
+            })
 
-        })
+        // store.collection('users').doc(uid).get().then(doc => {
+        //     if (doc.exists) {
+        //         const user = doc.data();
+        //         console.log(doc.data());
+
+        //         store.collection('users').doc(requestUid).get().then(doc => {
+        //             if (doc.exists) {
+        //                 var requestedBy = doc.data();
+        //                 var message = {
+        //                     token: user.fcmToken,
+        //                     notification: {
+        //                         body: requestedBy.username + ' added you!',
+        //                     },
+        //                     data: {
+        //                         requestedByUid: requestedBy.uid
+        //                     }
+        //                 }
+
+        //                 send(message);
+        //                 return;
+        //             }
+        //             else {
+        //                 console.log(`DOCUMENT /users/${uid} DOES NOT EXIST`);
+        //                 return;
+        //             }
+        //         }).catch(reason => {
+        //             console.log(reason)
+
+        //         })
+        //         return;
+        //     }
+        //     else {
+        //         console.log(`DOCUMENT /users/${uid} DOES NOT EXIST`);
+        //         return;
+        //     }
+        // }).catch(reason => {
+        //     console.log(reason)
+
+        // })
     });
     
 // [START generateThumbnail]

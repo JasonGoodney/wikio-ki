@@ -43,16 +43,16 @@ class SendToCell: CheckmarkToggleCell {
     
     override func toggleOff() {
     
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseIn], animations: {
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut], animations: {
             self.selectionButton.setImage(#imageLiteral(resourceName: "icons8-circled").withRenderingMode(.alwaysTemplate), for: .normal)
             self.selectionButton.tintColor = Theme.gainsboro
-            self.textLabel?.textColor = .black
+            self.textLabel?.textColor = Theme.ultraDarkGray
             self.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         }, completion: nil)
     }
     
     override func toggleOn() {
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseIn], animations: {
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut], animations: {
             self.selectionButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
             self.selectionButton.tintColor = Theme.buttonBlue
             self.textLabel?.textColor = Theme.buttonBlue

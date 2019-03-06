@@ -148,5 +148,7 @@ extension UserController {
         blockedUids = []
         allChatsWithFriends = []
         currentUser = nil
+        firebaseUser = nil
+        unreads = [:]
     }
 }
