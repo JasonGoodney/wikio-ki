@@ -98,7 +98,7 @@ class PreViewController: UIViewController {
         
         setupLayout()
         
-        UIApplication.shared.decrementBadgeNumber(by: items.count)
+//        UIApplication.shared.decrementBadgeNumber()
         
         for message in items {
             if message.tempCachedURL != nil {

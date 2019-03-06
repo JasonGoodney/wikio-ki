@@ -34,7 +34,12 @@ class UserController: LoginFlowHandler {
         }
     }
     
-    var unreads: [UID: [Message]] = [:]
+    var unreads: [UID: [Message]] = [:] {
+        didSet {
+            let unreads = UserController.shared.unreads.filter({ $0.value.count > 0 }).count
+            UIApplication.shared.applicationIconBadgeNumber = unreads
+        }
+    }
     
     var firebaseUser: FirebaseUser?
     

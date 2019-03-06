@@ -72,9 +72,12 @@ class LoginController: UIViewController, LoginFlowHandler {
     }()
     
     @objc fileprivate func handleLogin() {
+        view.endEditing(true)
+        
         loginViewModel.performLogin { (err) in
-            self.loginHUD.dismiss()
+            
             if let err = err {
+                self.loginHUD.dismiss()
                 let title = err._userInfo!["error_name"] as! String
                 let message = err.localizedDescription
                 self.errorAlert(alertTitle: title, alertMessage: message)
@@ -85,9 +88,14 @@ class LoginController: UIViewController, LoginFlowHandler {
             
             print("Logged in successfully")
             let window = UIApplication.shared.keyWindow
-            self.handleLogin(withWindow: window, completion: { (user) in
-                if let _ = user {
-                    UserController.shared.fetchCurrentUser()
+            UserController.shared.fetchCurrentUser(completion: { (fetched) in
+                if fetched {
+                    self.handleLogin(withWindow: window, completion: { (firebaseUser) in
+                        if let _ = firebaseUser {
+                            
+                        }
+                        self.loginHUD.dismiss()
+                    })
                 }
             })
         }

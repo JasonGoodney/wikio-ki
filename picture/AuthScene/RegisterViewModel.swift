@@ -33,15 +33,6 @@ class RegisterViewModel {
                 return
             }
             
-//            Auth.auth().currentUser?.sendEmailVerification(completion: { (error) in
-//                if let error = error {
-//                    print(error)
-//                    return
-//                }
-//                print("Sent email verifcation to: \(Auth.auth().currentUser!.email)")
-//
-//            })
-            
             let filename = UUID().uuidString
             let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
             let ref = Storage.storage().reference(withPath: "\(StorageService.Path.media)/\(Auth.auth().currentUser!.uid)/\(filename)")
@@ -95,14 +86,14 @@ class RegisterViewModel {
             }
             
             let authService = AuthService()
-            if let firebaseUser = UserController.shared.firebaseUser {
-                authService.sendEmailVerifiction(currentUser: firebaseUser, completion: { (error) in
+            if let user = Auth.auth().currentUser {
+                authService.sendEmailVerifiction(currentUser: user, completion: { (error) in
                     if let error = error {
                         print(error)
                         return
                     }
                     
-                    print("Sent verification email to: \(firebaseUser.email)")
+                    print("Sent verification email to: \(user.email)")
                 })
             }
             

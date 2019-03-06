@@ -267,6 +267,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
                 logoutActionSheet { (success) in
                     if success {
                         self.handleLogout()
+                        UIApplication.shared.clearAllNotifications()
                     }
                     
                 }
@@ -278,6 +279,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
                     print("handle delete acount")
                     let dbs = DatabaseService()
                     dbs.deleteAccount()
+                    UIApplication.shared.clearAllNotifications()
                 }
             }
         default:
