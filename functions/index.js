@@ -26,6 +26,22 @@ function send(message) {
         });
 }
 
+function sendToDevice(fcmToken, message) {
+    // Send a message to the device corresponding to the provided
+    // registration token.
+    console.log("BEGIN SENDING MESSAGE");
+    console.log("FMCToken:", fcmToken);
+    admin.messaging().sendToDevice(fcmToken, message, {contentAvailable: true})
+        .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+            return;
+        })
+        .catch((error) => {
+            console.log('Error sending message:', error);
+        });
+}
+
 async function getUser(uid, store) {
     let user = await store.collection('users').doc(uid)
         .get()
@@ -87,24 +103,56 @@ exports.observeNewMessage = functions.firestore
             let receiver = getUser(receiverUid, store);
             let sender = getUser(lastSenderUid, store);
 
-            // var badge = badgeCount(receiverUid);
+            var badge = badgeCount(receiverUid);
             
             // if (chat.unread[receiverUid] === true && chatBefore.unread[receiverUid] === false) {
             //     badge = 1;
             // }
-            Promise.all([receiver, sender])
+            Promise.all([receiver, sender, badge])
                 .then(values => {
                     const receiver = values[0];
                     const sender = values[1];
-                    // const badge = values[2];
+                    const badge = values[2];
 
                     console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
                     console.log('fmctoken ' + receiver.fcmToken);
 
-                    const message = createMessage(receiver.fcmToken, {chat: chatUid}, `from ${sender.username}`, `${1}`, "default")
+                    // const message = createMessage({chat: chatUid}, `from ${sender.username}`, `${1}`, "default")
+
+                    const message = {
+    
+                        data: {
+                            chat: chatUid,
+                        },
+                        notification: {
+                            body: `from ${sender.username}`,
+                            badge: `${badge}`,
+                            sound: "default",
+                        },
+                        // "apns": {
+                        //     "payload": {
+                        //       "aps": {
+                        //         "category": "NEW_MESSAGE_CATEGORY"
+                        //       }
+                        //     }
+                        // }
+                        // apns: {
+                        //     payload: {
+                        //         aps: {
+                        //             'content-available': 1,
+                        //             alert: {
+                        //                 // body: body,
+                        //                 badge: `${1}`,
+                        //                 categoryIdentifier: "wikio-ki",
+                        //                 sound: "default"
+                        //             },
+                        //         }
+                        //     }
+                        // }
+                    }
 
                     console.log("message:", message);
-                    send(message);
+                    sendToDevice(receiver.fcmToken, message);
                     return;
                 })
                 .catch(reason => {
@@ -113,9 +161,9 @@ exports.observeNewMessage = functions.firestore
         }  
 });
 
-function createMessage(token, data, body, badge, sound) {
+function createMessage(data, body, badge, sound) {
     return {
-        token: token,
+        // token: token,
 
         data: data,
         apns: {
@@ -175,10 +223,27 @@ exports.observeAddedUser = functions.firestore
                 // console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
                 // console.log('fmctoken ' + receiver.fcmToken);
 
-                const message = createMessage(added.fcmToken, {requestedByUid: requestedBy.uid}, `${requestedBy.username} added you!`, `${0}`, "default")
+                // const message = createMessage(added.fcmToken, {requestedByUid: requestedBy.uid}, `${requestedBy.username} added you!`, `${0}`, "default")
 
                 // console.log("message:", message);
-                send(message);
+                // send(message);
+
+
+                const message = {
+    
+                    data: {
+                        equestedByUid: requestedBy.uid
+                    },
+                    notification: {
+                        body: `${requestedBy.username} added you!`,
+                        sound: "default",
+                    },
+                }
+
+                console.log("message:", message);
+                sendToDevice(added.fcmToken, message);
+
+
                 return;
             })
             .catch(reason => {

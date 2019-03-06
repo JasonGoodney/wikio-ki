@@ -102,145 +102,12 @@ class FriendsListViewController: UIViewController {
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
-        UserController.shared.fetchCurrentUser { (success) in
-            if success {
-                
-                if let image = UserController.shared.currentUser?.profilePhoto {
-                    self.profileImageButton.setImage(image, for: .normal)
-                    self.profileImageButton.isUserInteractionEnabled = true
-                } else if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
-                    DispatchQueue.main.async {
-                        self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
-                            self.profileImageButton.isUserInteractionEnabled = true
-                        })
-                    }
-                }
-                
-                self.friendRequestListener = Firestore.firestore()
-                    .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
-                    .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
-                        
-                        if let error = error {
-                            print(error)
-                            return
-                        }
-                        
-                        guard let docChanges = snapshot?.documentChanges else { return }
-                        
-                        // New requests are ones that have not been seen ([uid: true]) in Firebase
-                        let newRequests = docChanges.filter({ (change) -> Bool in
-                            guard let data = change.document.data() as? [String: Bool] else { return false }
-                            return data.values.first == true
-                        })
-                        
-                        if newRequests.count == 0 {
-                            self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
-                            self.addFriendButton.tintColor = .black
-                            return
-                        }
-                        
-                        newRequests.forEach({ (diff) in
-                            if diff.type == .added {
-                                if self.addFriendButton.imageView?.image != #imageLiteral(resourceName: "icons8-add") {
-                                    self.addFriendButton.pop()
-                                    self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-add"), for: .normal)
-                                    self.addFriendButton.tintColor = Theme.buttonBlue
-                                }
-                                return
-                            } else if diff.type == .removed {
-                                self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
-                                self.addFriendButton.tintColor = .black
-                                return
-                            }
-                        })
-                }
-                
-                self.handleRefreshFriends()
-                
-                let value = UserController.shared.currentUser?.uid as Any
-                
-                self.chatUpdateListener = Firestore.firestore().collection(DatabaseService.Collection.chats)
-                    .whereField(Chat.Keys.memberUids, arrayContains: value)
-                    .addSnapshotListener({ (querySnapshot, error) in
-                    
-                        guard let snapshot = querySnapshot else {
-                            print("Error fetching documents: \(error!)")
-                            return
-                        }
-                        
-                            let modifiedDocs = snapshot.documentChanges.filter({
-                                $0.type == .modified
-                            })
-                            
-                            let pendingWrites = snapshot.documentChanges.filter({
-                                $0.document.metadata.hasPendingWrites
-                            })
-                            
-                            if pendingWrites.count > 0 {
-                                pendingWrites.forEach({ (change) in
-                                    let pendingChat = Chat(dictionary: change.document.data())
-                                    
-                                    self.tableView.performBatchUpdates({
-                                        if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
-                                            let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
-                                            UserController.shared.allChatsWithFriends[index].chat = pendingChat
-                                            let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
-                                            
-                                            if beforeRecentsCount < afterRecentsCount {
-                                                self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
-                                            }
-                                            //
-                                            self.tableView.reloadData()
-                                            //
-                                        }
-                                    }, completion: { (_) in
-                                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                                    })
-                                })
-                            }
-                        
-                                // Receiving user updates and sender user updates when receiver opens
-                            else if modifiedDocs.count > 0 {
-                                for change in modifiedDocs {
-                                    let pendingChat = Chat(dictionary: change.document.data())
-                                    self.tableView.performBatchUpdates({
-                                        
-                                        let isSender = pendingChat.lastSenderUid == UserController.shared.currentUser?.uid
-
-                                        if isSender {
-                                            if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
-                                                let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
-                                                UserController.shared.allChatsWithFriends[index].chat = pendingChat
-                                                let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
-                                                
-                                                if beforeRecentsCount < afterRecentsCount {
-                                                    self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
-                                                }
-                                                //
-                                                self.tableView.reloadData()
-                                                //
-                                            }
-                                        } else if !isSender && !pendingChat.isSending {
-                                            if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
-                                                let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
-                                                UserController.shared.allChatsWithFriends[index].chat = pendingChat
-                                                let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
-                                                
-                                                if beforeRecentsCount < afterRecentsCount {
-                                                    self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
-                                                }
-                                                //
-                                                self.tableView.reloadData()
-                                                //
-                                            }
-                                        }
-                                        
-                                    }, completion: nil)
-
-                                }
-                        }
-                })
+        if UserController.shared.currentUser == nil {
+            UserController.shared.fetchCurrentUser { (success) in
+                self.setupListeners()
             }
+        } else {
+            setupListeners()
         }
 
         if #available(iOS 10.0, *) {
@@ -799,6 +666,7 @@ extension FriendsListViewController {
     func fetchChatsWithFriends(completion: @escaping (Error?) -> Void) {
         UserController.shared.allChatsWithFriends = []
         UserController.shared.currentUser?.friendsUids = []
+        UserController.shared.unreads = [:]
         
         let dbs = DatabaseService()
         dbs.fetchUserChats(for: UserController.shared.currentUser!, completion: { (userChats, error) in
@@ -890,3 +758,145 @@ extension FriendsListViewController {
     }
 }
 
+extension FriendsListViewController {
+    fileprivate func setupListeners() {
+        //        UserController.shared.fetchCurrentUser { (success) in
+        //            if success {
+        //
+        if let image = UserController.shared.currentUser?.profilePhoto {
+            self.profileImageButton.setImage(image, for: .normal)
+            self.profileImageButton.isUserInteractionEnabled = true
+        } else if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
+            DispatchQueue.main.async {
+                self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
+                    self.profileImageButton.isUserInteractionEnabled = true
+                })
+            }
+        }
+        
+        self.friendRequestListener = Firestore.firestore()
+            .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
+            .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
+                
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                guard let docChanges = snapshot?.documentChanges else { return }
+                
+                // New requests are ones that have not been seen ([uid: true]) in Firebase
+                let newRequests = docChanges.filter({ (change) -> Bool in
+                    guard let data = change.document.data() as? [String: Bool] else { return false }
+                    return data.values.first == true
+                })
+                
+                if newRequests.count == 0 {
+                    self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
+                    self.addFriendButton.tintColor = .black
+                    return
+                }
+                
+                newRequests.forEach({ (diff) in
+                    if diff.type == .added {
+                        if self.addFriendButton.imageView?.image != #imageLiteral(resourceName: "icons8-add") {
+                            self.addFriendButton.pop()
+                            self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-add"), for: .normal)
+                            self.addFriendButton.tintColor = Theme.buttonBlue
+                        }
+                        return
+                    } else if diff.type == .removed {
+                        self.addFriendButton.setImage(#imageLiteral(resourceName: "icons8-plus_math").withRenderingMode(.alwaysTemplate), for: .normal)
+                        self.addFriendButton.tintColor = .black
+                        return
+                    }
+                })
+        }
+        
+        self.handleRefreshFriends()
+        
+        let value = UserController.shared.currentUser?.uid as Any
+        
+        self.chatUpdateListener = Firestore.firestore().collection(DatabaseService.Collection.chats)
+            .whereField(Chat.Keys.memberUids, arrayContains: value)
+            .addSnapshotListener({ (querySnapshot, error) in
+                
+                guard let snapshot = querySnapshot else {
+                    print("Error fetching documents: \(error!)")
+                    return
+                }
+                
+                let modifiedDocs = snapshot.documentChanges.filter({
+                    $0.type == .modified
+                })
+                
+                let pendingWrites = snapshot.documentChanges.filter({
+                    $0.document.metadata.hasPendingWrites
+                })
+                
+                if pendingWrites.count > 0 {
+                    pendingWrites.forEach({ (change) in
+                        let pendingChat = Chat(dictionary: change.document.data())
+                        
+                        self.tableView.performBatchUpdates({
+                            if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
+                                let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                UserController.shared.allChatsWithFriends[index].chat = pendingChat
+                                let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                
+                                if beforeRecentsCount < afterRecentsCount {
+                                    self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
+                                }
+                                //
+                                self.tableView.reloadData()
+                                //
+                            }
+                        }, completion: { (_) in
+                            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                        })
+                    })
+                }
+                    
+                    // Receiving user updates and sender user updates when receiver opens
+                else if modifiedDocs.count > 0 {
+                    for change in modifiedDocs {
+                        let pendingChat = Chat(dictionary: change.document.data())
+                        self.tableView.performBatchUpdates({
+                            
+                            let isSender = pendingChat.lastSenderUid == UserController.shared.currentUser?.uid
+                            
+                            if isSender {
+                                if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
+                                    let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                    UserController.shared.allChatsWithFriends[index].chat = pendingChat
+                                    let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                    
+                                    if beforeRecentsCount < afterRecentsCount {
+                                        self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
+                                    }
+                                    //
+                                    self.tableView.reloadData()
+                                    //
+                                }
+                            } else if !isSender && !pendingChat.isSending {
+                                if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
+                                    let beforeRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                    UserController.shared.allChatsWithFriends[index].chat = pendingChat
+                                    let afterRecentsCount = UserController.shared.recentChatsWithFriends.count
+                                    
+                                    if beforeRecentsCount < afterRecentsCount {
+                                        self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
+                                    }
+                                    //
+                                    self.tableView.reloadData()
+                                    //
+                                }
+                            }
+                            
+                        }, completion: nil)
+                        
+                    }
+                }
+            })
+    }
+}

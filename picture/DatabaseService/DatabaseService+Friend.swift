@@ -188,7 +188,7 @@ extension DatabaseService {
         let chatUid = Chat.chatUid(for: UserController.shared.currentUser!, and: friend)
         
         if let unreads = UserController.shared.unreads[friend.uid], !unreads.isEmpty {
-            UIApplication.shared.decrementBadgeNumber(by: unreads.count)
+            UIApplication.shared.decrementBadgeNumber()
         }
         
         // Delete the userChat references
