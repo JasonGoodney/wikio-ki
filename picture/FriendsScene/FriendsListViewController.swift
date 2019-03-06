@@ -265,14 +265,9 @@ private extension FriendsListViewController {
         view.backgroundColor = Theme.ultraLightGray
         view.addSubviews([tableView])
         setupNavigationBar()
- 
-//        cameraButton.anchor(top: nil, leading: nil, bottom: view.bottomAnchor, trailing: nil, padding: .init(top: 0, left: 0, bottom: 8, right: 0))
-//        cameraButton.anchorCenterXToSuperview()
-        
+
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
-        
-        
-        
+
         cameraButton.setTitle("  Camera", for: .normal)
         cameraButton.setTitleColor(Theme.buttonBlue, for: .normal)
         cameraButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -678,7 +673,6 @@ extension FriendsListViewController {
             
             guard let userChats = userChats, userChats.count > 0 else { completion(error); return }
             
-            _ = 0
             for chatUid in userChats {
                 
                 UserController.shared.unreads[chatUid] = []
@@ -691,7 +685,7 @@ extension FriendsListViewController {
                     }
 
                     guard let chat = chat else { print("chat does not exists"); return }
-                    
+
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {
                             print(error)
@@ -707,6 +701,15 @@ extension FriendsListViewController {
                             UserController.shared.currentUser?.friendsUids.insert(user.uid)
                             
                             let chatWithFriend = (friend: friend, chat: chat)
+
+                            // Prevents adding of duplicates when user re-logs in.
+                            // Checking earlier does not prevent the problem
+                            if UserController.shared.allChatsWithFriends.contains(where: { $0 == chatWithFriend }) {
+                                print("Friend already fetched")
+                                completion(nil)
+                                return
+                            }
+                            
                             UserController.shared.allChatsWithFriends.append(chatWithFriend)
                             
                             let collectionRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid).collection(UserController.shared.currentUser!.uid)
@@ -760,9 +763,7 @@ extension FriendsListViewController {
 
 extension FriendsListViewController {
     fileprivate func setupListeners() {
-        //        UserController.shared.fetchCurrentUser { (success) in
-        //            if success {
-        //
+
         if let image = UserController.shared.currentUser?.profilePhoto {
             self.profileImageButton.setImage(image, for: .normal)
             self.profileImageButton.isUserInteractionEnabled = true

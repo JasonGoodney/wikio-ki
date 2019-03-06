@@ -72,9 +72,12 @@ class LoginController: UIViewController, LoginFlowHandler {
     }()
     
     @objc fileprivate func handleLogin() {
+        view.endEditing(true)
+        
         loginViewModel.performLogin { (err) in
             
             if let err = err {
+                self.loginHUD.dismiss()
                 let title = err._userInfo!["error_name"] as! String
                 let message = err.localizedDescription
                 self.errorAlert(alertTitle: title, alertMessage: message)

@@ -46,4 +46,9 @@ extension UIApplication {
         application.registerForRemoteNotifications()
         application.applicationIconBadgeNumber = badgeCount
     }
+    
+    func clearAllNotifications() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        UIApplication.shared.applicationIconBadgeNumber = 0
+    }
 }
