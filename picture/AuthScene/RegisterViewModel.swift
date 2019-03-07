@@ -41,29 +41,6 @@ class RegisterViewModel {
                 let imageUrl = url?.absoluteString ?? ""
                 self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
             })
-
-        }
-    }
-    
-    private func saveImageToFirebase(completion: @escaping ErrorCompletion) {
-        let filename = UUID().uuidString
-        let ref = Storage.storage().reference(withPath: "/images/\(filename)")
-        let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
-        ref.putData(imageData, metadata: nil) { (_, error) in
-            if let error = error {
-                completion(error)
-                return
-            }
-            
-            ref.downloadURL(completion: { (url, error) in
-                if let error = error {
-                    completion(error)
-                    return
-                }
-                self.bindableIsRegistering.value = false
-                let imageUrl = url?.absoluteString ?? ""
-                self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
-            })
         }
     }
     
@@ -79,6 +56,10 @@ class RegisterViewModel {
             "email": email?.lowercased() ?? "",
             "fcmToken": fcmToken
         ]
+        
+        UserController.shared.currentUser = User(dictionary: docData)
+        UserController.shared.currentUser?.profilePhoto = profilePhoto
+        
         Firestore.firestore().collection(DatabaseService.Collection.users).document(uid).setData(docData) { (error) in
             if let error = error {
                 Auth.auth().currentUser?.delete(completion: { (error) in
@@ -86,7 +67,7 @@ class RegisterViewModel {
                         print(error)
                         return
                     }
-                    print("There was an error. Deleting account.")
+                    print("🛑 There was an error setting users data. Deleted account for so email is not taken.")
                 })
                 completion(error)
                 return
@@ -101,13 +82,13 @@ class RegisterViewModel {
                                 print(error)
                                 return
                             }
-                            print("There was an error. Deleting account.")
+                            print("🛑 There was an error. Deleting account.")
                         })
                         print(error)
                         return
                     }
                     
-                    print("Sent verification email to: \(user.email)")
+                    print("👍 Sent verification email to: \(String(describing: user.email))")
                 })
             }
             
@@ -117,13 +98,11 @@ class RegisterViewModel {
                     completion(error)
                     return
                 }
-                print("saved info to firebase")
+                print("👍 saved info to firebase")
                 completion(nil)
             }
         }
     }
-    
-    
     
     private func checkFormValidity() {
         guard let username = username, let email = email, let password = password else {

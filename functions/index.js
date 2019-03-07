@@ -216,7 +216,23 @@ exports.observeAddedUser = functions.firestore
                 console.log(reason);
             })
     });
-    
+
+// [START observeCreateAccount]
+// exports.observeCreateAccount = functions.firestore
+    // .document('/users/{uid}')
+    // .onCreate((snap, context) => {
+    //     const uid = context.params.uid;
+    //     const store = admin.firestore();
+
+    //     const user = snap.data();
+    //     const bucket = admin.storage().bucket();
+
+
+
+        
+    // });
+// [END observeCreateAccount]
+
 // [START generateThumbnail]
 /**
  * When an image is uploaded in the Storage bucket We generate a thumbnail automatically using

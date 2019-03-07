@@ -658,7 +658,7 @@ extension FriendsListViewController {
         let dbs = DatabaseService()
         dbs.fetchUserChats(for: UserController.shared.currentUser!, completion: { (userChats, error) in
             if let error = error {
-                print(error)
+                print("🛑 ",error)
                 completion(error)
                 return
             }
@@ -671,16 +671,16 @@ extension FriendsListViewController {
                 
                 dbs.fetchChat(chatUid, completion: { (chat, error) in
                     if let error = error {
-                        print(error)
+                        print("🛑 ",error)
                         completion(error)
                         return
                     }
 
-                    guard let chat = chat else { print("chat does not exists"); return }
+                    guard let chat = chat else { print("🛑 chat does not exists"); return }
 
                     dbs.fetchFriend(in: chat, completion: { (user, error) in
                         if let error = error {
-                            print(error)
+                            print("🛑 ",error)
                             completion(error)
                             return
                         }
@@ -731,7 +731,7 @@ extension FriendsListViewController {
                                                     
                                                     UserController.shared.unreads[chat.chatUid]?.insert(message, at: insertionIndex)
                                                     
-                                                    print("New message from \(message.senderUid): \(UserController.shared.unreads[chat.chatUid]?.count) unread messages")
+                                                    print("New message from \(message.senderUid): \(String(describing: UserController.shared.unreads[chat.chatUid]?.count)) unread messages")
                                                     
                                                 case .modified:
                                                     print("Message modified")
@@ -739,7 +739,7 @@ extension FriendsListViewController {
                                                     
                                                     UserController.shared.unreads[chat.chatUid]?.removeFirst()
 
-                                                    print("Deleted: \(UserController.shared.unreads[chat.chatUid]?.count) messages unread")
+                                                    print("Deleted: \(String(describing: UserController.shared.unreads[chat.chatUid]?.count)) messages unread")
 
 
                                                 }
@@ -765,18 +765,22 @@ extension FriendsListViewController {
 
 extension FriendsListViewController {
     fileprivate func setupListeners() {
-
-        if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
-            SDWebImageManager.shared().imageCache?.queryCacheOperation(forKey: urlString, done: { (image, _, _) in
-                if let image = image {
-                    self.profileImageButton.setImage(image, for: .normal)
-                    self.profileImageButton.isUserInteractionEnabled = true
-                } else {
-                    self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
+        if let image = UserController.shared.currentUser?.profilePhoto {
+            self.profileImageButton.setImage(image, for: .normal)
+            self.profileImageButton.isUserInteractionEnabled = true
+        } else {
+            if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
+                SDWebImageManager.shared().imageCache?.queryCacheOperation(forKey: urlString, done: { (image, _, _) in
+                    if let image = image {
+                        self.profileImageButton.setImage(image, for: .normal)
                         self.profileImageButton.isUserInteractionEnabled = true
+                    } else {
+                        self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
+                            self.profileImageButton.isUserInteractionEnabled = true
+                        }
                     }
-                }
-            })
+                })
+            }
         }
         
         self.friendRequestListener = Firestore.firestore()
@@ -784,7 +788,7 @@ extension FriendsListViewController {
             .collection(DatabaseService.Collection.friendRequests).addSnapshotListener { (snapshot, error) in
                 
                 if let error = error {
-                    print(error)
+                    print("🛑 ",error)
                     return
                 }
                 
@@ -827,7 +831,7 @@ extension FriendsListViewController {
             .addSnapshotListener({ (querySnapshot, error) in
                 
                 guard let snapshot = querySnapshot else {
-                    print("Error fetching documents: \(error!)")
+                    print("🛑 Error fetching documents: \(error!)")
                     return
                 }
                 

@@ -278,7 +278,7 @@ private extension RegisterViewController {
             let window = UIApplication.shared.keyWindow
             self.handleLogin(withWindow: window, completion: { (user) in
                 if let _ = user {
-                    UserController.shared.fetchCurrentUser()
+//                    UserController.shared.fetchCurrentUser()
                 }
             })
         }
