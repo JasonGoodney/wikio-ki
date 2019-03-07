@@ -712,12 +712,22 @@ extension FriendsListViewController {
                             
                             UserController.shared.allChatsWithFriends.append(chatWithFriend)
                             
+                            // Not created when it is a new friendship!
+                            // For new friend uid, message was sent but uid collection was never created
                             let collectionRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid).collection(UserController.shared.currentUser!.uid)
                              collectionRef.limit(to: 1).getDocuments(completion: { (snapshot, error) in
                                 if snapshot != nil {
                                     self.newMessageListener = self.addListener(listeningTo: collectionRef, completion: { (changes) in
                                         if let changes = changes {
                                             changes.forEach({
+                                                
+                                                // A placeholder doc is stored so the collection is never empty
+                                                if let exists = $0.document.data()["exists"] as? Bool, exists == true {
+                                                    print("Placeholder document")
+                                                    return
+                                                }
+                                                
+                                                
                                                 let message = Message(dictionary: $0.document.data())
                                                 switch $0.type {
                                                 case .added:

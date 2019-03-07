@@ -8,7 +8,9 @@
 
 import UIKit
 import JGProgressHUD
+import FirebaseInstanceID
 import FirebaseAuth
+import FirebaseMessaging
 
 protocol LoginControllerDelegate {
     func didFinishLoggingIn()

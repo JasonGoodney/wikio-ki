@@ -104,10 +104,7 @@ exports.observeNewMessage = functions.firestore
             let sender = getUser(lastSenderUid, store);
 
             var badge = badgeCount(receiverUid);
-            
-            // if (chat.unread[receiverUid] === true && chatBefore.unread[receiverUid] === false) {
-            //     badge = 1;
-            // }
+
             Promise.all([receiver, sender, badge])
                 .then(values => {
                     const receiver = values[0];
@@ -116,8 +113,6 @@ exports.observeNewMessage = functions.firestore
 
                     console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
                     console.log('fmctoken ' + receiver.fcmToken);
-
-                    // const message = createMessage({chat: chatUid}, `from ${sender.username}`, `${1}`, "default")
 
                     const message = {
     
@@ -129,26 +124,6 @@ exports.observeNewMessage = functions.firestore
                             badge: `${badge}`,
                             sound: "default",
                         },
-                        // "apns": {
-                        //     "payload": {
-                        //       "aps": {
-                        //         "category": "NEW_MESSAGE_CATEGORY"
-                        //       }
-                        //     }
-                        // }
-                        // apns: {
-                        //     payload: {
-                        //         aps: {
-                        //             'content-available': 1,
-                        //             alert: {
-                        //                 // body: body,
-                        //                 badge: `${1}`,
-                        //                 categoryIdentifier: "wikio-ki",
-                        //                 sound: "default"
-                        //             },
-                        //         }
-                        //     }
-                        // }
                     }
 
                     console.log("message:", message);
@@ -220,15 +195,6 @@ exports.observeAddedUser = functions.firestore
                 const added = values[0];
                 const requestedBy = values[1];
 
-                // console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
-                // console.log('fmctoken ' + receiver.fcmToken);
-
-                // const message = createMessage(added.fcmToken, {requestedByUid: requestedBy.uid}, `${requestedBy.username} added you!`, `${0}`, "default")
-
-                // console.log("message:", message);
-                // send(message);
-
-
                 const message = {
     
                     data: {
@@ -249,46 +215,6 @@ exports.observeAddedUser = functions.firestore
             .catch(reason => {
                 console.log(reason);
             })
-
-        // store.collection('users').doc(uid).get().then(doc => {
-        //     if (doc.exists) {
-        //         const user = doc.data();
-        //         console.log(doc.data());
-
-        //         store.collection('users').doc(requestUid).get().then(doc => {
-        //             if (doc.exists) {
-        //                 var requestedBy = doc.data();
-        //                 var message = {
-        //                     token: user.fcmToken,
-        //                     notification: {
-        //                         body: requestedBy.username + ' added you!',
-        //                     },
-        //                     data: {
-        //                         requestedByUid: requestedBy.uid
-        //                     }
-        //                 }
-
-        //                 send(message);
-        //                 return;
-        //             }
-        //             else {
-        //                 console.log(`DOCUMENT /users/${uid} DOES NOT EXIST`);
-        //                 return;
-        //             }
-        //         }).catch(reason => {
-        //             console.log(reason)
-
-        //         })
-        //         return;
-        //     }
-        //     else {
-        //         console.log(`DOCUMENT /users/${uid} DOES NOT EXIST`);
-        //         return;
-        //     }
-        // }).catch(reason => {
-        //     console.log(reason)
-
-        // })
     });
     
 // [START generateThumbnail]

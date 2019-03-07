@@ -67,44 +67,24 @@ extension DatabaseService {
             let currentUserUserChat = Firestore.firestore().collection(Collection.userChats).document(currentUser.uid)
             let friendUserChat = Firestore.firestore().collection(Collection.userChats).document(user.uid)
             self.changeUserChat(isActive: true, between: currentUser, andFriend: user, changeBoth: true)
-//            dbs.updateDocument(currentUserUserChat, withFields: [chat.chatUid : true], completion: { (error) in
-//                if let error = error {
-//                    print(error)
-//                    completion(error)
-//                    return
-//                }
-//                print("\(currentUser.username)'s userChat is")
-//                dbs.updateDocument(friendUserChat, withFields: [chat.chatUid : true], completion: { (error) in
-//                    if let error = error {
-//                        print(error)
-//                        completion(error)
-//                        return
-//                    }
-                    self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
+
+                self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in
+                    if let error = error {
+                        print(error)
+                        completion(error)
+                        return
+                    }
+                    
+                    self.removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
                         if let error = error {
                             print(error)
                             completion(error)
                             return
                         }
                         
-                        self.removeSentRequest(from: user, to: UserController.shared.currentUser!) { (error) in
-                            if let error = error {
-                                print(error)
-                                completion(error)
-                                return
-                            }
-                            
-                            completion(nil)
-                        }
+                        completion(nil)
                     }
-                    
-//                })
-//
-//            })
-        
-            
-            
-            
+                }
         }
     }
     

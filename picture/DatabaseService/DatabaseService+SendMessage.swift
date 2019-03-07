@@ -130,6 +130,9 @@ private extension DatabaseService {
             }
             
             print("Saved chat \(chat.chatUid) to collection")
+            for memberUid in chat.memberUids {
+                Firestore.firestore().collection(Collection.chats).document(chat.chatUid).collection(memberUid).document("placeholder").setData(["exists": true])
+            }
             completion(nil)
         }
     }
