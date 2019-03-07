@@ -7,8 +7,18 @@
 //
 
 import Foundation
+import Digger
+import SDWebImage
 
 extension FileManager {
+    
+    func clearAllCache() {
+        DiggerCache.cleanDownloadFiles()
+        DiggerCache.cleanDownloadTempFiles()
+        SDWebImageManager.shared().imageCache?.clearMemory()
+        SDWebImageManager.shared().imageCache?.clearDisk(onCompletion: nil)
+    }
+    
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]

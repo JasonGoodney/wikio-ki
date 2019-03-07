@@ -125,14 +125,6 @@ class FriendsListViewController: UIViewController {
         setStatusBar(hidden: false)
         navigationController?.setToolbarHidden(false, animated: false)
         
-        if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
-            DispatchQueue.main.async {
-                self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
-                    self.profileImageButton.isUserInteractionEnabled = true
-                })
-            }
-        }
-        
         DispatchQueue.main.async {
             if !UserController.shared.allChatsWithFriends.isEmpty{
                 self.tableView.isHidden = false
@@ -774,15 +766,17 @@ extension FriendsListViewController {
 extension FriendsListViewController {
     fileprivate func setupListeners() {
 
-        if let image = UserController.shared.currentUser?.profilePhoto {
-            self.profileImageButton.setImage(image, for: .normal)
-            self.profileImageButton.isUserInteractionEnabled = true
-        } else if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
-            DispatchQueue.main.async {
-                self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: placeholderProfileImage, options: [], completed: { (_, _, _, _) in
+        if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
+            SDWebImageManager.shared().imageCache?.queryCacheOperation(forKey: urlString, done: { (image, _, _) in
+                if let image = image {
+                    self.profileImageButton.setImage(image, for: .normal)
                     self.profileImageButton.isUserInteractionEnabled = true
-                })
-            }
+                } else {
+                    self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
+                        self.profileImageButton.isUserInteractionEnabled = true
+                    }
+                }
+            })
         }
         
         self.friendRequestListener = Firestore.firestore()

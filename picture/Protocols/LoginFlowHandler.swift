@@ -65,6 +65,7 @@ extension LoginFlowHandler {
                 }
             }
             Messaging.messaging().shouldEstablishDirectChannel = true
+            FileManager.default.clearAllCache()
         
         } catch let error {
             print("Error signing out of Firebase \(error)")

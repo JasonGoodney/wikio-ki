@@ -12,10 +12,12 @@ protocol ProfileImageButtonDelegate: class {
     func didTapProfileImageButton(_ sender: ProfileImageButton)
 }
 
-let placeholderProfileImage = UIImage(named: "placeholderProfileImage")?.withRenderingMode(.alwaysTemplate)
+
 
 class ProfileImageButton: PopButton {
 
+    static let placeholderProfileImage = UIImage(named: "placeholderProfileImage")?.withRenderingMode(.alwaysTemplate)
+    
     weak var delegate: ProfileImageButtonDelegate?
     
     init(height: CGFloat, width: CGFloat, enabled: Bool = false) {
@@ -28,7 +30,7 @@ class ProfileImageButton: PopButton {
         clipsToBounds = true
 //        backgroundColor = .lightGray
         imageView?.contentMode = .scaleAspectFill
-        setImage(placeholderProfileImage, for: .normal)
+        setImage(ProfileImageButton.placeholderProfileImage, for: .normal)
         tintColor = Theme.textColor
 
         addTarget(self, action: #selector(handleTap), for: .touchUpInside)

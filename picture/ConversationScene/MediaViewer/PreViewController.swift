@@ -146,52 +146,14 @@ class PreViewController: UIViewController {
             self.progressBar.cancel()
             self.progressBar.isPaused = true
             self.resetPlayer()
+            self.handleDeletingMessages()
         }
     
     }
 
     func dismiss() {
         dismiss(animated: true) {
-            let dbs = DatabaseService()
-            let openedMessages = self.items.filter({ $0.isOpened })
-
-            for i in 0 ..< openedMessages.count {
-                let message = openedMessages[i]
-
-                dbs.delete(message, forUser: UserController.shared.currentUser!, inChat: self.chatWithFriend!.chat, completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    print("Deleted opened message: \(message.uid)")
-                })
-            }
-
-            guard let chat = self.chatWithFriend?.chat else { return }
-            let docRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid)
             
-            chat.status = .opened
-            
-            var fields: [String: Any] = [Chat.Keys.isOpened: true,
-                                         Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
-                                         Chat.Keys.status: chat.status.databaseValue()]
-            
-            if self.items.filter({ $0.isOpened == false }).isEmpty {
-                chat.unread?[UserController.shared.currentUser!.uid] = false
-                
-                let key = "unread.\(UserController.shared.currentUser!.uid)"
-                fields[key] = false
-            }
-
-
-            dbs.updateData(docRef, withFields: fields, completion: { (error) in
-                if let error = error {
-                    print(error)
-                    return
-                }
-                
-                print("Updated \(chat.chatUid) chat")
-            })
             
             print("Dismissed")
         }
@@ -350,6 +312,50 @@ private extension PreViewController {
     }
 }
 
+private extension PreViewController {
+    func handleDeletingMessages() {
+        let dbs = DatabaseService()
+        let openedMessages = self.items.filter({ $0.isOpened })
+        
+        for i in 0 ..< openedMessages.count {
+            let message = openedMessages[i]
+            
+            dbs.delete(message, forUser: UserController.shared.currentUser!, inChat: self.chatWithFriend!.chat, completion: { (error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                print("Deleted opened message: \(message.uid)")
+            })
+        }
+        
+        guard let chat = self.chatWithFriend?.chat else { return }
+        let docRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid)
+        
+        chat.status = .opened
+        
+        var fields: [String: Any] = [Chat.Keys.isOpened: true,
+                                     Chat.Keys.lastChatUpdateTimestamp: Date().timeIntervalSince1970,
+                                     Chat.Keys.status: chat.status.databaseValue()]
+        
+        if self.items.filter({ $0.isOpened == false }).isEmpty {
+            chat.unread?[UserController.shared.currentUser!.uid] = false
+            
+            let key = "unread.\(UserController.shared.currentUser!.uid)"
+            fields[key] = false
+        }
+        
+        
+        dbs.updateData(docRef, withFields: fields, completion: { (error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print("Updated \(chat.chatUid) chat")
+        })
+    }
+}
 
 
 // frKOhvebFho:APA91bEK2mNWBEzW9K3pDQAGAgTU4JIhUXuCVj1GddKPp5ThgjAGjllsy9kPct-qpeKduZQ47lT3HRLo_1nv8XxLBc4NQfF4-fW1EGEgCFfpKiG1t8Sd1q4vZgJrHU2bVFgtVX7ebAbj

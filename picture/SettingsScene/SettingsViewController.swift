@@ -230,9 +230,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         case .clearCache:
             alert(alertTitle: "Clear Cache", alertMessage: "Are you sure you want to clear your cache?", actionTitle: "Clear") { (clear) in
                 if clear {
-                    DiggerCache.cleanDownloadFiles()
-                    DiggerCache.cleanDownloadTempFiles()
-                    SDWebImageManager.shared().imageCache?.clearMemory()
+                    FileManager.default.clearAllCache()
                     DispatchQueue.main.async {
                         let cell = tableView.cellForRow(at: indexPath)
                         cell?.detailTextLabel?.text = self.cacheString

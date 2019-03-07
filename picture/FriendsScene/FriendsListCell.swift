@@ -133,7 +133,17 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     
         usernameLabel.text = user.username
         if let url = URL(string: user.profilePhotoUrl) {
-            profileImageView.sd_setImage(with: url, for: .normal)
+            SDWebImageManager.shared().imageCache?.queryCacheOperation(forKey: url.absoluteString, done: { (image, _, _) in
+                if let image = image {
+                    self.profileImageView.setImage(image, for: .normal)
+                    self.profileImageView.isUserInteractionEnabled = true
+                } else {
+                    self.profileImageView.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
+                        self.profileImageView.isUserInteractionEnabled = true
+                    }
+                }
+            })
+            
         }
         
         let timeAgoString = "  ·  \(Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).timeAgoDisplay())"
