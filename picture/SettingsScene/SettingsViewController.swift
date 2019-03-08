@@ -21,7 +21,7 @@ enum SettingsType: String {
     case password
     
     case privacyPolicy
-    case termsOfService
+    case termsAndCondtions
     case openSource
     
     case clearCache
@@ -63,7 +63,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         ],
         [
             (title: "Privacy Policy", value: "", type: .privacyPolicy),
-            (title: "Terms of Service", value: "", type: .termsOfService),
+            (title: "Terms & Conditions", value: "", type: .termsAndCondtions),
             (title: "Open Source Libraries", value: "", type: .openSource),
         ],
         [
@@ -219,8 +219,8 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         case .privacyPolicy:
             let aboutVC = AboutViewController(type: .privacyPolicy)
             navigationController?.pushViewController(aboutVC, animated: true)
-        case .termsOfService:
-            let aboutVC = AboutViewController(type: .termsOfService)
+        case .termsAndCondtions:
+            let aboutVC = AboutViewController(type: .termsAndConditions)
             navigationController?.pushViewController(aboutVC, animated: true)
         case .openSource:
             let aboutVC = AboutViewController(type: .openSource)

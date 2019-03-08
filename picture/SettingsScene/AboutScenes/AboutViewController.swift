@@ -10,7 +10,7 @@ import UIKit
 
 enum AboutType: String {
     case privacyPolicy = "Privacy Policy"
-    case termsOfService = "Terms of Service"
+    case termsAndConditions = "Terms & Conditions"
     case openSource = "Open Source Libraries"
     case none
 }
@@ -83,7 +83,7 @@ class AboutViewController: UIViewController, UITableViewDataSource {
             if let attributedString = try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil) {
                 cell.textLabel?.attributedText = attributedString
             }
-        case .termsOfService:
+        case .termsAndConditions:
             let data = Data(About.termsHTML.utf8)
             if let attributedString = try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil) {
                 cell.textLabel?.attributedText = attributedString
