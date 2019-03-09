@@ -224,7 +224,6 @@ private extension SendToViewController {
     }
     
     @objc func cancelButtonTapped() {
-//        dismiss(animated: false)
         passBackMediaData = mediaData
         passBackSelectedNames = selectedNames
         delegate?.passBack(from: self)

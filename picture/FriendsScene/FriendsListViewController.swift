@@ -141,6 +141,8 @@ class FriendsListViewController: UIViewController {
                 self.tableView.reloadData()
             }
         }
+        
+        profileImageButton.setImage(UserController.shared.currentUser?.profilePhoto, for: .normal)
     }
     
     override func viewDidAppear(_ animated: Bool) {

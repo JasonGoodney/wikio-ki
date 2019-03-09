@@ -131,12 +131,20 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        self.navigationItem.hidesBackButton = true
+//        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItem.Style.plain, target: self, action: #selector())
+//        self.navigationItem.leftBarButtonItem = newBackButton
+//
+        
         setupLayout()
 
         navigationItem.titleView = titleLabel
         navigationItem.rightBarButtonItem = saveChangesButton
         
-        if let url = URL(string: (user?.profilePhotoUrl)!) {
+        if let profilePhoto = user?.profilePhoto {
+            profileImageButton.setImage(profilePhoto, for: .normal)
+            self.profileImageButton.isUserInteractionEnabled = true
+        } else if let url = URL(string: (user?.profilePhotoUrl)!) {
             self.profileImageButton.sd_setImage(with: url, for: .normal, completed: { (_, _, _, _) in
                 self.profileImageButton.isUserInteractionEnabled = true
             })
@@ -146,6 +154,8 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.backgroundColor = .white
+        
+        
         
         DispatchQueue.main.async {
             self.sectionInfoDetails[1] = [
@@ -161,6 +171,11 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        if isMovingFromParent && didChangeProfilePhoto {
+            UserController.shared.currentUser?.profilePhoto = profileImageButton.imageView?.image
+            handleSaveChanges()
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -406,7 +421,6 @@ private extension SettingsViewController {
         {
             let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            self.present(alert, animated: true, completion: nil)
             presentAlert(alert)
         }
     }
@@ -423,7 +437,6 @@ private extension SettingsViewController {
         {
             let alert  = UIAlertController(title: "Warning", message: "You don't have permission to access gallery.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            self.present(alert, animated: true, completion: nil)
             presentAlert(alert)
         }
     }
@@ -485,20 +498,9 @@ extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationC
         self.didChangeProfilePhoto = true
         dismiss(animated: true) {
             self.saveChangesButton.isEnabled = self.didChangeProfilePhoto
-//            self.navigationController?.backButtonText = "Cancel"
         }
     }
 }
-
-//extension UINavigationController {
-//    var backButtonText: String? {
-//        if self.viewControllers.count > 1 {
-//            let viewController = self.viewControllers[self.viewControllers.count - 2]
-//            return viewController.navigationItem.backBarButtonItem?.title ?? viewController.title
-//        }
-//    }
-//}
-
 
 extension UITableViewController {
     func deselectCell() {

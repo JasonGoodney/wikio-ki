@@ -34,7 +34,9 @@ extension StorageService {
         } else {
             mediaMetadata.contentType = "video/mp4"
         }
+        
         uploadDelegate?.upload(started: true)
+        
         let mediaUploadTask = ref.putData(data, metadata: mediaMetadata) { (metadata, error) in
             if let error = error {
                 message.status = .failed
