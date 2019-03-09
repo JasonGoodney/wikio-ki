@@ -56,17 +56,9 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
         
         usernameLabel.text = user.username
         if let url = URL(string: user.profilePhotoUrl) {
-            SDWebImageManager.shared().imageCache?.queryCacheOperation(forKey: user.profilePhotoUrl, done: { (image, _, _) in
-                if let image = image {
-                    self.profileImageView.setImage(image, for: .normal)
-                    self.profileImageView.isUserInteractionEnabled = true
-                } else {
-                    self.profileImageView.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
-                        self.profileImageView.isUserInteractionEnabled = true
-                    }
-                }
-            })
-            
+            self.profileImageView.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
+                self.profileImageView.isUserInteractionEnabled = true
+            }
         }
     }
     

@@ -46,7 +46,20 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         return "\(cacheSizeInMB + sdCacheSizeInMB) MB"
     }
     
-    private var didChangeProfilePhoto = false
+    private var didChangeProfilePhoto = false {
+        didSet {
+            if didChangeProfilePhoto {
+                UIView.animate(withDuration: 0.25) {
+                    self.setCurrentBackButton(title: "Cancel")
+                }
+            } else {
+                UIView.animate(withDuration: 0.25) {
+                    self.setCurrentBackButton(title: "")
+                    self.saveChangesButton.isEnabled = false
+                }
+            }
+        }
+    }
     private let totalHeaderVerticalPadding: CGFloat = 16 + 16 + 16 + 8
     private typealias SectionInfo = (title: String, value: String, type: SettingsType)
     private var user: User? {
@@ -131,11 +144,6 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        self.navigationItem.hidesBackButton = true
-//        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItem.Style.plain, target: self, action: #selector())
-//        self.navigationItem.leftBarButtonItem = newBackButton
-//
-        
         setupLayout()
 
         navigationItem.titleView = titleLabel
@@ -155,8 +163,6 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         super.viewWillAppear(animated)
         view.backgroundColor = .white
         
-        
-        
         DispatchQueue.main.async {
             self.sectionInfoDetails[1] = [
                 (title: "Username", value: self.user?.username ?? "", type: .username),
@@ -172,10 +178,6 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         super.viewWillDisappear(animated)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
-        if isMovingFromParent && didChangeProfilePhoto {
-            UserController.shared.currentUser?.profilePhoto = profileImageButton.imageView?.image
-            handleSaveChanges()
-        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -481,6 +483,8 @@ private extension SettingsViewController {
                         return
                     }
                     hud.dismiss()
+                    self.didChangeProfilePhoto = false
+                    UserController.shared.currentUser?.profilePhoto = image
                 })
                 
             })
@@ -568,5 +572,21 @@ extension SettingsViewController: GADBannerViewDelegate {
     /// the App Store), backgrounding the current app.
     func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
         print("adViewWillLeaveApplication")
+    }
+}
+
+extension UIViewController {
+    func setCurrentBackButton(title: String) {
+        guard let vcCount = self.navigationController?.viewControllers.count else {
+            return
+        }
+        
+        let priorVCPosition = vcCount - 2
+        
+        guard priorVCPosition >= 0 else {
+            return
+        }
+        
+        self.navigationController?.viewControllers[priorVCPosition].navigationItem.backBarButtonItem = UIBarButtonItem(title: title, style: .plain, target: self, action: nil)
     }
 }

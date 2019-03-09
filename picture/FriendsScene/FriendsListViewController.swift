@@ -115,6 +115,7 @@ class FriendsListViewController: UIViewController {
         if UserController.shared.currentUser == nil {
             UserController.shared.fetchCurrentUser { (success) in
                 self.setupListeners()
+                self.setupProfilePhoto()
             }
         } else {
             setupListeners()
@@ -142,7 +143,9 @@ class FriendsListViewController: UIViewController {
             }
         }
         
-        profileImageButton.setImage(UserController.shared.currentUser?.profilePhoto, for: .normal)
+        if let profilePhoto = UserController.shared.currentUser?.profilePhoto, profilePhoto != profileImageButton.imageView?.image {
+            setupProfilePhoto()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -268,6 +271,7 @@ private extension FriendsListViewController {
     func updateView() {
         view.backgroundColor = Theme.ultraLightGray
         view.addSubviews([tableView, uploadProgressView])
+        
         setupNavigationBar()
 
         uploadProgressView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor)
@@ -294,6 +298,17 @@ private extension FriendsListViewController {
         )
         navigationController?.navigationBar.tintColor = .black
         
+    }
+    
+    func setupProfilePhoto() {
+        if let image = UserController.shared.currentUser?.profilePhoto {
+            self.profileImageButton.setImage(image, for: .normal)
+            self.profileImageButton.isUserInteractionEnabled = true
+        } else if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
+            self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
+                self.profileImageButton.isUserInteractionEnabled = true
+            }
+        }
     }
     
     func deselectCell() {
@@ -780,23 +795,6 @@ extension FriendsListViewController {
 
 extension FriendsListViewController {
     fileprivate func setupListeners() {
-        if let image = UserController.shared.currentUser?.profilePhoto {
-            self.profileImageButton.setImage(image, for: .normal)
-            self.profileImageButton.isUserInteractionEnabled = true
-        } else {
-            if let urlString = UserController.shared.currentUser?.profilePhotoUrl, let url = URL(string: urlString) {
-                SDWebImageManager.shared().imageCache?.queryCacheOperation(forKey: urlString, done: { (image, _, _) in
-                    if let image = image {
-                        self.profileImageButton.setImage(image, for: .normal)
-                        self.profileImageButton.isUserInteractionEnabled = true
-                    } else {
-                        self.profileImageButton.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
-                            self.profileImageButton.isUserInteractionEnabled = true
-                        }
-                    }
-                })
-            }
-        }
         
         self.friendRequestListener = Firestore.firestore()
             .collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid)
