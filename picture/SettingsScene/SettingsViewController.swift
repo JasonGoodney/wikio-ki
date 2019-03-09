@@ -392,7 +392,7 @@ private extension SettingsViewController {
         
         alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
         
-        self.present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
     private func openCamera() {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -406,7 +406,8 @@ private extension SettingsViewController {
         {
             let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+//            self.present(alert, animated: true, completion: nil)
+            presentAlert(alert)
         }
     }
     
@@ -422,7 +423,8 @@ private extension SettingsViewController {
         {
             let alert  = UIAlertController(title: "Warning", message: "You don't have permission to access gallery.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+//            self.present(alert, animated: true, completion: nil)
+            presentAlert(alert)
         }
     }
     
@@ -466,12 +468,6 @@ private extension SettingsViewController {
                         return
                     }
                     hud.dismiss()
-                    //print("updated email for \(UserController.shared.currentUser!.username) to \(email)")
-                    UserController.shared.fetchCurrentUser(completion: { (success) in
-                        if success {
-                            self.navigationController?.popViewController(animated: true)
-                        }
-                    })
                 })
                 
             })
@@ -489,9 +485,19 @@ extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationC
         self.didChangeProfilePhoto = true
         dismiss(animated: true) {
             self.saveChangesButton.isEnabled = self.didChangeProfilePhoto
+//            self.navigationController?.backButtonText = "Cancel"
         }
     }
 }
+
+//extension UINavigationController {
+//    var backButtonText: String? {
+//        if self.viewControllers.count > 1 {
+//            let viewController = self.viewControllers[self.viewControllers.count - 2]
+//            return viewController.navigationItem.backBarButtonItem?.title ?? viewController.title
+//        }
+//    }
+//}
 
 
 extension UITableViewController {
@@ -517,7 +523,8 @@ private extension SettingsViewController {
         alertController.addAction(deleteAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+//        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
 }
 

@@ -29,6 +29,13 @@ class RegisterViewModel {
         bindableIsRegistering.value = true
         Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
             if let error = error {
+                Auth.auth().currentUser?.delete(completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    print("🛑 There was an error setting users data. Deleted account for so email is not taken.")
+                })
                 completion(error)
                 return
             }
@@ -36,6 +43,7 @@ class RegisterViewModel {
             let filename = UUID().uuidString
             let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
             let ref = Storage.storage().reference(withPath: "\(StorageService.Path.media)/\(Auth.auth().currentUser!.uid)/\(filename)")
+
             StorageService.shared.upload(data: imageData, withName: filename, atPath: ref, block: { (url) in
                 self.bindableIsRegistering.value = false
                 let imageUrl = url?.absoluteString ?? ""
@@ -77,13 +85,6 @@ class RegisterViewModel {
             if let user = Auth.auth().currentUser {
                 authService.sendEmailVerifiction(currentUser: user, completion: { (error) in
                     if let error = error {
-                        Auth.auth().currentUser?.delete(completion: { (error) in
-                            if let error = error {
-                                print(error)
-                                return
-                            }
-                            print("🛑 There was an error. Deleting account.")
-                        })
                         print(error)
                         return
                     }

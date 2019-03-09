@@ -13,7 +13,15 @@ import FirebaseStorage
 typealias FileCompletionBlock = () -> Void
 var block: FileCompletionBlock?
 
+protocol UploadDelegate: class {
+    func upload(started: Bool)
+    func upload(progress: Float)
+    func upload(completed: Bool)
+}
+
 class StorageService {
+    
+    weak var uploadDelegate: UploadDelegate?
     
     enum Path {
         static let images = "images/"
@@ -21,7 +29,7 @@ class StorageService {
     }
     
     /// Singleton instance
-    static let shared: StorageService = StorageService()
+    static let shared: StorageService = StorageService(); private init() {}
     
     /// Path
     let kMediaStorageRef = Storage.storage().reference().child(Path.media)

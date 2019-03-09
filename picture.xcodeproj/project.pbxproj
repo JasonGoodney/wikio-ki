@@ -12,6 +12,7 @@
 		D715B51F21E84F29008A5E80 /* AuthValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715B51E21E84F29008A5E80 /* AuthValidation.swift */; };
 		D726383121E13D8C00FDA242 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726383021E13D8C00FDA242 /* Theme.swift */; };
 		D726383321E13E7E00FDA242 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726383221E13E7E00FDA242 /* UIColor.swift */; };
+		D72B0D7F2232D5D600789469 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72B0D7E2232D5D600789469 /* UIDevice.swift */; };
 		D72D792A21D0912F00FB5327 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D792921D0912F00FB5327 /* LoginController.swift */; };
 		D72D792C21D0913900FB5327 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D792B21D0913900FB5327 /* LoginViewModel.swift */; };
 		D72D792E21D1399800FB5327 /* OpenCameraToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72D792D21D1399800FB5327 /* OpenCameraToolbar.swift */; };
@@ -214,6 +215,7 @@
 		D715B51E21E84F29008A5E80 /* AuthValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthValidation.swift; sourceTree = "<group>"; };
 		D726383021E13D8C00FDA242 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		D726383221E13E7E00FDA242 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		D72B0D7E2232D5D600789469 /* UIDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 		D72D792921D0912F00FB5327 /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		D72D792B21D0913900FB5327 /* LoginViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		D72D792D21D1399800FB5327 /* OpenCameraToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCameraToolbar.swift; sourceTree = "<group>"; };
@@ -535,6 +537,7 @@
 				D74585F722278AD100781713 /* UINavigationController.swift */,
 				D74585F922278DF200781713 /* UIApplication.swift */,
 				D74CDA65222863A00064F9D3 /* Bundle.swift */,
+				D72B0D7E2232D5D600789469 /* UIDevice.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -904,6 +907,7 @@
 				D78BB2F5220D216D007DD089 /* ARSupport.swift in Sources */,
 				D72F166421D4720F0009D43D /* AddFriendButton.swift in Sources */,
 				D7591F2721C55A5000B3EAAD /* MessageController.swift in Sources */,
+				D72B0D7F2232D5D600789469 /* UIDevice.swift in Sources */,
 				D7591F1721C2DF2E00B3EAAD /* CameraViewController.swift in Sources */,
 				D78BB2F9220DF194007DD089 /* MediaViewerDataSource.swift in Sources */,
 				D72D792E21D1399800FB5327 /* OpenCameraToolbar.swift in Sources */,

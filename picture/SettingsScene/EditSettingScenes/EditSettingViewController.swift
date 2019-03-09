@@ -133,6 +133,6 @@ extension EditSettingViewController {
         alertController.addAction(logInAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
 }

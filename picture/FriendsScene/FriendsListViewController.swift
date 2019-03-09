@@ -45,6 +45,14 @@ class FriendsListViewController: UIViewController {
     // MARK: - Subviews
     private var hud = JGProgressHUD(style: .dark)
     
+    private lazy var uploadProgressView: UIProgressView = {
+        let view = UIProgressView()
+        view.progressTintColor = Theme.buttonBlue
+        view.trackTintColor = Theme.gainsboro
+        view.alpha = 0
+        return view
+    }()
+    
     private lazy var tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .grouped)
         view.delegate = self
@@ -92,6 +100,8 @@ class FriendsListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        StorageService.shared.uploadDelegate = self
         
         notificationCenter.addObserver(self, selector: #selector(reloadDataForSending), name: Notification.Name.sendingMesssage, object: nil)
 
@@ -255,9 +265,11 @@ class FriendsListViewController: UIViewController {
 private extension FriendsListViewController {
     func updateView() {
         view.backgroundColor = Theme.ultraLightGray
-        view.addSubviews([tableView])
+        view.addSubviews([tableView, uploadProgressView])
         setupNavigationBar()
 
+        uploadProgressView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor)
+        
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
 
         cameraButton.setTitle("  Camera", for: .normal)
@@ -656,6 +668,7 @@ extension FriendsListViewController {
         UserController.shared.unreads = [:]
         
         let dbs = DatabaseService()
+        
         dbs.fetchUserChats(for: UserController.shared.currentUser!, completion: { (userChats, error) in
             if let error = error {
                 print("🛑 ",error)
@@ -907,5 +920,29 @@ extension FriendsListViewController {
                     }
                 }
             })
+    }
+}
+
+extension FriendsListViewController: UploadDelegate {
+    func upload(started: Bool) {
+        if started {
+            UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
+                self.uploadProgressView.alpha = 1
+            }, completion: nil)
+        }
+    }
+    func upload(progress: Float) {
+        uploadProgressView.setProgress(progress, animated: true)
+        if progress >= 100 {
+            self.uploadProgressView.alpha = 0
+            self.uploadProgressView.setProgress(0, animated: false)
+        }
+    }
+    
+    func upload(completed: Bool) {
+        if completed {
+            self.uploadProgressView.alpha = 0
+            self.uploadProgressView.setProgress(0, animated: false)
+        }
     }
 }

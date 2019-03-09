@@ -31,8 +31,8 @@ extension DatabaseService {
                     return
                 }
                 print("Sent message from \(currentUser.username) to \(friend.username)")
-                                
-                StorageService.saveMediaToStorage(data: data, thumbnailData: thumbnailData, for: message) { (messageWithMedia, error) in
+                
+                StorageService.shared.saveMediaToStorage(data: data, thumbnailData: thumbnailData, for: message) { (messageWithMedia, error) in
                     if let error = error {
                         completion(error)
                         return
@@ -77,6 +77,7 @@ extension DatabaseService {
                                     return
                                 }
                                     print("Everything uploaded and set")
+                                    StorageService.shared.uploadDelegate?.upload(completed: true)
                                     completion(nil)
                                 
                             })
@@ -145,7 +146,7 @@ extension DatabaseService {
                             }
                             print("Everything uploaded and set")
                             completion(nil)
-                            
+
                         })
                         
                     })

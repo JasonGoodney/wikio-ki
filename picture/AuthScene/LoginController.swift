@@ -271,6 +271,6 @@ class LoginController: UIViewController, LoginFlowHandler {
         alertController.addAction(okAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
 }

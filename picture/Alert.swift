@@ -17,7 +17,7 @@ extension UIViewController {
         
         alertController.addAction(okAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func logoutActionSheet(completion: @escaping (Bool) -> Void) {
@@ -32,7 +32,7 @@ extension UIViewController {
         alertController.addAction(logoutAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func unblockActionSheet(completion: @escaping (Bool) -> Void) {
@@ -47,7 +47,7 @@ extension UIViewController {
         alertController.addAction(okAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func userDescructionActionSheet(completion: @escaping (UserDestructionType) -> Void) {
@@ -77,7 +77,7 @@ extension UIViewController {
         alertController.addAction(reportAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func sendVerifyEmailAlert(to email: String, completion: @escaping (Bool) -> Void) {
@@ -93,7 +93,7 @@ extension UIViewController {
         alertController.addAction(sendAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func destructiveAlert(alertTitle: String, actionTitle: String, completion: @escaping (Bool) -> Void) {
@@ -109,7 +109,7 @@ extension UIViewController {
         
         alertController.addAction(destructiveAction)
         alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func defaultAlert(alertTitle: String, actionTitle: String, cancelTitle: String = "Cancel", completion: @escaping (Bool) -> Void) {
@@ -125,7 +125,7 @@ extension UIViewController {
         
         alertController.addAction(destructiveAction)
         alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func alert(alertTitle: String? = nil, alertMessage: String? = nil, actionTitle: String? = "OK", actionStyle: UIAlertAction.Style? = .default, cancelTitle: String = "Cancel", completion: @escaping (Bool) -> Void) {
@@ -141,7 +141,7 @@ extension UIViewController {
         
         alertController.addAction(destructiveAction)
         alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func actionSheet(alertTitle: String? = nil, alertMessage: String? = nil, actions: [UIAlertAction], completion: @escaping (UserDestructionType) -> Void) {
@@ -149,7 +149,7 @@ extension UIViewController {
         
         actions.forEach({ alertController.addAction($0) })
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func verifyLogoutActionSheet(completion: @escaping (_ logout: Bool, _ verify: Bool) -> Void) {
@@ -170,7 +170,7 @@ extension UIViewController {
         alertController.addAction(logoutAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func resendMessageAlert(completion: @escaping (_ resend: Bool, _ delete: Bool) -> Void) {
@@ -192,6 +192,48 @@ extension UIViewController {
         alertController.addAction(deleteAction)
         alertController.addAction(cancelAction)
         
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
+        
+    }
+}
+
+extension UIViewController {
+    func presentAlert(_ alertController: UIAlertController) {
+        //if iPhone
+        if UIDevice.isPhone {
+            present(alertController, animated: true, completion: nil)
+        }
+        else {
+            //In iPad Change Rect to position Popover
+            
+            if let popoverController = alertController.popoverPresentationController {
+                popoverController.sourceView = self.view
+                popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                popoverController.permittedArrowDirections = []
+            }
+            
+            present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    func promptToAppSettings(title: String, message: String) {
+        // prompt User with UIAlertView
+        
+        DispatchQueue.main.async(execute: { [unowned self] in
+            //let message = NSLocalizedString("Wikio Ki doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"), style: .default, handler: { action in
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+//                    UIApplication.shared.openURL(URL(string: UIApplication.openSettingsURLString)!)
+                } else {
+                    if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.openURL(appSettings)
+                    }
+                }
+            }))
+            self.present(alertController, animated: true, completion: nil)
+        })
     }
 }

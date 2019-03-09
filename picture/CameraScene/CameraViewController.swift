@@ -84,8 +84,9 @@ class CameraViewController: SwiftyCamViewController {
     }
   
     override func viewDidLoad() {
+        videoGravity = .resizeAspectFill
         super.viewDidLoad()
-        updateView()
+        
         
         shouldPrompToAppSettings = true
         maximumVideoDuration = 10.0
@@ -96,9 +97,11 @@ class CameraViewController: SwiftyCamViewController {
         swipeToZoomInverted = true
         cameraDelegate = self
         videoQuality = .high
-        videoGravity = .resizeAspectFill
+        
         
         VideoResolution.size = CGSize(width: 1080, height: 1920)
+        
+        updateView()
         
         captureButton.buttonEnabled = false
         
@@ -358,7 +361,7 @@ extension CameraViewController: SwiftyCamViewControllerDelegate {
         let message = NSLocalizedString("Unable to capture media", comment: "Alert message when something goes wrong during capture session configuration")
         let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
-        present(alertController, animated: true, completion: nil)
+        presentAlert(alertController)
     }
     
     func swiftyCam(_ swiftyCam: SwiftyCamViewController, didChangeZoomLevel zoom: CGFloat) {

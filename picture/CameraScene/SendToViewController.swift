@@ -28,6 +28,24 @@ class SendToViewController: UIViewController {
     }
     
     // Properties
+    private var isProcessingMedia: Bool = true {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isProcessingMedia {
+                    self.sendButton.setTitle("Processing...", for: .normal)
+                    self.sendButton.setImage(nil, for: .normal)
+                    self.sendButton.isEnabled = false
+                    self.sendButton.backgroundColor = .lightGray
+                } else {
+                    self.sendButton.setTitle("Send  ", for: .normal)
+                    self.sendButton.setImage(#imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate), for: .normal)
+                    self.sendButton.isEnabled = true
+                    self.sendButton.backgroundColor = Theme.buttonBlue
+                }
+            }
+        }
+    }
+    
     enum TableSection: Int {
         case preview = 0, bestFriends, recents, friends
     }
@@ -61,10 +79,10 @@ class SendToViewController: UIViewController {
 
     private lazy var sendButton: PopButton = {
         let button = PopButton(type: .custom)
-        button.setTitle("Send  ", for: .normal)
+//        button.setTitle("Send  ", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        button.setImage(#imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate), for: .normal)
+//        button.setImage(#imageLiteral(resourceName: "iconfinder_web_9_3924904").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
         button.alpha = 0
@@ -80,12 +98,15 @@ class SendToViewController: UIViewController {
     
     private var mediaData: Data? = nil {
         didSet {
-            if selectionsCount > 0 {
-                UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
-                    DispatchQueue.main.async {
-                        self.sendButton.alpha = 1
-                    }
-                }, completion: nil)
+//            if selectionsCount > 0 {
+//                UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
+//                    DispatchQueue.main.async {
+//                        self.sendButton.alpha = 1
+//                    }
+//                }, completion: nil)
+//            }
+            if mediaData != nil {
+                isProcessingMedia = false
             }
         }
     }
@@ -141,6 +162,7 @@ class SendToViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        isProcessingMedia = true
         //if mediaData == nil {
             if let image = image {
                 mediaData = image.jpegData(compressionQuality: Compression.photoQuality)
@@ -234,7 +256,8 @@ private extension SendToViewController {
             NotificationCenter.default.post(name: .sendingMesssage, object: nil)
             
             let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: type)
-            StorageService.saveMediaToStorage(data: self.mediaData!, thumbnailData: self.thumbnailData!, for: message, completion: { (message, error) in
+            
+            StorageService.shared.saveMediaToStorage(data: self.mediaData!, thumbnailData: self.thumbnailData!, for: message, completion: { (message, error) in
                 if let error = error {
                     print(error)
                     return
@@ -346,7 +369,7 @@ extension SendToViewController: UITableViewDelegate {
             selectedNames.remove(name)
         }
         
-        if selectionsCount > 0 && (mediaData != nil && thumbnailData != nil) {
+        if selectionsCount > 0 {
             UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
                 self.sendButton.alpha = 1
             }, completion: nil)

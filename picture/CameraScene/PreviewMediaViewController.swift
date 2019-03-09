@@ -325,6 +325,7 @@ class PreviewMediaViewController: UIViewController {
     
     func configure(_ videoURL: URL) {
         player = AVPlayer(url: videoURL)
+
         playerController = AVPlayerViewController()
         
         guard player != nil && playerController != nil else {
@@ -333,9 +334,11 @@ class PreviewMediaViewController: UIViewController {
         playerController!.showsPlaybackControls = false
         
         playerController!.player = player!
+        playerController?.videoGravity = .resizeAspectFill
         self.addChild(playerController!)
         self.view.addSubview(playerController!.view)
         playerController!.view.frame = view.frame
+        
         NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player!.currentItem)
         
         // Allow background audio to continue to play
@@ -357,7 +360,7 @@ class PreviewMediaViewController: UIViewController {
     
     func configure(_ image: UIImage) {
         backgroundImageView = UIImageView(frame: view.frame)
-        backgroundImageView.contentMode = UIView.ContentMode.scaleAspectFit
+        backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.image = image
         view.addSubview(backgroundImageView)
     }
@@ -465,7 +468,8 @@ class PreviewMediaViewController: UIViewController {
                     NotificationCenter.default.post(name: .sendingMesssage, object: nil)
                     
                     let message = Message(senderUid: currentUser.uid, status: .sending, messageType: .photo)
-                    StorageService.saveMediaToStorage(data: mediaData, thumbnailData: thumbnailData, for: message, completion: { (message, error) in
+                    
+                    StorageService.shared.saveMediaToStorage(data: mediaData, thumbnailData: thumbnailData, for: message, completion: { (message, error) in
                         if let error = error {
                             print(error)
                             return
@@ -514,7 +518,8 @@ class PreviewMediaViewController: UIViewController {
                             
                             
                             let message = Message(senderUid: UserController.shared.currentUser!.uid, status: .sending, messageType: .video)
-                            StorageService.saveMediaToStorage(data: data, thumbnailData: data, for: message, completion: { (message, error) in
+
+                            StorageService.shared.saveMediaToStorage(data: data, thumbnailData: data, for: message, completion: { (message, error) in
                                 if let error = error {
                                     print(error)
                                     return
@@ -738,16 +743,7 @@ class PreviewMediaViewController: UIViewController {
     @objc private func saveToCameraRollButtonTapped() {
         print("🤶\(#function)")
         
-        if PHPhotoLibrary.authorizationStatus() == .authorized {
-            DispatchQueue.main.async {
-                if let image = self.image {
-                    self.saveToCameraRoll(image: image)
-                } else if let videoURL = self.videoURL {
-                    self.saveToCameraRoll(videoURL: videoURL)
-                }
-            }
-            
-        } else {
+        if PHPhotoLibrary.authorizationStatus() == .notDetermined {
             PHPhotoLibrary.requestAuthorization { (status) in
                 
                 if status == .authorized {
@@ -759,10 +755,20 @@ class PreviewMediaViewController: UIViewController {
                         }
                     }
                 }
-            
             }
+        } else if PHPhotoLibrary.authorizationStatus() == .authorized {
+            DispatchQueue.main.async {
+                if let image = self.image {
+                    self.saveToCameraRoll(image: image)
+                } else if let videoURL = self.videoURL {
+                    self.saveToCameraRoll(videoURL: videoURL)
+                }
+            }
+            
+        } else if PHPhotoLibrary.authorizationStatus() == .denied {
+            self.promptToAppSettings(title: "Enable Access to Photos", message: NSLocalizedString("Wikio Ki doesn't have permission to save to your Photos, please change privacy settings", comment: "Alert message when the user has denied access to the photo libary"))
         }
-        
+
     }
     
     private func saveToCameraRoll(image: UIImage? = nil, videoURL: URL? = nil) {

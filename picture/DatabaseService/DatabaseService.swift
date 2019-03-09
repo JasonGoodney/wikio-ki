@@ -10,7 +10,7 @@ import Foundation
 import FirebaseFirestore
 
 class DatabaseService {
-    
+        
     static func messagesReference(forPath path: String) -> CollectionReference {
         return Firestore.firestore().collection(Collection.chats).document(path).collection(Collection.messages)
     }

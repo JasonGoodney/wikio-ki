@@ -156,7 +156,7 @@ open class SwiftyCamViewController: UIViewController {
     public var allowAutoRotate                = false
 
     /// Specifies the [videoGravity](https://developer.apple.com/reference/avfoundation/avcapturevideopreviewlayer/1386708-videogravity) for the preview layer.
-    public var videoGravity                   : SwiftyCamVideoGravity = .resizeAspect
+    public var videoGravity                   : SwiftyCamVideoGravity = .resizeAspectFill
 
     /// Sets whether or not video recordings will record audio
     /// Setting to true will prompt user for access to microphone on View Controller launch.
@@ -267,12 +267,7 @@ open class SwiftyCamViewController: UIViewController {
 
 	override open func viewDidLoad() {
 		super.viewDidLoad()
-        if #available(iOS 11.0, *) {
-            previewLayer = PreviewView(frame: view.safeAreaLayoutGuide.layoutFrame, videoGravity: videoGravity)
-        } else {
-            // Fallback on earlier versions
-            previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
-        }
+        previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
         previewLayer.center = view.center
         view.addSubview(previewLayer)
         view.sendSubviewToBack(previewLayer)
@@ -846,8 +841,8 @@ open class SwiftyCamViewController: UIViewController {
 		// prompt User with UIAlertView
 
 		DispatchQueue.main.async(execute: { [unowned self] in
-			let message = NSLocalizedString("AVCam doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
-			let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+			let message = NSLocalizedString("Wikio Ki doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
+			let alertController = UIAlertController(title: "Enable Access to Camera", message: message, preferredStyle: .alert)
 			alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
 			alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"), style: .default, handler: { action in
 				if #available(iOS 10.0, *) {
