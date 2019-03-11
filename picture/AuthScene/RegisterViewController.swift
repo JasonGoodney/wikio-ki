@@ -8,6 +8,8 @@
 
 import UIKit
 import JGProgressHUD
+import Photos
+import AVKit
 
 public struct RegisterError: Error {
     let msg: String
@@ -39,6 +41,19 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     let registerViewModel = RegisterViewModel()
     let registeringHUD = JGProgressHUD(style: .dark)
     let gradientLayer = CAGradientLayer()
+    
+    var agreedToAgreements = false {
+        didSet {
+            registerViewModel.agreedToAgreements = agreedToAgreements
+            if agreedToAgreements {
+                agreeButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
+                agreeButton.tintColor = Theme.buttonBlue
+            } else {
+                agreeButton.setImage(#imageLiteral(resourceName: "icons8-circled").withRenderingMode(.alwaysTemplate), for: .normal)
+                agreeButton.tintColor = Theme.textColor
+            }
+        }
+    }
     
     private let titleLabel = NavigationTitleLabel(title: "Create Account")
     
@@ -126,11 +141,14 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         stackView.spacing = 8
         return stackView
     }()
+    
+    private let agreeButton = PopButton()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //setupGradientLayer()
+        agreedToAgreements = false
+        
         setupLayout()
         setupNotificationObservers()
         setupTapGesture()
@@ -154,6 +172,15 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     }
     
     // MARK: - UI
+    private lazy var agreementTextView: UITextView = {
+        let textView = UITextView()
+        textView.textAlignment = .center
+        textView.isEditable = false
+        textView.showsVerticalScrollIndicator = false
+        textView.delegate = self
+        textView.textContainerInset.top = 0
+        return textView
+    }()
     private func setupLayout() {
         view.backgroundColor = .white
         view.addSubviews(selectPhotoButton, stackView, goToLoginButton)
@@ -172,9 +199,25 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         let attributedText = NSMutableAttributedString(string: "Have an account already?  ", attributes: [.foregroundColor: Theme.textColor])
         attributedText.append(NSAttributedString(string: "Log in", attributes: [.foregroundColor: Theme.buttonBlue]))
         
-        // #colorLiteral(red: 0, green: 0.5694751143, blue: 1, alpha: 1)
-        
         goToLoginButton.setAttributedTitle(attributedText, for: .normal)
+        
+        let agreementView = UIView()
+        agreementView.addSubviews([agreeButton, agreementTextView])
+        
+        agreeButton.anchor(top: agreementView.topAnchor, leading: agreementView.leadingAnchor, bottom: nil, trailing: nil, padding: .init(), size: .init(width: 24, height: 24))
+        agreeButton.addTarget(self, action: #selector(agreeButtonTapped), for: .touchUpInside)
+        agreeButton.tintColor = Theme.textColor
+        
+        agreementTextView.anchor(top: agreeButton.topAnchor, leading: agreeButton.trailingAnchor, bottom: agreementView.bottomAnchor, trailing: agreementView.trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 0))
+        
+        
+        agreementTextView.attributedText = setupAgreementText()
+        view.addSubview(agreementView)
+        agreementView.anchor(top: nil, leading: stackView.leadingAnchor, bottom: goToLoginButton.topAnchor, trailing: stackView.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 0), size: .init(width: 0, height: 70))
+    }
+    
+    @objc private func agreeButtonTapped() {
+        agreedToAgreements = !agreedToAgreements
     }
     
     override func viewDidLayoutSubviews() {
@@ -209,7 +252,9 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     private func setupRegisterViewModelObserver() {
         registerViewModel.bindableIsFormValid.bind { [unowned self] isFormValid in
             guard let isFormValid = isFormValid else { return }
+            
             self.registerButton.isEnabled = isFormValid
+            
             if isFormValid {
                 self.registerButton.backgroundColor = Theme.buttonBlue
                 self.registerButton.setTitleColor(.white, for: .normal)
@@ -246,6 +291,35 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         view.layer.addSublayer(gradientLayer)
         gradientLayer.frame = view.bounds
     }
+    
+    private func setupAgreementText() -> NSAttributedString {
+        let regularText = attributedText("I agree to the ")
+
+        regularText.append(tappableText("Privacy Policy"))
+        regularText.append(attributedText(", "))
+        regularText.append(tappableText("Terms & Conditions"))
+        regularText.append(attributedText(", and "))
+        regularText.append(tappableText("License Agreement"))
+        regularText.append(attributedText("."))
+        
+        return regularText
+    }
+    
+    private func attributedText(_ text: String) -> NSMutableAttributedString {
+        let regularText = NSMutableAttributedString(string: text, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: Theme.textColor])
+        
+        return regularText
+    }
+    
+    private func tappableText(_ text: String) -> NSMutableAttributedString {
+        let tappableText = NSMutableAttributedString(string: text)
+        tappableText.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 14), range: NSMakeRange(0, tappableText.length))
+        tappableText.addAttribute(NSAttributedString.Key.foregroundColor, value: Theme.buttonBlue, range: NSMakeRange(0, tappableText.length))
+        
+        tappableText.addAttribute(NSAttributedString.Key.link, value: "makeMeTappable", range: NSMakeRange(0, tappableText.length))
+        
+        return tappableText
+    }
 }
 
 // MARK: - Actions
@@ -278,7 +352,6 @@ private extension RegisterViewController {
             let window = UIApplication.shared.keyWindow
             self.handleLogin(withWindow: window, completion: { (user) in
                 if let _ = user {
-//                    UserController.shared.fetchCurrentUser()
                 }
             })
         }
@@ -297,7 +370,6 @@ private extension RegisterViewController {
         
         alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
         
-//        self.present(alert, animated: true, completion: nil)
         presentAlert(alert)
     }
     private func openCamera() {
@@ -306,13 +378,12 @@ private extension RegisterViewController {
             imagePicker.delegate = self
             imagePicker.sourceType = .camera
             imagePicker.allowsEditing = true
-            self.present(imagePicker, animated: true, completion: nil)
+            checkPermission(imagePicker: imagePicker)
         }
         else
         {
             let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            self.present(alert, animated: true, completion: nil)
             presentAlert(alert)
         }
     }
@@ -323,14 +394,61 @@ private extension RegisterViewController {
             imagePicker.delegate = self
             imagePicker.allowsEditing = true
             imagePicker.sourceType = .photoLibrary
-            self.present(imagePicker, animated: true, completion: nil)
+            checkPermission(imagePicker: imagePicker)
         }
         else
         {
             let alert  = UIAlertController(title: "Warning", message: "You don't have permission to access gallery.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            self.present(alert, animated: true, completion: nil)
             presentAlert(alert)
+        }
+    }
+    
+    func checkPermission(imagePicker: UIImagePickerController) {
+        if imagePicker.sourceType == .camera {
+            let authStatus = AVCaptureDevice.authorizationStatus(for: .video)
+            
+            switch authStatus {
+            case .authorized:
+                present(imagePicker, animated: true, completion: nil)
+            case .denied:
+                self.promptToAppSettings(title: "Enable Access to Camera", message: NSLocalizedString("Wikio Ki doesn't have permission to use your camera, please change privacy settings.", comment: "Alert message when the user has denied access to the photo libary"))
+            default:
+                // Not determined fill fall here - after first use, when is't neither authorized, nor denied
+                // we try to use camera, because system will ask itself for camera permissions
+                AVCaptureDevice.requestAccess(for: .video) { (granted) in
+                    if granted {
+                        self.present(imagePicker, animated: true, completion: nil)
+                    }
+                }
+            }
+            
+        } else if imagePicker.sourceType == .photoLibrary {
+            let photoAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
+            switch photoAuthorizationStatus {
+            case .authorized:
+                present(imagePicker, animated: true, completion: nil)
+                print("Access is granted by user")
+            case .notDetermined:
+                PHPhotoLibrary.requestAuthorization({
+                    (newStatus) in
+                    print("status is \(newStatus)")
+                    if newStatus ==  PHAuthorizationStatus.authorized {
+                        /* do stuff here */
+                        self.present(imagePicker, animated: true, completion: nil)
+                        print("success")
+                    }
+                })
+                print("It is not determined until now")
+            case .restricted:
+                // same same
+                print("User do not have access to photo album.")
+            case .denied:
+                // same same
+                print("User has denied the permission.")
+                
+                self.promptToAppSettings(title: "Enable Access to Photos", message: NSLocalizedString("Wikio Ki doesn't have permission to save to your Photos, please change privacy settings.", comment: "Alert message when the user has denied access to the photo libary"))
+            }
         }
     }
     
@@ -417,4 +535,31 @@ extension RegisterViewController: UITextFieldDelegate {
         return true
     }
 
+}
+
+extension RegisterViewController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
+
+        if URL.absoluteString == "makeMeTappable"{
+            
+            var aboutVC: AboutViewController!
+            let startIndex = textView.text.index(textView.text.startIndex, offsetBy: characterRange.location)
+            let endIndex = textView.text.index(textView.text.startIndex, offsetBy: characterRange.upperBound)
+            let tappedText = textView.text[startIndex..<endIndex]
+            
+            if tappedText == "Privacy Policy" {
+                aboutVC = AboutViewController(type: .privacyPolicy)
+            } else if tappedText == "Terms & Conditions" {
+                aboutVC = AboutViewController(type: .termsAndConditions)
+            } else if tappedText == "License Agreement" {
+                aboutVC = AboutViewController(type: .eula)
+            }
+            
+            navigationController?.pushViewController(aboutVC, animated: true)
+            
+            return false // return false for this to work
+        }
+        
+        return true
+    }
 }

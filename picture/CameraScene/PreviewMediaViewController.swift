@@ -766,7 +766,7 @@ class PreviewMediaViewController: UIViewController {
             }
             
         } else if PHPhotoLibrary.authorizationStatus() == .denied {
-            self.promptToAppSettings(title: "Enable Access to Photos", message: NSLocalizedString("Wikio Ki doesn't have permission to save to your Photos, please change privacy settings", comment: "Alert message when the user has denied access to the photo libary"))
+            self.promptToAppSettings(title: "Enable Access to Photos", message: NSLocalizedString("Wikio Ki doesn't have permission to save to your Photos, please change privacy settings.", comment: "Alert message when the user has denied access to the photo libary"))
         }
 
     }

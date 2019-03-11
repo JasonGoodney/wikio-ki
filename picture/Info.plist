@@ -17,19 +17,19 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.56</string>
+	<string>1.6</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This lets you take photos and record videos.</string>
+	<string>Enable camera access to be able to send photos and videos to your friends.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This lets you record videos with sound.</string>
+	<string>Enable microphone access to record videos with sound.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>The lets you save drafts to your Camera Roll.</string>
+	<string>Enable Wikio Ki to save photos and videos capture with the app to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The lets you save drafts to your Camera Roll.</string>
+	<string>Enable Wikio Ki to use and save photos and videos to your photo library.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

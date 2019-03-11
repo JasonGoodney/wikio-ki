@@ -119,6 +119,7 @@ class FriendsListViewController: UIViewController {
             }
         } else {
             setupListeners()
+            setupProfilePhoto()
         }
 
         if #available(iOS 10.0, *) {

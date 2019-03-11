@@ -841,7 +841,7 @@ open class SwiftyCamViewController: UIViewController {
 		// prompt User with UIAlertView
 
 		DispatchQueue.main.async(execute: { [unowned self] in
-			let message = NSLocalizedString("Wikio Ki doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
+			let message = NSLocalizedString("Wikio Ki doesn't have permission to use the camera, please change privacy settings.", comment: "Alert message when the user has denied access to the camera")
 			let alertController = UIAlertController(title: "Enable Access to Camera", message: message, preferredStyle: .alert)
 			alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
 			alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"), style: .default, handler: { action in
