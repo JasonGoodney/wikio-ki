@@ -226,7 +226,7 @@ extension UIViewController {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"), style: .default, handler: { action in
                 if #available(iOS 10.0, *) {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-//                    UIApplication.shared.openURL(URL(string: UIApplication.openSettingsURLString)!)
+
                 } else {
                     if let appSettings = URL(string: UIApplication.openSettingsURLString) {
                         UIApplication.shared.openURL(appSettings)

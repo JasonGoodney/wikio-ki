@@ -202,6 +202,9 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         goToLoginButton.setAttributedTitle(attributedText, for: .normal)
         
         let agreementView = UIView()
+        view.addSubview(agreementView)
+        
+        agreementView.anchor(top: nil, leading: stackView.leadingAnchor, bottom: goToLoginButton.topAnchor, trailing: stackView.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 0), size: .init(width: 0, height: 60))
         agreementView.addSubviews([agreeButton, agreementTextView])
         
         agreeButton.anchor(top: agreementView.topAnchor, leading: agreementView.leadingAnchor, bottom: nil, trailing: nil, padding: .init(), size: .init(width: 24, height: 24))
@@ -210,10 +213,8 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         
         agreementTextView.anchor(top: agreeButton.topAnchor, leading: agreeButton.trailingAnchor, bottom: agreementView.bottomAnchor, trailing: agreementView.trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 0))
         
-        
         agreementTextView.attributedText = setupAgreementText()
-        view.addSubview(agreementView)
-        agreementView.anchor(top: nil, leading: stackView.leadingAnchor, bottom: goToLoginButton.topAnchor, trailing: stackView.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 0), size: .init(width: 0, height: 70))
+        
     }
     
     @objc private func agreeButtonTapped() {
@@ -462,6 +463,7 @@ private extension RegisterViewController {
         let bottomSpace = view.frame.height - stackView.frame.origin.y - stackView.frame.height - 36
         let difference = keyboardFrame.height - bottomSpace
         view.transform = CGAffineTransform(translationX: 0, y: -difference)
+        
     }
     
     @objc func handleKeyboardHide() {

@@ -29,17 +29,21 @@ extension DatabaseService {
                 
                 print("\(currentUser.username) blocked \(user.username)")
                 
-                let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(user.uid)
-                
-                self.updateDocument(document, withFields: ["isBestFriend": false], completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    UserController.shared.bestFriendUids.removeAll(where: { $0 == user.uid })
-                    print("Blocked user and no longer best friends")
+                if UserController.shared.bestFriendUids.contains(user.uid) {
+                    let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(user.uid)
+                    
+                    self.updateDocument(document, withFields: ["isBestFriend": false], completion: { (error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                        UserController.shared.bestFriendUids.removeAll(where: { $0 == user.uid })
+                        print("Blocked user and no longer best friends")
+                        completion(nil)
+                    })
+                } else {
                     completion(nil)
-                })
+                }
         }
     }
     

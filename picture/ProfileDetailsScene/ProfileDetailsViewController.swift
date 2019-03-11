@@ -52,7 +52,7 @@ class ProfileDetailsViewController: UIViewController {
         ],
         [
         UserController.shared.blockedUids.contains(user.uid) ? (title: "Unblock", value: "", type: .unblock) : (title: "Block", value: "", type: .block),
-//            (title: "Report", value: "", type: .report),
+            (title: "Report", value: "", type: .report),
             (title: "Remove Friend", value: "", type: .removeFriend),
         ]
     ]
@@ -367,7 +367,16 @@ extension ProfileDetailsViewController: UITableViewDelegate {
                 }
             }
         case .report:
-            ()
+            if isFriend {
+                let friend = Friend(user: user, isBestFriend: isBestFriend)
+                let reportVC = ReportViewController(friend: friend)
+                self.navigationController?.pushViewController(reportVC, animated: true)
+            } else {
+                let reportVC = ReportViewController(user: user)
+                self.navigationController?.pushViewController(reportVC, animated: true)
+            }
+            
+            
         case .removeFriend:
             destructiveAlert(alertTitle: "Are you sure you want to remove \(user.username) as a friend?", actionTitle: "Remove") { (removed) in
                 if removed {
