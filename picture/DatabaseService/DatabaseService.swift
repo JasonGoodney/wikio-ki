@@ -56,8 +56,26 @@ class DatabaseService {
             guard let docs = snapshot?.documents else { return }
             guard let docDataDict = docs.first?.data() else { return }
             let searchedUser = User(dictionary: docDataDict)
+            Firestore.firestore().collection(Collection.users).document(searchedUser.uid)
+                .collection(Collection.blocked).document(UserController.shared.currentUser!.uid)
+                .getDocument(completion: { (snapshot, error) in
+                if let error = error {
+                    print(error)
+                    completion(nil, error)
+                    return
+                }
+                    // The user being search for has block the user who is searching
+                    if let snapshot = snapshot, snapshot.exists {
+                        print("The user being search for has block the user who is searching")
+                        completion(nil, nil)
+                    } else {
+                        print("Not Blocked")
+                        completion(searchedUser, nil)
+                    }
+                
+            })
             
-            completion(searchedUser, nil)
+            
         }
     }
     

@@ -15,7 +15,7 @@ extension DatabaseService {
         guard let currentUser = UserController.shared.currentUser else { return }
         UserController.shared.allChatsWithFriends.removeAll(where: { $0.friend == user })
         
-        changeUserChat(isActive: false, between: currentUser, andFriend: user)
+        changeUserChat(isActive: false, between: currentUser, andFriend: user, changeBoth: true)
         
         let blockData: [String: Any] = [user.uid: true]
         
@@ -28,22 +28,35 @@ extension DatabaseService {
                 }
                 
                 print("\(currentUser.username) blocked \(user.username)")
-                
-                if UserController.shared.bestFriendUids.contains(user.uid) {
-                    let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(user.uid)
-                    
-                    self.updateDocument(document, withFields: ["isBestFriend": false], completion: { (error) in
-                        if let error = error {
-                            print(error)
-                            return
-                        }
-                        UserController.shared.bestFriendUids.removeAll(where: { $0 == user.uid })
-                        print("Blocked user and no longer best friends")
-                        completion(nil)
+                if let isFriend = UserController.shared.currentUser?.friendsUids.contains(user.uid), isFriend {
+                    self.removeFriend(user, completion: { (error) in
+                    if let error = error {
+                        print(error)
+                        completion(error)
+                        return
+                    }
+                    print("Blocked user and removed as friend")
+                    completion(nil)
                     })
                 } else {
+                    print("Blocked user that was not a friend")
                     completion(nil)
                 }
+//                if UserController.shared.bestFriendUids.contains(user.uid) {
+//                    let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(user.uid)
+//
+//                    self.updateDocument(document, withFields: ["isBestFriend": false], completion: { (error) in
+//                        if let error = error {
+//                            print(error)
+//                            return
+//                        }
+//                        UserController.shared.bestFriendUids.removeAll(where: { $0 == user.uid })
+//                        print("Blocked user and no longer best friends")
+//                        completion(nil)
+//                    })
+//                } else {
+//                    completion(nil)
+//                }
         }
     }
     

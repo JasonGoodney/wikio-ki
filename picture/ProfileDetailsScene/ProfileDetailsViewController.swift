@@ -347,6 +347,7 @@ extension ProfileDetailsViewController: UITableViewDelegate {
         case .block:
             destructiveAlert(alertTitle: "Are you sure want to block \(user.username)?", actionTitle: "Block") { (blocked) in
                 if blocked {
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = true
                     dbs.block(user: self.user, completion: { (error) in
                         if let error = error {
                             print(error)

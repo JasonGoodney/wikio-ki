@@ -734,9 +734,7 @@ extension FriendsListViewController {
                             }
                             
                             UserController.shared.allChatsWithFriends.append(chatWithFriend)
-                            
-                            // Not created when it is a new friendship!
-                            // For new friend uid, message was sent but uid collection was never created
+
                             let collectionRef = Firestore.firestore().collection(DatabaseService.Collection.chats).document(chat.chatUid).collection(UserController.shared.currentUser!.uid)
                              collectionRef.limit(to: 1).getDocuments(completion: { (snapshot, error) in
                                 if snapshot != nil {
@@ -767,7 +765,7 @@ extension FriendsListViewController {
                                                 case .modified:
                                                     print("Message modified")
                                                 case .removed:
-                                                    
+                                                    #warning("Might crash if user has been remove as a friend")
                                                     UserController.shared.unreads[chat.chatUid]?.removeFirst()
 
                                                     print("Deleted: \(String(describing: UserController.shared.unreads[chat.chatUid]?.count)) messages unread")

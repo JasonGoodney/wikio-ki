@@ -217,6 +217,70 @@ exports.observeAddedUser = functions.firestore
             })
     });
 
+// [START observeDeleteChat]
+exports.observeDeleteChat = functions.firestore
+    .document('/chats/{chatUid}')
+    .onDelete((snap, context) => {
+        const chatUid = context.params.chatUid;
+        const deletedChat = snap.data();
+        const store = admin.firestore();
+        const batch = store.batch();
+        
+        var promiseArray = [];
+        
+        console.log('BEGIN DELETE CHATS');
+
+        for (let memberUid of deletedChat.memberUids) {
+            const ref = store.collection('chats').doc(chatUid).collection(memberUid);
+            const chatDocsForMember = getDocs(ref);
+            promiseArray.push(chatDocsForMember);
+        }
+        promiseArray
+        Promise.all(promiseArray)
+            .then(values => {
+                const memberDocs0 = values[0];
+                const memberDocs1 = values[1];
+                for (let doc of memberDocs0) {
+                    doc.ref.delete().then(() => {
+                        console.log("Document successfully deleted!");
+                        return
+                      }).catch(function(error) {
+                        console.error("Error removing document: ", error);
+                      });   
+                }
+
+                for (let doc of memberDocs1) {
+                    doc.ref.delete().then(() => {
+                        console.log("Document successfully deleted!");
+                        return
+                      }).catch(function(error) {
+                        console.error("Error removing document: ", error);
+                      });   
+                }
+                return;
+            })
+            .catch(reason => {
+                console.log(reason);
+            })     
+            
+        batch.commit();
+    });
+// [END observeDeleteChat]
+
+async function getDocs(ref) {
+    let docs = await ref.get()
+        .then((snapshot) => {
+            console.log('snap.docs:', snapshot.docs);
+            return snapshot.docs;
+        })
+        .catch(reason => {
+            console.log(reason);
+        })
+
+    return docs;
+}
+
+
 // [START observeCreateAccount]
 // exports.observeCreateAccount = functions.firestore
     // .document('/users/{uid}')

@@ -17,6 +17,12 @@ class ReportedViewController: UIViewController {
     
     private let thanksLabel = UILabel()
     private let contactUsLabel = UILabel()
+    private lazy var blockDetailsLabel: UILabel = {
+        let label = UILabel()
+        label.attributedText = blockDetailsAttributedText()
+        label.numberOfLines = 0
+        return label
+    }()
     
     private lazy var blockButton: UIButton = {
         let button = UIButton()
@@ -59,7 +65,7 @@ class ReportedViewController: UIViewController {
     }
     
     private func setupLayout() {
-        view.addSubviews([thanksLabel, blockButton, contactUsLabel, contactUsButton])
+        view.addSubviews([thanksLabel, blockButton, blockDetailsLabel, contactUsLabel, contactUsButton])
         view.backgroundColor = .white
 
         navigationItem.titleView = titleLabel
@@ -72,6 +78,8 @@ class ReportedViewController: UIViewController {
         
         blockButton.anchor(top: thanksLabel.bottomAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 24, left: 16, bottom: 0, right: 16), size: .init(width: 0, height: 44))
         blockButton.setTitle("Block \(reportedUser.username)", for: .normal)
+        
+        blockDetailsLabel.anchor(top: blockButton.bottomAnchor, leading: blockButton.leadingAnchor, bottom: nil, trailing: blockButton.trailingAnchor, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
         
         contactUsButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 16, bottom: 24, right: 16), size: .init(width: 0, height: 44))
         
@@ -88,6 +96,21 @@ class ReportedViewController: UIViewController {
     
     @objc private func blockButtonTapped() {
         print("🤶\(#function)")
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        let dbs = DatabaseService()
+        dbs.block(user: reportedUser) { (error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            print("BLOCKED")
+            UserController.shared.blockedUids.append(self.reportedUser.uid)
+            DispatchQueue.main.async {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+            
+        }
     }
     
     @objc private func contactUsButtonTapped() {
@@ -102,6 +125,18 @@ class ReportedViewController: UIViewController {
     
     private func contactUsLabelAttributedText() -> NSMutableAttributedString {
         let string = NSMutableAttributedString(string: "Feel free to contact us detailing more information about the report.", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: Theme.ultraDarkGray])
+        return string
+    }
+    
+    private func blockDetailsAttributedText() -> NSMutableAttributedString {
+        var blockDetails: String!
+        let isFriend = UserController.shared.currentUser?.friendsUids.contains(reportedUser.uid)
+        if let _ = isFriend, isFriend! {
+            blockDetails = "\(reportedUser.username) will be removed from your friends lists. You will be removed from their friends list. They are prevented from re-adding you as a friend. They are blocked from sending you posts."
+        } else {
+            blockDetails = "\(reportedUser.username) is prevented from adding you as a friend. They are blocked from sending you posts."
+        }
+        let string = NSMutableAttributedString(string: blockDetails, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: Theme.ultraDarkGray])
         return string
     }
     
@@ -127,5 +162,17 @@ class ReportedViewController: UIViewController {
 extension ReportedViewController: MFMailComposeViewControllerDelegate {
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true)
+    }
+}
+
+// MARK: - Private Methods
+import FirebaseFirestore
+private extension ReportedViewController {
+    func changeBestFriendStatus(isBestFriend: Bool, completion: @escaping ErrorCompletion) {
+        let dbs = DatabaseService()
+        let document = Firestore.firestore().collection(DatabaseService.Collection.users).document(UserController.shared.currentUser!.uid).collection(DatabaseService.Collection.friends).document(reportedUser.uid)
+        
+        dbs.updateDocument(document, withFields: ["isBestFriend": isBestFriend], completion: completion)
+        
     }
 }
