@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import MessageUI
 import JGProgressHUD
 
 class ReportViewController: UIViewController {
@@ -70,31 +69,26 @@ class ReportViewController: UIViewController {
         setCurrentBackButton(title: "Cancel")
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if let index = self.tableView.indexPathForSelectedRow {
+            self.tableView.deselectRow(at: index, animated: true)
+        }
+  
+    }
+    
     private func setupLayout() {
         view.backgroundColor = .white
 
         view.addSubviews([tableView])
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
+        
+        navigationItem.titleView = titleLabel
     }
     
     @objc private func cancelButtonTapped() {
         dismiss(animated: true, completion: nil)
-    }
-    
-    private func sendEmailReport(subject: String, body: String) {
-        if MFMailComposeViewController.canSendMail() {
-            let mail = MFMailComposeViewController()
-            mail.setToRecipients(["teamwikioki@gmail.com"])
-            mail.setSubject(subject)
-            mail.setMessageBody(body, isHTML: false)
-            present(mail, animated: true)
-        } else {
-            print("Can not send mail")
-        }
-    }
-    
-    private func emailBody(withReason reason: String) -> String {
-        return "\(UserController.shared.currentUser!.username)(\(UserController.shared.currentUser!.uid)) is reporting \(userToReport.username)(\(userToReport.uid)) for \(reason)"
     }
     
     private func changeBestFriendStatus(isBestFriend: Bool, completion: @escaping ErrorCompletion) {
@@ -109,39 +103,47 @@ class ReportViewController: UIViewController {
         let dbs = DatabaseService()
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Reporting"
-        hud.show(in: self.view)
-        dbs.report(user: userToReport, forReason: reason) { (error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            dbs.block(user: self.userToReport, completion: { (error) in
+//        hud.show(in: self.view)
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        let reportedVC = ReportedViewController(user: self.userToReport)
+        self.navigationController?.pushToViewController(reportedVC, animated: true, completion: {
+            dbs.report(user: self.userToReport, forReason: reason) { (error) in
                 if let error = error {
                     print(error)
                     return
                 }
-                if self.isBestFriend {
-                    self.changeBestFriendStatus(isBestFriend: false, completion: { (error) in
-                        DispatchQueue.main.async {
-                            UserController.shared.bestFriendUids.removeAll(where: { $0 == self.userToReport.uid })
-                        }
-                    })
-                }
-                if !UserController.shared.blockedUids.contains(self.userToReport.uid) {
-                    UserController.shared.blockedUids.append(self.userToReport.uid)
-                }
                 DispatchQueue.main.async {
-                    hud.dismiss()
-                    self.navigationController?.popToRootViewController(animated: true)
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 }
-            })
-        }
+            }
+        })
+//            dbs.block(user: self.userToReport, completion: { (error) in
+//                if let error = error {
+//                    print(error)
+//                    return
+//                }
+//                if self.isBestFriend {
+//                    self.changeBestFriendStatus(isBestFriend: false, completion: { (error) in
+//                        DispatchQueue.main.async {
+//                            UserController.shared.bestFriendUids.removeAll(where: { $0 == self.userToReport.uid })
+//                        }
+//                    })
+//                }
+//                if !UserController.shared.blockedUids.contains(self.userToReport.uid) {
+//                    UserController.shared.blockedUids.append(self.userToReport.uid)
+//                }
+//                DispatchQueue.main.async {
+//                    hud.dismiss()
+//                    self.navigationController?.popToRootViewController(animated: true)
+//                }
+//            })
+        
     }
 }
 
 extension ReportViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return UserReportReason.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -168,11 +170,6 @@ extension ReportViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let title = "Help us understand the problem. What issue with \(userToReport.username) are you reporting?"
-        return title
-    }
-    
-    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let title = "Reporting a user will also block them."
         return title
     }
 }

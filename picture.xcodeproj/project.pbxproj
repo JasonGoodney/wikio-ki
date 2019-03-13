@@ -107,6 +107,8 @@
 		D7D0007B21EC2E8D003C3A80 /* ChatWithFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */; };
 		D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007D21ED6BFE003C3A80 /* UIButton.swift */; };
 		D7D0008321ED7518003C3A80 /* ProfileDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */; };
+		D7D58B2622382FFE005E6AFC /* ReportedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D58B2522382FFE005E6AFC /* ReportedViewController.swift */; };
+		D7D58B2822388CBF005E6AFC /* EULAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D58B2722388CBF005E6AFC /* EULAViewController.swift */; };
 		D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DF9B9B21F390500087031B /* UnreadView.swift */; };
 		D7DF9BA521F6674F0087031B /* CachingPlayerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DF9BA421F6674F0087031B /* CachingPlayerItem.swift */; };
 		D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */; };
@@ -313,6 +315,8 @@
 		D7D0007A21EC2E8D003C3A80 /* ChatWithFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatWithFriend.swift; sourceTree = "<group>"; };
 		D7D0007D21ED6BFE003C3A80 /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailsViewController.swift; sourceTree = "<group>"; };
+		D7D58B2522382FFE005E6AFC /* ReportedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportedViewController.swift; sourceTree = "<group>"; };
+		D7D58B2722388CBF005E6AFC /* EULAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EULAViewController.swift; sourceTree = "<group>"; };
 		D7DF9B9B21F390500087031B /* UnreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadView.swift; sourceTree = "<group>"; };
 		D7DF9BA421F6674F0087031B /* CachingPlayerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingPlayerItem.swift; sourceTree = "<group>"; };
 		D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDestructionType.swift; sourceTree = "<group>"; };
@@ -415,6 +419,7 @@
 				D72D792921D0912F00FB5327 /* LoginController.swift */,
 				D72D792B21D0913900FB5327 /* LoginViewModel.swift */,
 				D715B51E21E84F29008A5E80 /* AuthValidation.swift */,
+				D7D58B2722388CBF005E6AFC /* EULAViewController.swift */,
 			);
 			path = AuthScene;
 			sourceTree = "<group>";
@@ -476,6 +481,7 @@
 				D7591F0E21C2CD7A00B3EAAD /* MessagesScene */,
 				D72D793121D14A3000FB5327 /* AddFriendScene */,
 				D73B8AF021C72A2200DD4CA4 /* AuthScene */,
+				D7BDC96F2236A3BF00CF2C6B /* ReportScene */,
 				D74F7E2221D0682900B5EF28 /* SettingsScene */,
 				D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */,
 				D74890F121BC86DC005AAF6B /* Main.storyboard */,
@@ -522,7 +528,6 @@
 				D786F67721D85F74003DA3C6 /* LoginFlowHandler.swift */,
 				D7591F0921C2C26100B3EAAD /* ReuseIdentifiable.swift */,
 				D7E9F15F2223160F0038FFDA /* PassBackDelegate.swift */,
-				D74585F32226F2D600781713 /* Notification.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -545,6 +550,7 @@
 				D74585F922278DF200781713 /* UIApplication.swift */,
 				D74CDA65222863A00064F9D3 /* Bundle.swift */,
 				D72B0D7E2232D5D600789469 /* UIDevice.swift */,
+				D74585F32226F2D600781713 /* Notification.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -664,6 +670,7 @@
 			isa = PBXGroup;
 			children = (
 				D7BDC9702236A3D900CF2C6B /* ReportViewController.swift */,
+				D7D58B2522382FFE005E6AFC /* ReportedViewController.swift */,
 			);
 			path = ReportScene;
 			sourceTree = "<group>";
@@ -679,7 +686,6 @@
 		D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */ = {
 			isa = PBXGroup;
 			children = (
-				D7BDC96F2236A3BF00CF2C6B /* ReportScene */,
 				D7D0008221ED7518003C3A80 /* ProfileDetailsViewController.swift */,
 				D7F6A35921EE6A04002DDB6D /* BestFriendDetailCell.swift */,
 			);
@@ -994,6 +1000,7 @@
 				D7F8992821F18D2E00020A68 /* CALayer+Shadow.swift in Sources */,
 				D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */,
 				D7591F1921C2DFCA00B3EAAD /* RecordButton.swift in Sources */,
+				D7D58B2822388CBF005E6AFC /* EULAViewController.swift in Sources */,
 				D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */,
 				D7F0EA3221F6DA1800B9522E /* UIView+Animations.swift in Sources */,
 				D7BDC9712236A3D900CF2C6B /* ReportViewController.swift in Sources */,
@@ -1002,6 +1009,7 @@
 				D7736D1B2200BD77007299C4 /* AuthService.swift in Sources */,
 				D7591F0421C2C1B700B3EAAD /* FriendsListViewController.swift in Sources */,
 				D79A2E5921E7025F00502FF1 /* EditEmailViewController.swift in Sources */,
+				D7D58B2622382FFE005E6AFC /* ReportedViewController.swift in Sources */,
 				D79A2E5721E7023D00502FF1 /* EditSettingViewController.swift in Sources */,
 				D7F6A35A21EE6A04002DDB6D /* BestFriendDetailCell.swift in Sources */,
 				D78BB2EC220CD078007DD089 /* VideoCell.swift in Sources */,

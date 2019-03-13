@@ -12,4 +12,8 @@ extension Notification.Name {
     static var sendingMesssage: Notification.Name {
         return .init(rawValue: "SendingMessageNotification")
     }
+    
+    static var agreeToEULA: Notification.Name {
+        return .init(rawValue: "AgreeToEULANotification")
+    }
 }

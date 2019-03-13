@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum UserReportReason {
+enum UserReportReason: CaseIterable {
     case hatefulContent
     case sensitiveContent
     case spamContent

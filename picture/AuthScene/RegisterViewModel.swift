@@ -23,7 +23,6 @@ class RegisterViewModel {
     var username: String? { didSet { checkFormValidity() } }
     var email: String? { didSet { checkFormValidity() } }
     var password: String? { didSet { checkFormValidity() } }
-    var agreedToAgreements: Bool? { didSet { checkFormValidity() } }
     
     func performRegistration(completion: @escaping ErrorCompletion) {
         guard let email = email, let password = password else { return }
@@ -107,7 +106,7 @@ class RegisterViewModel {
     }
     
     private func checkFormValidity() {
-        guard let username = username, let email = email, let password = password, let agreed = agreedToAgreements else {
+        guard let username = username, let email = email, let password = password else {
             bindableIsFormValid.value = false
             return
         }
@@ -120,7 +119,6 @@ class RegisterViewModel {
                     && AuthValidation.isValidEmail(email)
                     && AuthValidation.isValidPassword(password)
                     && self.profilePhoto != nil
-                    && agreed
                 
                 self.bindableIsFormValid.value = isFormValid
             } else {
@@ -130,7 +128,6 @@ class RegisterViewModel {
                         && AuthValidation.isValidEmail(email)
                         && AuthValidation.isValidPassword(password)
                         && self.profilePhoto != nil
-                        && agreed
                 
                 self.bindableIsFormValid.value = isFormValid
             }

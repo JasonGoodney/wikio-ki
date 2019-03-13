@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-
+//        window?.rootViewController = UINavigationController(rootViewController: EULAViewController(type: .eula))
         handleLogin(withWindow: window) { (_) in }
 
         return true

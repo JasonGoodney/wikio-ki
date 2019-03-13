@@ -16,15 +16,45 @@ extension DatabaseService {
         let reportedByElement: Any = [reportedBy.uid: reasonString(reason)]
 
         let ref = Firestore.firestore().collection("reports").document(user.uid)
-        let fields: [String: Any] = [
+        var fields: [String: Any] = [
             "username": user.username,
-            "reportedBy": FieldValue.arrayUnion([reportedByElement])
+            "reportedBy": FieldValue.arrayUnion([reportedByElement]),
+            "reportCount": 1
         ]
         
-        updateData(ref, withFields: fields, completion: { (error) in
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            let reportDocument: DocumentSnapshot
+            do {
+                try reportDocument = transaction.getDocument(ref)
+            } catch let fetchError as NSError {
+                errorPointer?.pointee = fetchError
+                return nil
+            }
+            
+            guard let oldReportCount = reportDocument.data()?["reportCount"] as? Int else {
+                let error = NSError(
+                    domain: "AppErrorDomain",
+                    code: -1,
+                    userInfo: [
+                        NSLocalizedDescriptionKey: "Unable to retrieve reportCount from snapshot \(reportDocument)"
+                    ]
+                )
+                errorPointer?.pointee = error
+                return nil
+            }
+            
+            let newReportCount = oldReportCount + 1
+            fields["reportCount"] = newReportCount
+            transaction.updateData(fields, forDocument: ref)
+            DispatchQueue.main.async {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            }
+            
+            return newReportCount
+        }) { (object, error) in
             if let error = error {
-                print("Error updating data: \(error)")
-                if error._code == 5 {
+                print("Error updating report count: \(error)")
+                if error._code == 5 || error._code == -1 {
                     self.updateDocument(ref, withFields: fields, completion: { (error) in
                         if let error = error {
                             print("Error setting data: \(error)")
@@ -35,15 +65,12 @@ extension DatabaseService {
                         completion(nil)
                         return
                     })
-                } else {
-                    completion(error)
-                    return
-                }
+            } else {
+                print("Report count increased to \(object!)")
+                    completion(nil)
             }
-
-            print("👊 User was reported: update")
-            completion(nil)
-        })
+        }
+        }
     }
     
     fileprivate func reasonString(_ reason: UserReportReason) -> String {

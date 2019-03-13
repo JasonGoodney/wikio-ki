@@ -26,15 +26,10 @@ class AboutViewController: UIViewController, UITableViewDataSource {
         return label
     }()
     
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        
-        return scrollView
-    }()
-    
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.dataSource = self
+        tableView.allowsSelection = false
         return tableView
     }()
     
