@@ -297,7 +297,302 @@ struct About {
       
     """
     static let eulaHTML = """
-        <html><head><meta content="text/html; charset=UTF-8" http-equiv="content-type"><style type="text/css">ol{margin:0;padding:0}table td,table th{padding:0}.c4{color:#000000;font-weight:700;text-decoration:none;vertical-align:baseline;font-size:11pt;font-family:"Arial";font-style:normal}.c2{color:#000000;font-weight:400;text-decoration:none;vertical-align:baseline;font-size:11pt;font-family:"Arial";font-style:normal}.c0{padding-top:0pt;padding-bottom:0pt;line-height:1.15;orphans:2;widows:2;text-align:left}.c1{padding-top:0pt;padding-bottom:0pt;line-height:1.0;text-align:left;height:11pt}.c6{max-width:468pt;padding:72pt 72pt 72pt 72pt}.c5{background-color:#ffffff}.c3{height:11pt}.title{padding-top:0pt;color:#000000;font-size:26pt;padding-bottom:3pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}.subtitle{padding-top:0pt;color:#666666;font-size:15pt;padding-bottom:16pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}li{color:#000000;font-size:11pt;font-family:"Arial"}p{margin:0;color:#000000;font-size:11pt;font-family:"Arial"}h1{padding-top:20pt;color:#000000;font-size:20pt;padding-bottom:6pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h2{padding-top:18pt;color:#000000;font-size:16pt;padding-bottom:6pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h3{padding-top:16pt;color:#434343;font-size:14pt;padding-bottom:4pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h4{padding-top:14pt;color:#666666;font-size:12pt;padding-bottom:4pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h5{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;orphans:2;widows:2;text-align:left}h6{padding-top:12pt;color:#666666;font-size:11pt;padding-bottom:4pt;font-family:"Arial";line-height:1.15;page-break-after:avoid;font-style:italic;orphans:2;widows:2;text-align:left}</style></head><body class="c5 c6"><p class="c0"><span class="c2">Wikio Ki iOS App</span></p><p class="c0"><span class="c2">End-User License Agreement (&quot;Agreement&quot;)</span></p><p class="c0"><span>Last updated: </span><span class="c2 c5">March 10, 2019</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span>Please read this End-User License Agreement (&quot;Agreement&quot;) carefully before clicking the &quot;I Agree&quot; button, downloading or using </span><span class="c5">Wikio Ki</span><span class="c2">&nbsp;(&quot;Application&quot;).</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">By clicking the &quot;I Agree&quot; button, downloading or using the Application, you are agreeing to be bound by the terms and conditions of this Agreement.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">If you do not agree to the terms of this Agreement, do not click on the &quot;I Agree&quot; button and do not download or use the Application.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">License</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span class="c2">grants you a revocable, non-exclusive, non-transferable, limited license to download, install and use the Application solely for your personal, non-commercial purposes strictly in accordance with the terms of this Agreement.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">Restrictions</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">You agree not to, and you will not permit others to:</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">a) license, sell, rent, lease, assign, distribute, transmit, host, outsource, disclose or otherwise commercially exploit the Application or make the Application available to any third party.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">Modifications to Application</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span class="c2">reserves the right to modify, suspend or discontinue, temporarily or permanently, the Application or any service to which it connects, with or without notice and without liability to you.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">Term and Termination</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span>This Agreement shall remain in effect until terminated by you or </span><span class="c5">Wikio Ki</span><span>.</span><span class="c2">&nbsp;</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span class="c2">may, in its sole discretion, at any time and for any or no reason, suspend or terminate this Agreement with or without prior notice.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span>This Agreement will terminate immediately, without prior notice from </span><span class="c5">Wikio Ki</span><span>,</span><span class="c2">&nbsp;in the event that you fail to comply with any provision of this Agreement. You may also terminate this Agreement by deleting the Application and all copies thereof from your mobile device or from your desktop.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">Upon termination of this Agreement, you shall cease all use of the Application and delete all copies of the Application from your mobile device or from your desktop.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">Severability</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">If any provision of this Agreement is held to be unenforceable or invalid, such provision will be changed and interpreted to accomplish the objectives of such provision to the greatest extent possible under applicable law and the remaining provisions will continue in full force and effect.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">Amendments to this Agreement</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span>reserves the right, at its sole discretion, to modify or replace this Agreement at any time. If a revision is material we will provide at least </span><span class="c5">30</span><span class="c2">&nbsp;days&#39; notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c4">Contact Information</span></p><p class="c0 c3"><span class="c2"></span></p><p class="c0"><span class="c2">If you have any questions about this Agreement, please contact us.</span></p><p class="c1"><span class="c2"></span></p><p class="c0"><span class="c2">teamwikioki@gmail.com</span></p></body></html>
+        <html>
+
+            <head>
+                <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+                <style type="text/css">
+                    ol {
+                        margin: 0;
+                        padding: 0
+                    }
+
+                    table td,
+                    table th {
+                        padding: 0
+                    }
+
+                    .c4 {
+                        color: #000000;
+                        font-weight: 700;
+                        text-decoration: none;
+                        vertical-align: baseline;
+                        font-size: 11pt;
+                        font-family: "Arial";
+                        font-style: normal
+                    }
+
+                    .c2 {
+                        color: #000000;
+                        font-weight: 400;
+                        text-decoration: none;
+                        vertical-align: baseline;
+                        font-size: 11pt;
+                        font-family: "Arial";
+                        font-style: normal
+                    }
+
+                    .c0 {
+                        padding-top: 0pt;
+                        padding-bottom: 0pt;
+                        line-height: 1.15;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    .c1 {
+                        padding-top: 0pt;
+                        padding-bottom: 0pt;
+                        line-height: 1.0;
+                        text-align: left;
+                        height: 11pt
+                    }
+
+                    .c6 {
+                        max-width: 468pt;
+                        padding: 72pt 72pt 72pt 72pt
+                    }
+
+                    .c5 {
+                        background-color: #ffffff
+                    }
+
+                    .c3 {
+                        height: 11pt
+                    }
+
+                    .title {
+                        padding-top: 0pt;
+                        color: #000000;
+                        font-size: 26pt;
+                        padding-bottom: 3pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    .subtitle {
+                        padding-top: 0pt;
+                        color: #666666;
+                        font-size: 15pt;
+                        padding-bottom: 16pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    li {
+                        color: #000000;
+                        font-size: 11pt;
+                        font-family: "Arial"
+                    }
+
+                    p {
+                        margin: 0;
+                        color: #000000;
+                        font-size: 11pt;
+                        font-family: "Arial"
+                    }
+
+                    h1 {
+                        padding-top: 20pt;
+                        color: #000000;
+                        font-size: 20pt;
+                        padding-bottom: 6pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    h2 {
+                        padding-top: 18pt;
+                        color: #000000;
+                        font-size: 16pt;
+                        padding-bottom: 6pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    h3 {
+                        padding-top: 16pt;
+                        color: #434343;
+                        font-size: 14pt;
+                        padding-bottom: 4pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    h4 {
+                        padding-top: 14pt;
+                        color: #666666;
+                        font-size: 12pt;
+                        padding-bottom: 4pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    h5 {
+                        padding-top: 12pt;
+                        color: #666666;
+                        font-size: 11pt;
+                        padding-bottom: 4pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+
+                    h6 {
+                        padding-top: 12pt;
+                        color: #666666;
+                        font-size: 11pt;
+                        padding-bottom: 4pt;
+                        font-family: "Arial";
+                        line-height: 1.15;
+                        page-break-after: avoid;
+                        font-style: italic;
+                        orphans: 2;
+                        widows: 2;
+                        text-align: left
+                    }
+                </style>
+            </head>
+
+            <body class="c5 c6">
+                <p class="c0"><span class="c2">Wikio Ki iOS App</span></p>
+                <p class="c0"><span class="c2">End-User License Agreement
+                        (&quot;Agreement&quot;)</span></p>
+                <p class="c0"><span>Last
+                        updated: </span><span class="c2 c5">March 13, 2019</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span>Please
+                        read this End-User License Agreement (&quot;Agreement&quot;)
+                        carefully before clicking the &quot;I Agree&quot; button,
+                        downloading or using </span><span class="c5">Wikio Ki</span><span
+                        class="c2">&nbsp;(&quot;Application&quot;).</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">By clicking the &quot;I Agree&quot; button,
+                        downloading or using the Application, you are agreeing to be
+                        bound by the terms and conditions of this Agreement.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">If you do not agree to the terms of this Agreement,
+                        do not click on the &quot;I Agree&quot; button and do not
+                        download or use the Application.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">License</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span class="c2">grants
+                        you a revocable, non-exclusive, non-transferable, limited
+                        license to download, install and use the Application solely for
+                        your personal, non-commercial purposes strictly in accordance
+                        with the terms of this Agreement.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Restrictions</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">You agree not to, and you will not permit others to:</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">a) license, sell, rent, lease, assign, distribute,
+                        transmit, host, outsource, disclose or otherwise commercially
+                        exploit the Application or make the Application available to any
+                        third party.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Objectionable Content Policy</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">Wikio Ki maintains a zero tolerance policy regarding objectionable content.
+                    Objectionable content may not be upload or displayed to the extent such content includes, is in conjunction with, or alongside and, Objectionable Content.
+                    Objectionable Content includes, but is not limited to:
+                    (i) sexually explicit materials;
+                    (ii) obscene, defamatory, libelous, slanderous, violent and/or unlawful content or profanity;
+                    (iii) content that infringes upon the rights of any third party, including copyright, trademark, privacy, publicity or other personal or proprietary right, or that is deceptive or fraudulent;
+                    (iv) content that promotes the use or sale of illegal or regulated substance, tabacco products, ammunation and/or firearms; and
+                    (v) gambling, including without limitation, any casino, sports books, bingo or poker
+                    Any user can flag content they deem objectionable for review.
+                    Content will be moderateed by Wikio Ki to ensure the timely removal of any and all objectionable content.
+                    User accounts which have been confirmed responsible for posting objectionable content will be restricted from access to the Wikio Ki app.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Modifications to Application</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span class="c2">reserves
+                        the right to modify, suspend or discontinue, temporarily or
+                        permanently, the Application or any service to which it
+                        connects, with or without notice and without liability to you.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Term and
+                        Termination</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span>This Agreement shall remain in effect until
+                        terminated by you or </span><span class="c5">Wikio Ki</span><span>.</span><span class="c2">&nbsp;</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c5">Wikio Ki</span><span>&nbsp;</span><span class="c2">may, in its sole discretion, at
+                        any time and for any
+                        or no reason, suspend or terminate this Agreement with or
+                        without prior notice.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span>This Agreement will
+                        terminate immediately, without prior notice from </span><span class="c5">Wikio Ki</span><span>,</span><span
+                        class="c2">&nbsp;in
+                        the event that you fail to comply with any provision of this
+                        Agreement. You may also terminate this Agreement by deleting the
+                        Application and all copies thereof from your mobile device or
+                        from your desktop.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">Upon termination of this Agreement, you
+                        shall cease all use of the Application and delete all copies of
+                        the Application from your mobile device or from your desktop.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Severability</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">If any
+                        provision of this Agreement is held to be unenforceable or
+                        invalid, such provision will be changed and interpreted to
+                        accomplish the objectives of such provision to the greatest
+                        extent possible under applicable law and the remaining
+                        provisions will continue in full force and effect.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Amendments to this Agreement</span></p>
+                <p class="c0
+                        c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c5">Wikio
+                        Ki</span><span>&nbsp;</span><span>reserves the right, at its
+                        sole discretion, to modify or replace this Agreement at any
+                        time. If a revision is material we will provide at least </span><span class="c5">30</span><span
+                        class="c2">&nbsp;days&#39; notice
+                        prior to any new terms taking effect. What constitutes a
+                        material change will be determined at our sole discretion.</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c4">Contact Information</span></p>
+                <p class="c0 c3"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">If you have
+                        any questions about this Agreement, please contact us.</span></p>
+                <p class="c1"><span class="c2"></span></p>
+                <p class="c0"><span class="c2">teamwikioki@gmail.com</span></p>
+            </body>
+
+            </html>
     """
     typealias OpenSourceLibrary = (name: String, license: String)
     static let libraries: [OpenSourceLibrary] = [
