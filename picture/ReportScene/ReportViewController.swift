@@ -66,7 +66,11 @@ class ReportViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setCurrentBackButton(title: "Cancel")
+        if isModal {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
+        } else {
+            setCurrentBackButton(title: "Cancel")
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -101,10 +105,9 @@ class ReportViewController: UIViewController {
     
     private func report(reason: UserReportReason) {
         let dbs = DatabaseService()
-        let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Reporting"
-//        hud.show(in: self.view)
+
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
         let reportedVC = ReportedViewController(user: self.userToReport)
         self.navigationController?.pushToViewController(reportedVC, animated: true, completion: {
             dbs.report(user: self.userToReport, forReason: reason) { (error) in
@@ -117,27 +120,6 @@ class ReportViewController: UIViewController {
                 }
             }
         })
-//            dbs.block(user: self.userToReport, completion: { (error) in
-//                if let error = error {
-//                    print(error)
-//                    return
-//                }
-//                if self.isBestFriend {
-//                    self.changeBestFriendStatus(isBestFriend: false, completion: { (error) in
-//                        DispatchQueue.main.async {
-//                            UserController.shared.bestFriendUids.removeAll(where: { $0 == self.userToReport.uid })
-//                        }
-//                    })
-//                }
-//                if !UserController.shared.blockedUids.contains(self.userToReport.uid) {
-//                    UserController.shared.blockedUids.append(self.userToReport.uid)
-//                }
-//                DispatchQueue.main.async {
-//                    hud.dismiss()
-//                    self.navigationController?.popToRootViewController(animated: true)
-//                }
-//            })
-        
     }
 }
 

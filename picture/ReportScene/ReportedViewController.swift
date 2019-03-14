@@ -91,7 +91,11 @@ class ReportedViewController: UIViewController {
     }
     
     @objc private func doneButtonTapped() {
-        navigationController?.popToRootViewController(animated: true)
+        if isModal {
+            dismiss(animated: true, completion: nil)
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
     }
     
     @objc private func blockButtonTapped() {

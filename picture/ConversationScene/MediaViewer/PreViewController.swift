@@ -48,6 +48,15 @@ class PreViewController: UIViewController {
         return label
     }()
     
+    private lazy var flagButton: PopButton = {
+        let button = PopButton()
+        button.setTitle("•••", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addShadow()
+        button.addTarget(self, action: #selector(flagButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
     var chatWithFriend: ChatWithFriend? {
         didSet {
             guard let items = chatWithFriend?.chat.currentUserUnreads else {
@@ -71,7 +80,7 @@ class PreViewController: UIViewController {
         bar.isPaused = true
         bar.currentAnimationIndex = 0
         bar.duration = getDuration(at: 0)
-        bar.addShadow()
+        bar.addShadow(opacity: 0.3)
         return bar
     }()
     
@@ -91,14 +100,13 @@ class PreViewController: UIViewController {
     deinit {
         print("PreView deinit")
         DiggerManager.shared.cancelAllTasks()
+        self.handleDeletingMessages()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupLayout()
-        
-//        UIApplication.shared.decrementBadgeNumber()
         
         for message in items {
             if message.tempCachedURL != nil {
@@ -146,7 +154,6 @@ class PreViewController: UIViewController {
             self.progressBar.cancel()
             self.progressBar.isPaused = true
             self.resetPlayer()
-            self.handleDeletingMessages()
         }
     
     }
@@ -259,6 +266,42 @@ class PreViewController: UIViewController {
             }
         }
     }
+    
+    @objc private func flagButtonTapped() {
+        
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.view.addSubview(blurEffectView)
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let flagAction = UIAlertAction(title: "Flag", style: .destructive) { (action) in
+            print("Handle flagging content")
+            if let friend = self.chatWithFriend?.friend {
+                let reportVC = UINavigationController(rootViewController: ReportViewController(friend: friend))
+                self.setStatusBar(hidden: false)
+                self.present(reportVC, animated: true, completion: nil)
+            }
+            UIView.animate(withDuration: 0.25, animations: {
+                blurEffectView.alpha = 0
+            }, completion: { (_) in
+                blurEffectView.removeFromSuperview()
+            })
+            
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            UIView.animate(withDuration: 0.25, animations: {
+                blurEffectView.alpha = 0
+            }, completion: { (_) in
+                blurEffectView.removeFromSuperview()
+            })
+        }
+        alertController.addAction(flagAction)
+        alertController.addAction(cancelAction)
+        presentAlert(alertController)
+    }
 }
 
 extension PreViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -298,13 +341,16 @@ private extension PreViewController {
         let rightView = UIView(frame: CGRect(x: view.frame.maxX * 0.35, y: 0, width: rightWidth, height: frame.height))
         rightView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleNext)))
         
-        view.addSubviews([collectionView, leftView, rightView, usernameLabel, progressBar])
+        view.addSubviews([collectionView, leftView, rightView, usernameLabel, progressBar, flagButton])
 
         collectionView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
         usernameLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0))
         
-        progressBar.anchor(top: nil, leading: usernameLabel.leadingAnchor, bottom: usernameLabel.topAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 4, right: 16), size: .init(width: 0, height: 2))
+        progressBar.anchor(top: nil, leading: usernameLabel.leadingAnchor, bottom: usernameLabel.topAnchor, trailing: flagButton.leadingAnchor, padding: .init(top: 0, left: 0, bottom: 4, right: 16), size: .init(width: 0, height: 2))
         progressBar.addShadow()
+        
+        flagButton.anchor(top: nil, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
+        flagButton.centerYAnchor.constraint(equalTo: progressBar.centerYAnchor).isActive = true
         
         view.backgroundColor = .black
         
@@ -356,8 +402,3 @@ private extension PreViewController {
         })
     }
 }
-
-
-// frKOhvebFho:APA91bEK2mNWBEzW9K3pDQAGAgTU4JIhUXuCVj1GddKPp5ThgjAGjllsy9kPct-qpeKduZQ47lT3HRLo_1nv8XxLBc4NQfF4-fW1EGEgCFfpKiG1t8Sd1q4vZgJrHU2bVFgtVX7ebAbj
-
-//frKOhvebFho:APA91bEK2mNWBEzW9K3pDQAGAgTU4JIhUXuCVj1GddKPp5ThgjAGjllsy9kPct-qpeKduZQ47lT3HRLo_1nv8XxLBc4NQfF4-fW1EGEgCFfpKiG1t8Sd1q4vZgJrHU2bVFgtVX7ebAbj
