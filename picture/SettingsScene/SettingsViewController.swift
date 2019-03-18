@@ -500,7 +500,8 @@ private extension SettingsViewController {
 // MARK: - UIImagePickerControllerDelegate
 extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let selectedImage = info[.originalImage] as? UIImage else { return }
+        let image = info[.editedImage] ?? info[.originalImage]
+        guard let selectedImage = image as? UIImage else { return }
         //registerViewModel.bindableImage.value = selectedImage
         //registerViewModel.profilePhoto = selectedImage
         profileImageButton.setImage(selectedImage, for: .normal)

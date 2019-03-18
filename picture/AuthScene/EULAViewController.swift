@@ -10,6 +10,7 @@ import UIKit
 
 protocol AgreementDelegate: class {
     func didAgree()
+    func didDisagree()
 }
 
 class EULAViewController: AboutViewController, UITableViewDelegate {
@@ -73,12 +74,12 @@ class EULAViewController: AboutViewController, UITableViewDelegate {
     
     @objc private func agreeButtonTapped() {
         
-        dismiss(animated: true) {
-            NotificationCenter.default.post(name: NSNotification.Name.agreeToEULA, object: nil)
-        }
+        NotificationCenter.default.post(name: NSNotification.Name.agreeToEULA, object: nil)
+        dismiss(animated: true)
     }
     
     @objc private func cancelButtonTapped() {
+        NotificationCenter.default.post(name: NSNotification.Name.disagreeWithEULA, object: nil)
         dismiss(animated: true, completion: nil)
     }
 }

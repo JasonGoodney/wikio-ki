@@ -23,32 +23,38 @@ class RegisterViewModel {
     var username: String? { didSet { checkFormValidity() } }
     var email: String? { didSet { checkFormValidity() } }
     var password: String? { didSet { checkFormValidity() } }
+    var agreedToAgreements: Bool? { didSet { checkFormValidity() } }
     
+    #warning("If disagreed the agreed, error saying email is already taken but that's not true")
     func performRegistration(completion: @escaping ErrorCompletion) {
         guard let email = email, let password = password else { return }
         bindableIsRegistering.value = true
         Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
             if let error = error {
-                Auth.auth().currentUser?.delete(completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    print("🛑 There was an error setting users data. Deleted account for so email is not taken.")
-                })
-                completion(error)
-                return
+                if error._domain == "FIRAuthErrorDomain" && error._code == 17007 {
+                    print("Error creating account: \(error.localizedDescription)")
+                    completion(error)
+                    return
+                } else {
+                    print("Error creating account: \(error.localizedDescription)")
+                    completion(error)
+                    return
+                }
+                
             }
-            
-            let filename = UUID().uuidString
-            let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
-            let ref = Storage.storage().reference(withPath: "\(StorageService.Path.media)/\(Auth.auth().currentUser!.uid)/\(filename)")
 
-            StorageService.shared.upload(data: imageData, withName: filename, atPath: ref, block: { (url) in
-                self.bindableIsRegistering.value = false
-                let imageUrl = url?.absoluteString ?? ""
-                self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
-            })
+            print("😶 Created account. Email is now taken.")
+            
+
+                let filename = UUID().uuidString
+                let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
+                let ref = Storage.storage().reference(withPath: "\(StorageService.Path.media)/\(Auth.auth().currentUser!.uid)/\(filename)")
+                
+                StorageService.shared.upload(data: imageData, withName: filename, atPath: ref, block: { (url) in
+                    let imageUrl = url?.absoluteString ?? ""
+                    self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
+                })
+        
         }
     }
     
@@ -70,22 +76,31 @@ class RegisterViewModel {
         
         Firestore.firestore().collection(DatabaseService.Collection.users).document(uid).setData(docData) { (error) in
             if let error = error {
-                Auth.auth().currentUser?.delete(completion: { (error) in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    print("🛑 There was an error setting users data. Deleted account for so email is not taken.")
-                })
-                completion(error)
-                return
+                if error._domain == "FIRAuthErrorDomain" && error._code == 17007 {
+                    
+                    Auth.auth().currentUser?.delete(completion: { (error) in
+                        if let error = error {
+                            print(error)
+                            return
+                        }
+                        print("🛑 There was an error setting users data. Deleted account for so email is not taken.")
+                    })
+                    completion(error)
+                    return
+                } else {
+                    print("Error creating account: \(error.localizedDescription)")
+                    completion(error)
+                    return
+                }
             }
+            
+            self.bindableIsRegistering.value = false
             
             let authService = AuthService()
             if let user = Auth.auth().currentUser {
                 authService.sendEmailVerifiction(currentUser: user, completion: { (error) in
                     if let error = error {
-                        print(error)
+                        print("\(#function):",error)
                         return
                     }
                     
@@ -96,17 +111,19 @@ class RegisterViewModel {
             let takenUsernameData = ["username": self.username?.lowercased() ?? ""]
             Firestore.firestore().collection(DatabaseService.Collection.takenUsernames).addDocument(data: takenUsernameData) { (error) in
                 if let error = error {
+                    print("\(#function):",error)
                     completion(error)
                     return
                 }
-                print("👍 saved info to firebase")
+                print("👍 Taken username data set")
                 completion(nil)
             }
         }
     }
     
     private func checkFormValidity() {
-        guard let username = username, let email = email, let password = password else {
+        guard let username = username, let email = email,
+            let password = password, let agreed = agreedToAgreements else {
             bindableIsFormValid.value = false
             return
         }
@@ -119,6 +136,7 @@ class RegisterViewModel {
                     && AuthValidation.isValidEmail(email)
                     && AuthValidation.isValidPassword(password)
                     && self.profilePhoto != nil
+                    && agreed
                 
                 self.bindableIsFormValid.value = isFormValid
             } else {
@@ -128,6 +146,7 @@ class RegisterViewModel {
                         && AuthValidation.isValidEmail(email)
                         && AuthValidation.isValidPassword(password)
                         && self.profilePhoto != nil
+                    && agreed
                 
                 self.bindableIsFormValid.value = isFormValid
             }

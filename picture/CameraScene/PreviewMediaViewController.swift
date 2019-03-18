@@ -905,6 +905,10 @@ private extension PreviewMediaViewController {
         
         colorSlider.centerXAnchor.constraint(equalTo: toggleDrawingButton.centerXAnchor).isActive = true
       
+        if UserController.shared.allChatsWithFriends.isEmpty {
+            sendButton.isHidden = true
+        }
+        
     }
 }
 

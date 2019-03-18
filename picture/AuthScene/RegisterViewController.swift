@@ -44,6 +44,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     
     var agreedToAgreements = false {
         didSet {
+            registerViewModel.agreedToAgreements = agreedToAgreements
             if agreedToAgreements {
                 agreeButton.setImage(#imageLiteral(resourceName: "icons8-ok").withRenderingMode(.alwaysTemplate), for: .normal)
                 agreeButton.tintColor = Theme.buttonBlue
@@ -149,14 +150,15 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         agreedToAgreements = false
         
         setupLayout()
-        setupNotificationObservers()
         setupTapGesture()
+
+        setupNotificationObservers()
+        setupRegisterViewModelObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setupRegisterViewModelObserver()
         
         navigationItem.titleView = titleLabel
         navigationController?.navigationBar.barTintColor = .white
@@ -202,6 +204,20 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         
         goToLoginButton.setAttributedTitle(attributedText, for: .normal)
         
+        let agreementView = UIView()
+        agreementView.addSubviews([agreeButton, agreementTextView])
+        
+        agreeButton.anchor(top: agreementView.topAnchor, leading: agreementView.leadingAnchor, bottom: nil, trailing: nil, padding: .init(), size: .init(width: 24, height: 24))
+        agreeButton.addTarget(self, action: #selector(agreeButtonTapped), for: .touchUpInside)
+        agreeButton.tintColor = Theme.textColor
+        
+        agreementTextView.anchor(top: agreeButton.topAnchor, leading: agreeButton.trailingAnchor, bottom: agreementView.bottomAnchor, trailing: agreementView.trailingAnchor, padding: .init(top: 0, left: 8, bottom: 0, right: 0))
+        
+        
+        agreementTextView.attributedText = setupAgreementText()
+        view.addSubview(agreementView)
+        agreementView.anchor(top: nil, leading: stackView.leadingAnchor, bottom: goToLoginButton.topAnchor, trailing: stackView.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 0), size: .init(width: 0, height: 70))
+        
     }
     
     @objc private func agreeButtonTapped() {
@@ -219,7 +235,9 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         hud.textLabel.text = "Registration Failed"
         hud.detailTextLabel.text = error.localizedDescription
         hud.show(in: view)
-        hud.dismiss(afterDelay: 3)
+        hud.dismiss(afterDelay: 3) {
+            hud.textLabel.text = nil
+        }
     }
 
     private func validateUsername(str: String) -> Bool {
@@ -260,9 +278,14 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
             if isRegistering == true {
                 self.registeringHUD.textLabel.text = "Registering"
                 self.registeringHUD.show(in: self.view)
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
             } else {
-                self.registeringHUD.dismiss()
+                if self.registeringHUD.isVisible {
+                    self.registeringHUD.dismiss()
+                }
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
+            
         }
     }
     
@@ -331,12 +354,17 @@ private extension RegisterViewController {
         handleTapDismiss()
         errorLabel.text = ""
         
-        NotificationCenter.default.addObserver(self, selector: #selector(didAgree), name: NSNotification.Name.agreeToEULA, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(didAgree), name: NSNotification.Name.agreeToEULA, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(didDisagree), name: NSNotification.Name.disagreeWithEULA, object: nil)
+//
+//        let eulaVC = UINavigationController(rootViewController: EULAViewController(type: .eula))
+//        eulaVC.delegate = self
+//
+//        present(eulaVC, animated: true, completion: nil)
         
-        let eulaVC = UINavigationController(rootViewController: EULAViewController(type: .eula))
-        eulaVC.delegate = self
-        
-        present(eulaVC, animated: true, completion: nil)
+        if agreedToAgreements {
+            didAgree()
+        }
     }
     
     @objc private func handleSelectPhoto() {
@@ -461,7 +489,8 @@ private extension RegisterViewController {
 // MARK: - UIImagePickerControllerDelegate
 extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let selectedImage = info[.originalImage] as? UIImage else { return }
+        let image = info[.editedImage] ?? info[.originalImage]
+        guard let selectedImage = image as? UIImage else { return }
         registerViewModel.bindableImage.value = selectedImage
         registerViewModel.profilePhoto = selectedImage
         self.selectPhotoButton.layer.borderWidth = 0
@@ -471,11 +500,14 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
 
 extension RegisterViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-
+        if textField == usernameTextField, errorLabel.text != "" {
+            self.errorLabel.text = ""
+        }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == usernameTextField {
+            
             if let username = textField.text, username.isEmpty == false {
                 AuthValidation.isValidUsername(username) { (registerError) in
                     if let error = registerError {
@@ -499,7 +531,7 @@ extension RegisterViewController: UITextFieldDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        self.errorLabel.text = ""
+        
         if textField == usernameTextField && textField.isFirstResponder {
             let validString = CharacterSet(charactersIn: " !@#$€%^&*()-_+{}[]|\"<>,.~`/:;?=\\¥'£•¢")
             
@@ -552,16 +584,21 @@ extension RegisterViewController: AgreementDelegate {
         registerViewModel.performRegistration { [unowned self] (error) in
             if let error = error {
                 self.showHUDWithError(error)
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 return
             }
-            print("Finised registering the user")
-            print("Logged in successfully")
+            print("🤪Finised registering the user")
+            print("🤪Logged in successfully")
             let window = UIApplication.shared.keyWindow
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.agreeToEULA, object: nil)
             self.handleLogin(withWindow: window, completion: { (user) in
                 if let _ = user {
                 }
             })
         }
+    }
+    
+    @objc func didDisagree() {
+        print("Disagreed or cancel button tapped")
+        setupRegisterViewModelObserver()
     }
 }
