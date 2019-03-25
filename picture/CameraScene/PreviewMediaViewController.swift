@@ -429,17 +429,14 @@ class PreviewMediaViewController: UIViewController {
                 #endif
                 navigationController?.pushViewController(sendToVC, animated: false)
             } else if let videoURL = videoURL {
-                let process = Process()
-                let imageEdits = editContainerView.screenshot()
-                
-                
+
                 // Pass the image or editContainerView to SendToViewController
                 
                 sendToVC = SendToViewController(videoURL: videoURL, containerView: editContainerView)
                 sendToVC.delegate = self
                 sendToVC.passBackSelectedNames = self.passForwardSelectedNames
                 sendToVC.passBackMediaData = self.passForwardMediaData
-                //                present(sendToVC, animated: false, completion: nil)   
+
                 self.navigationController?.pushViewController(sendToVC, animated: false)
                 
             }
@@ -941,7 +938,6 @@ extension PreviewMediaViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let currentText = textView.text ?? ""
         if text.count > 1 {
-            #warning("Maybe warning saying pasted text is too long?")
             return text.count <= characterLimit
         }
         guard let stringRange = Range(range, in: currentText) else { return false }

@@ -165,20 +165,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        let userInfo = response.notification.request.content.userInfo
-        
-        if let badge = userInfo["badge"] as? Int {
-            print(badge)
-            let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
-//            UIApplication.shared.applicationIconBadgeNumber = badge + badgeNumber
-        }
-        
-        if let chatUid = userInfo["chat"] as? String {
-            print(chatUid)
-        }
-    }
-    
 
+    }
 }
 
 

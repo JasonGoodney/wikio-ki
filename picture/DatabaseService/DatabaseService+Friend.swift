@@ -63,9 +63,7 @@ extension DatabaseService {
             
             currentUser.addFriend(user)
             user.addFriend(currentUser)
-            
-            let currentUserUserChat = Firestore.firestore().collection(Collection.userChats).document(currentUser.uid)
-            let friendUserChat = Firestore.firestore().collection(Collection.userChats).document(user.uid)
+
             self.changeUserChat(isActive: true, between: currentUser, andFriend: user, changeBoth: true)
 
                 self.removeFriendRequest(to: UserController.shared.currentUser!, from: user) { (error) in

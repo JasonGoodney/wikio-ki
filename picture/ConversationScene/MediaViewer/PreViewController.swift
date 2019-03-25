@@ -122,7 +122,7 @@ class PreViewController: UIViewController {
                         print("Downloaded: \(url)")
                         message.tempCachedURL = url
                     case .failure(let error):
-                        print("Error downloading url")
+                        print("Error downloading url: \(error.localizedDescription)")
                     }
                 }
             }

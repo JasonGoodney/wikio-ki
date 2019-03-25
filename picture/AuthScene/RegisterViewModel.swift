@@ -25,7 +25,6 @@ class RegisterViewModel {
     var password: String? { didSet { checkFormValidity() } }
     var agreedToAgreements: Bool? { didSet { checkFormValidity() } }
     
-    #warning("If disagreed the agreed, error saying email is already taken but that's not true")
     func performRegistration(completion: @escaping ErrorCompletion) {
         guard let email = email, let password = password else { return }
         bindableIsRegistering.value = true
