@@ -47,30 +47,18 @@ class AddFriendViewController: UITableViewController {
         tableView.separatorStyle = .none
         tableView.register(AddFriendCell.self, forCellReuseIdentifier: AddFriendCell.reuseIdentifier)
         
-        searchController.delegate = self
         searchController.searchBar.delegate = self
         navigationItem.titleView = titleLabel
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
+        
+        hideKeyboardOnTap()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        searchController.isActive = true
         searchController.definesPresentationContext = true
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak searchController] timer in
-            guard let searchController = searchController else {
-                timer.invalidate()
-                return
-            }
-            
-            if searchController.searchBar.canBecomeFirstResponder {
-                searchController.searchBar.becomeFirstResponder()
-                timer.invalidate()
-            }
-        }
-        
         
     }
     
@@ -83,16 +71,24 @@ class AddFriendViewController: UITableViewController {
         self.navigationController?.navigationBar.isTranslucent = true
         self.navigationController?.navigationBar.barTintColor = nil
         self.navigationController?.navigationBar.backgroundColor = UIColor(red: 247, green: 247, blue: 247, alpha: 1)
-        
     }
 
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        searchController.isActive = false
+        
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         if self.presentedViewController != nil {
             self.presentedViewController?.dismiss(animated: false, completion: nil)
+        }
+    }
+    
+    override func hideKeyboard() {
+        DispatchQueue.main.async {
+            self.searchController.searchBar.resignFirstResponder()
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
     
@@ -399,12 +395,6 @@ extension AddFriendViewController: PassBackDelegate {
     }
 }
 
-extension AddFriendViewController: UISearchControllerDelegate {
-    func presentSearchController(_ searchController: UISearchController) {
-        searchController.searchBar.becomeFirstResponder()
-    }
-}
-
 extension AddFriendViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchedUser = nil
@@ -413,6 +403,7 @@ extension AddFriendViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
             if searchedUser != nil {
                 DispatchQueue.main.async {
                     self.tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
@@ -448,5 +439,9 @@ extension AddFriendViewController: UISearchBarDelegate {
                 }
             }
         }
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(false, animated: true)
     }
 }

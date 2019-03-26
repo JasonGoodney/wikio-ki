@@ -199,7 +199,7 @@ exports.observeAddedUser = functions.firestore
                 const message = {
     
                     data: {
-                        equestedByUid: requestedBy.uid
+                        requestedByUid: requestedBy.uid
                     },
                     notification: {
                         body: `${requestedBy.username} added you!`,
