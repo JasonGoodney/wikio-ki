@@ -97,6 +97,14 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         return view
     }()
     
+    private let versionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "\(Bundle.appName()) \(Bundle.main.releaseVersionNumberPretty)"
+        label.textAlignment = .center
+        label.textColor = Theme.textColor
+        return label
+    }()
+    
     private let titleLabel = NavigationTitleLabel(title: "Settings")
     private let profileImageButton: UIButton = {
         let button = ProfileImageButton(height: 128, width: 128)
@@ -317,14 +325,24 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         }
         return UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == sectionHeaders.count - 1 && sectionHeaders[section] == "Account Actions" {
+            return  "\(Bundle.appName()) \(Bundle.main.releaseVersionNumberPretty)"
+        }
+        
+        return nil
+    }
 }
 
 // MARK: - UI
 private extension SettingsViewController {
     func setupLayout() {
-        view.addSubviews([tableView])
+        view.addSubviews([versionLabel, tableView])
 
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
+        
+        versionLabel.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets.init(), size: .init(width: 0, height: 44))
     }
     
     func deselectCell() {
