@@ -128,6 +128,7 @@ exports.observeNewMessage = functions.firestore
 
                     console.log("message:", message);
                     sendToDevice(receiver.fcmToken, message);
+
                     return;
                 })
                 .catch(reason => {

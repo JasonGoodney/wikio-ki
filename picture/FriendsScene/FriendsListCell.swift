@@ -156,7 +156,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
         }
         
         if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
-            detailsLabel.text = "Tap to chat" + timeAgoString
+            detailsLabel.text = "New friend" + timeAgoString
             usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
             statusIndicatorView.configure(forStatus: .none, isOpened: false, type: type)
