@@ -41,6 +41,7 @@ class PreviewMediaViewController: UIViewController {
     private var captionIsInSuperview = false
     private var captionCanBeDragged = false
     private var previousCaptionPoint: CGPoint!
+    private var keyboardSize: CGRect!
     
     // Drawing
     
@@ -255,8 +256,7 @@ class PreviewMediaViewController: UIViewController {
         return gesture
     }()
     
-    
-    
+    // MARK: - Initialization
     init(videoURL: URL) {
         self.videoURL = videoURL
         super.init(nibName: nil, bundle: nil)
@@ -271,6 +271,11 @@ class PreviewMediaViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
@@ -292,10 +297,6 @@ class PreviewMediaViewController: UIViewController {
         view.addGestureRecognizer(captionResponderTapGesture)
         
         setupNotificationObservers()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -367,13 +368,7 @@ class PreviewMediaViewController: UIViewController {
     
     // MARK: - Actions
     @objc func cancel() {
-        //self.remove()
         navigationController?.popViewController(animated: false)
-//        dismiss(animated: false, completion: nil)
-//            if image != nil {
-//            } else if videoURL != nil {
-//                self.remove()
-//            }
     }
     
     func imageFromView(_ myView: UIView) -> UIImage {
@@ -923,18 +918,6 @@ extension PreviewMediaViewController: UITextViewDelegate {
         }
     }
     
-    func textViewDidChange(_ textView: UITextView) {
-        
-        let size = CGSize(width: view.frame.width, height: .infinity)
-        let estimatedSize = textView.sizeThatFits(size)
-        
-        textView.constraints.forEach { (constraint) in
-            if constraint.firstAttribute == .height {
-                constraint.constant = estimatedSize.height
-            }
-        }
-    }
-    
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let currentText = textView.text ?? ""
         if text.count > 1 {
@@ -953,16 +936,17 @@ private extension PreviewMediaViewController {
     private func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(updateCaptionHeight), name: UITextView.textDidChangeNotification, object: nil)
     }
     
     @objc func handleKeyboardShow(notification: Notification) {
-
         if captionIsInSuperview {
             previousCaptionPoint = captionTextView.frame.origin
         } else {
             if let keyboardSize = ((notification as NSNotification).userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
                 let y = captionEditingPosition(keyboardSize)
                 previousCaptionPoint = CGPoint(x: 0, y: y)
+                self.keyboardSize = keyboardSize
             }
         }
         
@@ -987,6 +971,23 @@ private extension PreviewMediaViewController {
     
     func captionEditingPosition(_ keyboardSize: CGRect) -> CGFloat {
         return self.view.safeAreaLayoutGuide.layoutFrame.height - keyboardSize.height - (self.captionTextView.frame.size.height)
+    }
+    
+    @objc func updateCaptionHeight() {
+        var newFrame = self.captionTextView.frame
+        
+        let fixedWidth = self.captionTextView.frame.size.width
+        let fixedMaxY = self.captionTextView.frame.maxY
+        let newSize = self.captionTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        
+        newFrame = CGRect(x: 0, y: fixedMaxY, width: max(newSize.width, fixedWidth), height: newSize.height)
+        self.captionTextView.frame = newFrame
+        
+        if let size = keyboardSize {
+            let y = captionEditingPosition(size)
+            previousCaptionPoint = CGPoint(x: 0, y: y)
+            self.captionTextView.frame.origin.y = y
+        }
     }
 }
 
@@ -1017,8 +1018,6 @@ extension PreviewMediaViewController: SketchViewDelegate {
     func drawView(_ view: SketchView, willBeginDrawUsingTool tool: AnyObject) {
         
         isDrawing(true)
-        
-        
     }
     
     func drawView(_ view: SketchView, didEndDrawUsingTool tool: AnyObject) {
