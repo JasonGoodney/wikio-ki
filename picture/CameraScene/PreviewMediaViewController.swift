@@ -246,6 +246,7 @@ class PreviewMediaViewController: UIViewController {
         textView.addGestureRecognizer(captionDragGesture)
         textView.isHidden = true
         textView.isScrollEnabled = false
+        textView.returnKeyType = .done
         return textView
     }()
 
@@ -913,12 +914,14 @@ extension PreviewMediaViewController: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         captionCanBeDragged = true
-        if textView.text?.last == " " {
-            textView.text?.removeLast()
-        }
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text.last == "\n" {
+            handleCaptionResponder()
+            return true
+        }
+        
         let currentText = textView.text ?? ""
         if text.count > 1 {
             return text.count <= characterLimit
