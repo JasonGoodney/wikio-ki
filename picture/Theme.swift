@@ -28,6 +28,6 @@ enum Theme {
     static let photo = #colorLiteral(red: 0.9333333333, green: 0.137254902, blue: 0.3294117647, alpha: 1)
     static let meColor = #colorLiteral(red: 0.9333333333, green: 0.137254902, blue: 0.3294117647, alpha: 1)
     static let friendColor = #colorLiteral(red: 0, green: 0.737254902, blue: 1, alpha: 1)
-    static let like = UIColor(hex: 0xcf2c73)
+    static let like = #colorLiteral(red: 0.9568627451, green: 0.02745098039, blue: 0.4392156863, alpha: 1)
     
 }

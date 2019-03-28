@@ -211,7 +211,7 @@ class PreViewController: UIViewController {
             likeImageView.anchorCenterYToSuperview()
             likeImageView.alpha = 0
             UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0.2, options: [.allowUserInteraction, .curveEaseInOut], animations: {
-                likeImageView.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
+                likeImageView.transform = CGAffineTransform(scaleX: 3.0, y: 3.0)
                 likeImageView.alpha = 1
             }) { (finished) in
                 likeImageView.alpha = 0
