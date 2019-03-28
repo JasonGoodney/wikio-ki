@@ -11,8 +11,12 @@ import AVKit
 import CoreMedia
 import Digger
 import FirebaseFirestore
+import FirebaseFunctions
 
 class PreViewController: UIViewController {
+    // Firebase Functions
+    private lazy var functions = Functions.functions()
+    
     private var initialTouchPoint: CGPoint = CGPoint(x: 0,y: 0)
 
     var videoView: UIView = {
@@ -55,6 +59,11 @@ class PreViewController: UIViewController {
         button.addShadow()
         button.addTarget(self, action: #selector(flagButtonTapped), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var likeGesture: UILongPressGestureRecognizer = {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLike))
+        return gesture
     }()
     
     var chatWithFriend: ChatWithFriend? {
@@ -167,6 +176,8 @@ class PreViewController: UIViewController {
     }
     
     var currentIndex = 0
+    
+    // MARK: - Actions
     @objc func handlePrevious(_ sender: UITapGestureRecognizer) {
         if currentIndex <= 0 {
             return
@@ -189,7 +200,42 @@ class PreViewController: UIViewController {
 
     }
     
-    // MARK: Private func
+    @objc private func handleLike() {
+        let message = items[currentIndex]
+        if !message.isLiked {
+            message.isLiked = true
+            let likeImageView = UIImageView(image: #imageLiteral(resourceName: "icons8-like").withRenderingMode(.alwaysTemplate))
+            likeImageView.tintColor = Theme.like
+            view.addSubview(likeImageView)
+            likeImageView.anchorCenterXToSuperview()
+            likeImageView.anchorCenterYToSuperview()
+            likeImageView.alpha = 0
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0.2, options: [.allowUserInteraction, .curveEaseInOut], animations: {
+                likeImageView.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
+                likeImageView.alpha = 1
+            }) { (finished) in
+                likeImageView.alpha = 0
+                likeImageView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            }
+            print("Liked \(items[currentIndex].messageType.databaseValue().lowercased())")
+            guard let friend = chatWithFriend?.friend else { return }
+            let data = ["friendUid": friend.uid,
+                        "likedByUsername": UserController.shared.currentUser!.username,
+                        "messageType": message.messageType.databaseValue().lowercased()]
+            functions.httpsCallable("observeLike").call(data) { (result, error) in
+                if let error = error as NSError? {
+                    if error.domain == FunctionsErrorDomain {
+                        let code = FunctionsErrorCode(rawValue: error.code)
+                        let message = error.localizedDescription
+                        let details = error.userInfo[FunctionsErrorDetailsKey]
+                    }
+                    // ...
+                }
+            }
+
+        }
+    }
+    
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
         if self.player != nil {
             self.player!.seek(to: CMTime.zero)
@@ -355,6 +401,7 @@ private extension PreViewController {
         view.backgroundColor = .black
         
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(dismissPanGestureRecognizerHandler(_:))))
+        view.addGestureRecognizer(likeGesture)
     }
 }
 

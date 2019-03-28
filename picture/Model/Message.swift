@@ -49,7 +49,7 @@ class Message: Codable {
     var mediaFilename: String?
     var mediaThumbnailURL: String?
     let timestamp: TimeInterval
-    
+    var isLiked = false
     var mediaData: Data?
     var tempCachedURL: URL?
     

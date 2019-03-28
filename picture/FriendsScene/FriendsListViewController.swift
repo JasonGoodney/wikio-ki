@@ -766,7 +766,9 @@ extension FriendsListViewController {
                                                     print("Message modified")
                                                 case .removed:
                                                     #warning("Might crash if user has been remove as a friend")
-                                                    UserController.shared.unreads[chat.chatUid]?.removeFirst()
+                                                    if let unreads = UserController.shared.unreads[chat.chatUid], unreads.count > 0 {
+                                                        UserController.shared.unreads[chat.chatUid]?.removeFirst()
+                                                    }
 
                                                     print("Deleted: \(String(describing: UserController.shared.unreads[chat.chatUid]?.count)) messages unread")
 
