@@ -8,9 +8,12 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseFunctions
 import JGProgressHUD
 
 class AddFriendViewController: UITableViewController {
+    // Firebase Functions
+    private lazy var functions = Functions.functions()
     
     private var sentRequestUids: [String] = []
     private var friendRequests: [User] = []
@@ -332,6 +335,19 @@ extension AddFriendViewController: AddFriendDelegate {
                 cell.updateView(forAddFriendState: .accepted)
                 
                 print(UserController.shared.currentUser!.username, "and", user.username, "are friends")
+
+                let data = ["friendUid": user.uid,
+                            "acceptedByUsername": UserController.shared.currentUser!.username]
+                self.functions.httpsCallable("observeAcceptFriendRequest").call(data) { (result, error) in
+                    if let error = error as NSError? {
+                        if error.domain == FunctionsErrorDomain {
+                            let code = FunctionsErrorCode(rawValue: error.code)
+                            let message = error.localizedDescription
+                            let details = error.userInfo[FunctionsErrorDetailsKey]
+                        }
+                        // ...
+                    }
+                }
             }
         case .accepted:
             print("Message start new message with user \(user.uid)")

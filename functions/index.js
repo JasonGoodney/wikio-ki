@@ -30,7 +30,6 @@ function sendNotificationToDevice(fcmToken, message) {
     // Send a message to the device corresponding to the provided
     // registration token.
     console.log("BEGIN SENDING MESSAGE");
-    console.log("FMCToken:", fcmToken);
     admin.messaging().sendToDevice(fcmToken, message, {contentAvailable: true})
         .then((response) => {
             // Response is a message ID string.
@@ -65,7 +64,6 @@ async function badgeCount(userId) {
     let count = db.collection("chats").where(`unread.${userId}`, "==", true)
         .get()
         .then((querySnapshot) => {
-            console.log("snap size:", querySnapshot.size);
             return querySnapshot.size;
             
         })
@@ -79,7 +77,6 @@ async function badgeCount(userId) {
 async function getDocs(ref) {
     let docs = await ref.get()
         .then((snapshot) => {
-            console.log('snap.docs:', snapshot.docs);
             return snapshot.docs;
         })
         .catch(reason => {
@@ -146,7 +143,6 @@ exports.observeNewMessage = functions.firestore
                     const badge = values[2];
 
                     console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
-                    console.log('fmctoken ' + receiver.fcmToken);
 
                     const message = {
     
@@ -160,7 +156,6 @@ exports.observeNewMessage = functions.firestore
                         },
                     }
 
-                    console.log("message:", message);
                     sendNotificationToDevice(receiver.fcmToken, message);
 
                     return;
@@ -177,13 +172,9 @@ exports.observeAddedUser = functions.firestore
     .onCreate((snap, context) => {
 
         var addedUid = context.params.uid;
-        var autoUid = context.params.autoUid
-        // Get an object representing the document
-        // e.g. {'name': 'Marie', 'age': 66}
+
         const data = snap.data();
         const requestUid = Object.keys(data)[0];
-        // access a particular field as you would any JS property
-        console.log('User: ' + addedUid + ' added by: ' + requestUid);
 
         // perform desired operations ...
         const store = admin.firestore();
@@ -196,6 +187,7 @@ exports.observeAddedUser = functions.firestore
                 const added = values[0];
                 const requestedBy = values[1];
 
+                console.log(`User: ${added.username}(${added.uid}) added by: ${requestedBy.username}(${requestedBy.uid})`);
                 const message = {
     
                     data: {
@@ -283,6 +275,8 @@ exports.observeLike = functions.https.onCall((data, context) => {
     }
 
     const store = admin.firestore();
+
+    // User to send notification to
     const user = getUser(uid, store);
 
     return Promise.all([user])
@@ -297,6 +291,34 @@ exports.observeLike = functions.https.onCall((data, context) => {
 });
 // [END observeLike]
 
+// [START observeAcceptFriendRequest]
+exports.observeAcceptFriendRequest = functions.https.onCall((data, context) => {
+
+    const uid = data.friendUid;
+    const username = data.acceptedByUsername;
+
+    const message = {
+        notification: {
+            body: `You and ${username} are now friends!`
+        }
+    }
+
+    const store = admin.firestore();
+
+    // User to send notification to
+    const user = getUser(uid, store);
+
+    return Promise.all([user])
+        .then(values => {
+            const user = values[0];
+            return sendNotificationToDevice(user.fcmToken, message); 
+        })
+        .catch(reason => {
+            console.log(reason);
+            return reason;
+        })
+});
+// [END observeAcceptFriendRequest]
 
 // [START observeCreateAccount]
 // exports.observeCreateAccount = functions.firestore
