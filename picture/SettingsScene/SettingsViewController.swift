@@ -257,7 +257,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         case .notifications:
             if !isNotificationsEnabled {
 
-                promptToAppSettings(title: "Unable to use notifications", message: "To enable notifications, go to Settings and enable notifications for this app.") { (completed) in
+                promptToAppSettings(title: "Turn On Notifications", message: "Turn on notifications in Settings to improve your Wikio Ki experience.") { (completed) in
                     NotificationCenter.default.addObserver(self, selector: #selector(self.willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
 
                 }
