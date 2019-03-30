@@ -339,7 +339,7 @@ extension SendToViewController: UITableViewDataSource {
             print("SECTION ERROR 🤶\(#function)")
         }
         
-        cell.textLabel?.text = friend.username
+        cell.textLabel?.text = friend.displayName
         
         return cell
     }
