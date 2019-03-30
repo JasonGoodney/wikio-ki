@@ -12,6 +12,7 @@ import SDWebImage
 
 class User {
     
+    var displayName: String
     let username: String
     let email: String
     let score: Int
@@ -28,6 +29,7 @@ class User {
         static let profilePhotoUrl = "profilePhotoUrl"
         static let email = "email"
         static let fcmToken = "fcmToken"
+        static let displayName = "displayName"
     }
     
     init(dictionary: [String: Any]) {
@@ -37,6 +39,11 @@ class User {
         self.uid = dictionary["uid"] as? String ?? ""
         self.score = dictionary["score"] as? Int ?? 0
         self.fcmToken = dictionary[Keys.fcmToken] as? String ?? nil
+        self.displayName = dictionary[Keys.displayName] as? String ?? ""
+        
+        if self.displayName == "" {
+            self.displayName = self.username
+        }
     }
     
     init(username: String, email: String = "", score: Int = 0, uid: String = "", profilePhotoUrl: String = "") {
@@ -45,7 +52,7 @@ class User {
         self.score = score
         self.uid = uid
         self.profilePhotoUrl = profilePhotoUrl
-        
+        self.displayName = username
         cacheImage(for: URL(string: self.profilePhotoUrl)!)
     }
 }
