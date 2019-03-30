@@ -72,6 +72,7 @@ class ProfileDetailsViewController: UIViewController {
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         label.textColor = Theme.darkGray
         return label
     }()
@@ -98,7 +99,7 @@ class ProfileDetailsViewController: UIViewController {
         displayNameLabel.anchor(top: profileImageView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
         
         usernameLabel.anchorCenterXToSuperview()
-        usernameLabel.anchor(top: displayNameLabel.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0))
+        usernameLabel.anchor(top: displayNameLabel.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 4, left: 0, bottom: 0, right: 0))
         
         addFriendButton.anchorCenterXToSuperview()
         addFriendButton.anchor(top: usernameLabel.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
