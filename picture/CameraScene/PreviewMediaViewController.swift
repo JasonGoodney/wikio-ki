@@ -321,7 +321,7 @@ class PreviewMediaViewController: UIViewController {
     
     func configure() {
         if let friend = friend {
-            sendToLabel.text = friend.username
+            sendToLabel.text = friend.displayName
         }
     }
     

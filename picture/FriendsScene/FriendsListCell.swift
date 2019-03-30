@@ -37,9 +37,10 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     
     weak var delegate: FriendsListCellDelegate?
     
-    private let usernameLabel: UILabel = {
+    private let unlFontSize: CGFloat = 18
+    private lazy var usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: unlFontSize, weight: .regular)
         label.textColor = Theme.secondaryBackground
         return label
     }()
@@ -149,7 +150,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
         
         if isLastSender && chat.isSending {
             cameraButton.tintColor = Theme.textColor
-            usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+            usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
             detailsLabel.text = "Sending - Don't close 🙏"
             statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
@@ -158,13 +159,13 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
         
         if chat.isNewFriendship && !Date(timeIntervalSince1970: chat.lastChatUpdateTimestamp).isWithinThePastWeek() {
             detailsLabel.text = "New friend" + timeAgoString
-            usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+            usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
             detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
             statusIndicatorView.configure(forStatus: .none, isOpened: false, type: type)
             return
             
         } else if chat.isNewFriendship {
-            usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
+            usernameLabel.font = UIFont.boldSystemFont(ofSize: unlFontSize)
             detailsLabel.font = UIFont.boldSystemFont(ofSize: detailsTextFontSize)
             detailsLabel.text = "New friend" + timeAgoString
             cameraButton.tintColor = Theme.textColor
@@ -181,21 +182,21 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
                 statusIndicatorView.configure(forStatus: .failed)
             case .sending:
                 cameraButton.tintColor = Theme.textColor
-                usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+                usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
                 detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
                 detailsLabel.text = "Sending - Do not close 🙏"
                 statusIndicatorView.configure(forStatus: .sending, isOpened: false, type: type)
             case .delivered:
                 cameraButton.tintColor = Theme.textColor
-                usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+                usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
                 detailsLabel.attributedText = attibutedText(detailsText: "Delivered", detailsTextColor: Theme.textColor, timeAgoString: timeAgoString)
                 statusIndicatorView.configure(forStatus: .delivered, isOpened: false, type: type)
             case .opened:
-                usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
+                usernameLabel.font = UIFont.boldSystemFont(ofSize: unlFontSize)
                 detailsLabel.attributedText = attibutedText(detailsText: "Opened", timeAgoString: timeAgoString)
                 cameraButton.tintColor = Theme.textColor
                 statusImageView.image = #imageLiteral(resourceName: "icons8-circled")
-                usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+                usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
                 detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
                 statusIndicatorView.configure(forStatus: .delivered, isOpened: true, type: type)
             default:
@@ -206,14 +207,14 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
             switch chat.status {
             case .delivered:
                 cameraButton.tintColor = Theme.textColor
-                usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+                usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .semibold)
                 detailsLabel.attributedText = attibutedText(detailsText: "New \(chat.lastMessageSentType.rawValue.capitalized)", detailsTextColor: textColor, timeAgoString: timeAgoString, isBold: true)
                 statusIndicatorView.configure(forStatus: .received, isOpened: false, type: type)
             case .opened:
-                usernameLabel.font = UIFont.boldSystemFont(ofSize: 17)
+                usernameLabel.font = UIFont.boldSystemFont(ofSize: unlFontSize)
                 detailsLabel.attributedText = attibutedText(detailsText: "Opened", timeAgoString: timeAgoString)
                 cameraButton.tintColor = Theme.textColor
-                usernameLabel.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+                usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
                 detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)
                 statusIndicatorView.configure(forStatus: .received, isOpened: true, type: type)
             default:
