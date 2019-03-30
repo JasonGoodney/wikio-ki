@@ -12,12 +12,15 @@ import FirebaseStorage
 import JGProgressHUD
 import SDWebImage
 import Digger
+import UserNotifications
 
 enum SettingsType: String {
     case username
     case email
     case profilePhoto
     case password
+    
+    case notifications
     
     case privacyPolicy
     case termsAndCondtions
@@ -66,13 +69,16 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         return UserController.shared.currentUser
     }
     
-    private let sectionHeaders: [String] = ["", "My Account", "About", "Account Actions"]
+    private let sectionHeaders: [String] = ["", "My Account", "Preferences", "About", "Account Actions"]
     private lazy var sectionInfoDetails: [[SectionInfo]] = [
         [],
         [
             (title: "Username", value: user?.username ?? "", type: .username),
             (title: "Email", value: user?.email ?? "", type: .email),
             (title: "Password", value: "", type: .password),
+        ],
+        [
+            (title: "Notifications", value: isNotificationsEnabled ? "On" : "Off", type: .notifications)
         ],
         [
             (title: "Privacy Policy", value: "", type: .privacyPolicy),
@@ -140,6 +146,8 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         return header
     }()
 
+    private var isNotificationsEnabled = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -156,6 +164,10 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
                 self.profileImageButton.isUserInteractionEnabled = true
             })
         }
+        
+        setIsNotificationsEnabled(completion: { (enabled) in
+            self.isNotificationsEnabled = enabled
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -203,6 +215,17 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
             case .username:
                 cell.accessoryType = .none
                 cell.selectionStyle = .none
+            case .notifications:
+                if !isNotificationsEnabled {
+                    let warningView = UIImageView(frame: .init(x: 0, y: 0, width: 16, height: 16))
+                    warningView.image = #imageLiteral(resourceName: "icons8-error").withRenderingMode(.alwaysTemplate)
+                    warningView.tintColor = Theme.warningYellow
+                    cell.accessoryView = warningView
+                    cell.selectionStyle = .default
+                } else {
+                    cell.accessoryType = .none
+                    cell.selectionStyle = .none
+                }
             case .deleteAccount:
                 cell.textLabel?.textColor = .red
             default:
@@ -230,6 +253,16 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
             let changePasswordVC = ChangePasswordViewController.init(navigationTitle: "Update Password", descriptionText: "To set a new password, please enter your current password first.", textFieldText: "", textFieldPlaceholder: "Current password")
             navigationController?.pushViewController(changePasswordVC, animated: true)
             
+        // MARK: - Preferences
+        case .notifications:
+            if !isNotificationsEnabled {
+
+                promptToAppSettings(title: "Unable to use notifications", message: "To enable notifications, go to Settings and enable notifications for this app.") { (completed) in
+                    NotificationCenter.default.addObserver(self, selector: #selector(self.willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+
+                }
+            }
+
         // MARK: - About
         case .privacyPolicy:
             let aboutVC = AboutViewController(type: .privacyPolicy)
@@ -327,7 +360,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == sectionHeaders.count - 1 && sectionHeaders[section] == "Account Actions" {
+        if section == sectionHeaders.count - 1 {
             return  "\(Bundle.appName()) \(Bundle.main.releaseVersionNumberPretty)"
         }
         
@@ -448,6 +481,40 @@ private extension SettingsViewController {
                 
             })
         }
+    }
+    
+    @objc private func willEnterForeground() {
+        let preferencesSection = 2
+        let notificationsRow = 0
+        setIsNotificationsEnabled { (enabled) in
+            self.isNotificationsEnabled = enabled
+            
+            self.sectionInfoDetails[preferencesSection][notificationsRow].value =
+                self.isNotificationsEnabled ? "On" : "Off"
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadRows(at: [
+                    IndexPath(row: notificationsRow, section: preferencesSection)
+                    ], with: .none)
+            }
+        }
+    }
+    
+    func setIsNotificationsEnabled(completion: @escaping (Bool) -> Void) {
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationSettings(completionHandler: { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .provisional:
+                print("authorized")
+                completion(true)
+            case .denied:
+                print("denied")
+                completion(false)
+            case .notDetermined:
+                print("not determined, ask user for permission now")
+                completion(false)
+            }
+        })
     }
 }
 

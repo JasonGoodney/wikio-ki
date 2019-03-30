@@ -156,9 +156,7 @@ exports.observeNewMessage = functions.firestore
                         },
                     }
 
-                    sendNotificationToDevice(receiver.fcmToken, message);
-
-                    return;
+                    return sendNotificationToDevice(receiver.fcmToken, message);
                 })
                 .catch(reason => {
                     console.log(reason);

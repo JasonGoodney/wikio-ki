@@ -94,6 +94,9 @@ class AboutViewController: UIViewController, UITableViewDataSource {
         default:
             cell.textLabel?.text = "None"
         }
+        
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+        
         return cell
     }
     

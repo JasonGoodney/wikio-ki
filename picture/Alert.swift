@@ -216,7 +216,7 @@ extension UIViewController {
         }
     }
     
-    func promptToAppSettings(title: String, message: String) {
+    func promptToAppSettings(title: String, message: String, completion: @escaping (Bool) -> Void = { _ in }) {
         // prompt User with UIAlertView
         
         DispatchQueue.main.async(execute: { [unowned self] in
@@ -225,7 +225,7 @@ extension UIViewController {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"), style: .cancel, handler: nil))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"), style: .default, handler: { action in
                 if #available(iOS 10.0, *) {
-                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: completion)
 
                 } else {
                     if let appSettings = URL(string: UIApplication.openSettingsURLString) {
