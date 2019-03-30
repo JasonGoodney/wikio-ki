@@ -237,7 +237,7 @@ private extension CameraViewController {
         
         if let friend = friend {
             let attributedText = NSMutableAttributedString(string: "Send to\n", attributes: [.font: UIFont.systemFont(ofSize: 16)])
-            attributedText.append(NSAttributedString(string: "\(friend.username)", attributes: [.font: UIFont.boldSystemFont(ofSize: 16)]))
+            attributedText.append(NSAttributedString(string: "\(friend.displayName)", attributes: [.font: UIFont.boldSystemFont(ofSize: 16)]))
             sendToLabel.attributedText = attributedText
         }
         
