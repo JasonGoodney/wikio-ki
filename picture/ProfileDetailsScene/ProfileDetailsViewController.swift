@@ -63,9 +63,16 @@ class ProfileDetailsViewController: UIViewController {
         return button
     }()
     
-    private let usernameLabel: UILabel = {
+    private let displayNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 30, weight: .heavy)
+        label.textColor = Theme.ultraDarkGray
+        return label
+    }()
+    
+    private let usernameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = Theme.darkGray
         return label
     }()
     
@@ -82,13 +89,16 @@ class ProfileDetailsViewController: UIViewController {
     
     private lazy var header: UIView = {
         let header = UIView()
-        header.addSubviews([profileImageView, usernameLabel, addFriendButton])
+        header.addSubviews([profileImageView, displayNameLabel, usernameLabel, addFriendButton])
 
         profileImageView.anchorCenterXToSuperview()
         profileImageView.anchor(top: header.topAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0))
         
+        displayNameLabel.anchorCenterXToSuperview()
+        displayNameLabel.anchor(top: profileImageView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
+        
         usernameLabel.anchorCenterXToSuperview()
-        usernameLabel.anchor(top: profileImageView.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
+        usernameLabel.anchor(top: displayNameLabel.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 0, left: 0, bottom: 0, right: 0))
         
         addFriendButton.anchorCenterXToSuperview()
         addFriendButton.anchor(top: usernameLabel.bottomAnchor, leading: nil, bottom: nil, trailing: nil, padding: .init(top: 16, left: 0, bottom: 0, right: 0))
@@ -120,6 +130,7 @@ class ProfileDetailsViewController: UIViewController {
         setupLayout()
         guard let url = URL(string: user.profilePhotoUrl) else { return }
         profileImageView.sd_setImage(with: url, for: .normal)
+        displayNameLabel.text = user.displayName
         usernameLabel.text = user.username
         
         updateButton(forAddFriendState: addFriendState)
