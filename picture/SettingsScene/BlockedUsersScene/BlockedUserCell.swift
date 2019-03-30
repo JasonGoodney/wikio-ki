@@ -24,9 +24,17 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
         return button
     }()
     
+    private let displayNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        label.textColor = Theme.ultraDarkGray
+        return label
+    }()
+    
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        label.textColor = Theme.darkGray
         return label
     }()
     
@@ -42,15 +50,22 @@ class BlockedUserCell: UITableViewCell, ReuseIdentifiable {
     
     func configure(withBlockedUser blockedUser: User) {
         usernameLabel.text = blockedUser.username
+        displayNameLabel.text = blockedUser.displayName
     }
     
     private func setupLayout() {
         selectionStyle = .none
         
-        let stackView = UIStackView(arrangedSubviews: [usernameLabel, unblockButton])
+        let namesStackView = UIStackView(arrangedSubviews: [displayNameLabel, usernameLabel])
+        namesStackView.axis = .vertical
+        namesStackView.spacing = 4
+        
+        let stackView = UIStackView(arrangedSubviews: [namesStackView, unblockButton])
         stackView.distribution = .equalSpacing
+        
         addSubview(stackView)
-        stackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 16))
+        stackView.anchorCenterYToSuperview()
+        stackView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 0, right: 16))
         
         unblockButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
         

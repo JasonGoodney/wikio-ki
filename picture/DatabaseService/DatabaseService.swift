@@ -53,8 +53,8 @@ class DatabaseService {
                 return
             }
             
-            guard let docs = snapshot?.documents else { return }
-            guard let docDataDict = docs.first?.data() else { return }
+            guard let docs = snapshot?.documents else { completion(nil, nil); return }
+            guard let docDataDict = docs.first?.data() else { completion(nil, nil); return }
             let searchedUser = User(dictionary: docDataDict)
             Firestore.firestore().collection(Collection.users).document(searchedUser.uid)
                 .collection(Collection.blocked).document(UserController.shared.currentUser!.uid)

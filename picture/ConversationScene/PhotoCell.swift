@@ -44,6 +44,9 @@ class PhotoCell: UICollectionViewCell, ReuseIdentifiable {
         mediaViews.forEach({
             $0.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor)
         })
+        
+        photoView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(zoom(gesture:))))
+        photoView.isUserInteractionEnabled = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -54,6 +57,26 @@ class PhotoCell: UICollectionViewCell, ReuseIdentifiable {
         
         self.photoView.imageFromServerURL(photoURL.absoluteString)
         
+    }
+    
+    var lastScale:CGFloat!
+    @objc func zoom(gesture:UIPinchGestureRecognizer) {
+        if(gesture.state == .began) {
+            // Reset the last scale, necessary if there are multiple objects with different scales
+            lastScale = gesture.scale
+        }
+        if (gesture.state == .began || gesture.state == .changed) {
+            let currentScale = gesture.view!.layer.value(forKeyPath:"transform.scale")! as! CGFloat
+            // Constants to adjust the max/min values of zoom
+            let kMaxScale:CGFloat = 2.0
+            let kMinScale:CGFloat = 1.0
+            var newScale = 1 -  (lastScale - gesture.scale)
+            newScale = min(newScale, kMaxScale / currentScale)
+            newScale = max(newScale, kMinScale / currentScale)
+            let transform = (gesture.view?.transform)!.scaledBy(x: newScale, y: newScale);
+            gesture.view?.transform = transform
+            lastScale = gesture.scale  // Store the previous scale factor for the next pinch gesture call
+        }
     }
     
 }

@@ -26,7 +26,7 @@ class Friend: User {
         
         self.isBestFriend = isBestFriend
         
-        super.init(username: user.username, email: user.email, score: user.score, uid: user.uid, profilePhotoUrl: user.profilePhotoUrl)
+        super.init(username: user.username, displayName: user.displayName, email: user.email, score: user.score, uid: user.uid, profilePhotoUrl: user.profilePhotoUrl)
         
     }
 }

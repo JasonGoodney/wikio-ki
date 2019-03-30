@@ -290,6 +290,7 @@ class PreViewController: UIViewController {
             
                 self.progressBar.alpha = 0
                 self.usernameLabel.alpha = 0
+                self.flagButton.alpha = 0
                 
             }
         } else if sender.state == UIGestureRecognizer.State.ended || sender.state == UIGestureRecognizer.State.cancelled {
@@ -308,6 +309,7 @@ class PreViewController: UIViewController {
                     
                     self.progressBar.alpha = 1
                     self.usernameLabel.alpha = 1
+                    self.flagButton.alpha = 1
                 })
             }
         }

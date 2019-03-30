@@ -795,6 +795,17 @@ extension FriendsListViewController {
 }
 
 extension FriendsListViewController {
+    fileprivate func reloadTableView(forChatUpdate pendingChat: Chat, atUserIndex index: Int) {
+        
+        self.tableView.reloadRows(at: [IndexPath(row: index, section: 2)], with: .automatic)
+        
+        if UserController.shared.bestFriendsChats.contains(where: { $0.chat.uid == pendingChat.uid }) {
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+        } else if UserController.shared.recentChatsWithFriends.contains(where: { $0.chat.uid == pendingChat.uid }) {
+            self.tableView.reloadSections(IndexSet(integer: 1), with: .none)
+        }
+    }
+    
     fileprivate func setupListeners() {
         
         self.friendRequestListener = Firestore.firestore()
@@ -870,9 +881,8 @@ extension FriendsListViewController {
                                 if beforeRecentsCount < afterRecentsCount {
                                     self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
                                 }
-                                //
-                                self.tableView.reloadData()
-                                //
+                                // I sent + I viewed
+                                self.reloadTableView(forChatUpdate: pendingChat, atUserIndex: index)
                             }
                         }, completion: { (_) in
                             UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -897,9 +907,8 @@ extension FriendsListViewController {
                                     if beforeRecentsCount < afterRecentsCount {
                                         self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
                                     }
-                                    //
-                                    self.tableView.reloadData()
-                                    //
+                                    
+                                   self.reloadTableView(forChatUpdate: pendingChat, atUserIndex: index)
                                 }
                             } else if !isSender && !pendingChat.isSending {
                                 if let index = UserController.shared.allChatsWithFriends.firstIndex(where: { $0.chat.uid == pendingChat.uid }) {
@@ -910,9 +919,10 @@ extension FriendsListViewController {
                                     if beforeRecentsCount < afterRecentsCount {
                                         self.tableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
                                     }
-                                    //
-                                    self.tableView.reloadData()
-                                    //
+                                    
+                                    // Received message
+                                    self.reloadTableView(forChatUpdate: pendingChat, atUserIndex: index)
+                                    
                                 }
                             }
                             

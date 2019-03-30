@@ -12,6 +12,7 @@ import SDWebImage
 
 class User {
     
+    var displayName: String
     let username: String
     let email: String
     let score: Int
@@ -28,6 +29,7 @@ class User {
         static let profilePhotoUrl = "profilePhotoUrl"
         static let email = "email"
         static let fcmToken = "fcmToken"
+        static let displayName = "displayName"
     }
     
     init(dictionary: [String: Any]) {
@@ -37,15 +39,18 @@ class User {
         self.uid = dictionary["uid"] as? String ?? ""
         self.score = dictionary["score"] as? Int ?? 0
         self.fcmToken = dictionary[Keys.fcmToken] as? String ?? nil
+        self.displayName = dictionary["displayName"] as? String ?? ""
+        
+        setEmptyDisplayName()
     }
     
-    init(username: String, email: String = "", score: Int = 0, uid: String = "", profilePhotoUrl: String = "") {
+    init(username: String, displayName: String = "", email: String = "", score: Int = 0, uid: String = "", profilePhotoUrl: String = "") {
         self.username = username
         self.email = email
         self.score = score
         self.uid = uid
         self.profilePhotoUrl = profilePhotoUrl
-        
+        self.displayName = displayName == "" ? username : displayName
         cacheImage(for: URL(string: self.profilePhotoUrl)!)
     }
 }
@@ -59,6 +64,12 @@ extension User {
     
     func cacheImage(for url: URL) {
         SDWebImageManager.shared().saveImage(toCache: profilePhoto, for: url)
+    }
+    
+    private func setEmptyDisplayName() {
+        if displayName == "" {
+            displayName = username
+        }
     }
 }
 

@@ -22,9 +22,17 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
     
     private var user: User?
     
+    private let displayNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        label.textColor = Theme.ultraDarkGray
+        return label
+    }()
+    
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        label.textColor = Theme.darkGray
         return label
     }()
     
@@ -54,6 +62,7 @@ class AddFriendCell: UITableViewCell, ReuseIdentifiable {
     func configure(with user: User) {
         self.user = user
         
+        displayNameLabel.text = user.displayName
         usernameLabel.text = user.username
         if let url = URL(string: user.profilePhotoUrl) {
             self.profileImageView.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
@@ -108,16 +117,20 @@ private extension AddFriendCell {
         stackView.distribution = .equalSpacing
         stackView.spacing = 8
         
-        addSubviews([profileImageView, usernameLabel, stackView])
+        let namesStackView = UIStackView(arrangedSubviews: [displayNameLabel, usernameLabel])
+        namesStackView.axis = .vertical
+        namesStackView.spacing = 4
+        
+        addSubviews([profileImageView, namesStackView, stackView])
         
         profileImageView.anchorCenterYToSuperview()
-        usernameLabel.anchorCenterYToSuperview()
+        namesStackView.anchorCenterYToSuperview()
         stackView.anchorCenterYToSuperview()
         
         
         profileImageView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0))
         
-        usernameLabel.anchor(top: nil, leading: profileImageView.trailingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0))
+        namesStackView.anchor(top: nil, leading: profileImageView.trailingAnchor, bottom: nil, trailing: nil, padding: .init(top: 0, left: 16, bottom: 0, right: 0))
 
         stackView.anchor(top: nil, leading: nil, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 16))
         
