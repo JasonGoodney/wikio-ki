@@ -39,20 +39,18 @@ class User {
         self.uid = dictionary["uid"] as? String ?? ""
         self.score = dictionary["score"] as? Int ?? 0
         self.fcmToken = dictionary[Keys.fcmToken] as? String ?? nil
-        self.displayName = dictionary[Keys.displayName] as? String ?? ""
+        self.displayName = dictionary["displayName"] as? String ?? ""
         
-        if self.displayName == "" {
-            self.displayName = self.username
-        }
+        setEmptyDisplayName()
     }
     
-    init(username: String, email: String = "", score: Int = 0, uid: String = "", profilePhotoUrl: String = "") {
+    init(username: String, displayName: String = "", email: String = "", score: Int = 0, uid: String = "", profilePhotoUrl: String = "") {
         self.username = username
         self.email = email
         self.score = score
         self.uid = uid
         self.profilePhotoUrl = profilePhotoUrl
-        self.displayName = username
+        self.displayName = displayName == "" ? username : displayName
         cacheImage(for: URL(string: self.profilePhotoUrl)!)
     }
 }
@@ -66,6 +64,12 @@ extension User {
     
     func cacheImage(for url: URL) {
         SDWebImageManager.shared().saveImage(toCache: profilePhoto, for: url)
+    }
+    
+    private func setEmptyDisplayName() {
+        if displayName == "" {
+            displayName = username
+        }
     }
 }
 

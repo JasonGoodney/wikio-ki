@@ -131,7 +131,8 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
             }
         }
     
-        usernameLabel.text = user.username
+        usernameLabel.text = user.displayName
+        
         if let url = URL(string: user.profilePhotoUrl) {
             self.profileImageView.sd_setImage(with: url, for: .normal, placeholderImage: ProfileImageButton.placeholderProfileImage, options: []) { (_, _, _, _) in
                 self.profileImageView.isUserInteractionEnabled = true

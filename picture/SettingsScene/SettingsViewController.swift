@@ -15,6 +15,7 @@ import Digger
 import UserNotifications
 
 enum SettingsType: String {
+    case displayName
     case username
     case email
     case profilePhoto
@@ -73,6 +74,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     private lazy var sectionInfoDetails: [[SectionInfo]] = [
         [],
         [
+            (title: "Name", value: user?.displayName ?? "", type: .displayName),
             (title: "Username", value: user?.username ?? "", type: .username),
             (title: "Email", value: user?.email ?? "", type: .email),
             (title: "Password", value: "", type: .password),
@@ -174,10 +176,12 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         super.viewWillAppear(animated)
         view.backgroundColor = .white
         
+        // To reload after making changes to My Account.
+        #warning("Should change how this works.")
         DispatchQueue.main.async {
             self.sectionInfoDetails[1] = [
+                (title: "Name", value: self.user?.displayName ?? "", type: .displayName),
                 (title: "Username", value: self.user?.username ?? "", type: .username),
-                
                 (title: "Email", value: self.user?.email ?? "", type: .email),
                 (title: "Password", value: "", type: .password),
             ]
@@ -244,6 +248,9 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         
         switch detail.type {
         // MARK: - My Account
+        case .displayName:
+            let editDisplayNameVC = EditDisplayNameViewController.init(navigationTitle: "Name", descriptionText: "This is how you will appear on \(Bundle.appName()).", textFieldText: user!.displayName, textFieldPlaceholder: "Name")
+            navigationController?.pushViewController(editDisplayNameVC, animated: true)
         case .username:
             ()
         case .email:
