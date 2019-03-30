@@ -437,7 +437,16 @@ extension AddFriendViewController: UISearchBarDelegate {
                     return
                 }
 
-                guard let searchedUser = searchedUser else { return }
+                guard let searchedUser = searchedUser else {
+                    self.searchedUser = nil
+                    DispatchQueue.main.async {
+                        if let _ = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) {
+                            self.tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                        }
+                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                    }
+                    return
+                }
                 if UserController.shared.currentUser == searchedUser
                     
                     || (UserController.shared.currentUser?.friendsUids.contains((searchedUser.uid)))!
@@ -449,7 +458,11 @@ extension AddFriendViewController: UISearchBarDelegate {
                     self.searchedUser = searchedUser
                     
                     DispatchQueue.main.async {
-                        self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                        if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) {
+                            self.tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                        } else {
+                            self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                        }
                         UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     } 
                 }
