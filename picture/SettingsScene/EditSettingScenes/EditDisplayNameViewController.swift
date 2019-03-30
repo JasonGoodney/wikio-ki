@@ -18,6 +18,25 @@ class EditDisplayNameViewController: EditSettingViewController {
         settingTextField.autocorrectionType = .no
         
         delegate = self
+        
+        saveButton.isEnabled = isValidDisplayName(text: settingTextField.text!)
+    }
+    
+    private func isValidDisplayName(text: String) -> Bool {
+        if text.hasPrefix(" ") || text.hasSuffix(" ") {
+            return false
+        }
+        
+        let spaces = text.filter({ String($0) == " " })
+        if spaces.count > 1 {
+            return false
+        }
+        
+        if text.utf16.count > 18 {
+            return false
+        }
+        
+        return true
     }
 
 }
@@ -33,6 +52,11 @@ extension EditDisplayNameViewController: EditSettingDelegate {
         } else {
             saveButton.isEnabled = false
         }
+
+        if let text = textField.text, !isValidDisplayName(text: text) {
+            saveButton.isEnabled = false
+        }
+        
     }
     
     func updateChanges() {
