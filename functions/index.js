@@ -143,7 +143,7 @@ exports.observeNewMessage = functions.firestore
                     const badge = values[2];
 
                     console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
-
+                    console.log("Sender display name:", sender.displayName);
                     const message = {
     
                         data: {
@@ -280,6 +280,7 @@ exports.observeLike = functions.https.onCall((data, context) => {
     return Promise.all([user])
         .then(values => {
             const user = values[0];
+            console.log(`${username} liked ${user.username}'s ${type}.`);
             return sendNotificationToDevice(user.fcmToken, message); 
         })
         .catch(reason => {
