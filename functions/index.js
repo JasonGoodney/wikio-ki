@@ -107,6 +107,13 @@ function createMessage(data, body, badge, sound) {
     }
 }
 
+// TODO: Have to update name sent to observeLike first to make notifications coherent
+function usersNotificationName(user) {
+    const hasDisplayName = user.displayName !== undefined;
+    const usersName = hasDisplayName ? user.displayName : user.username;
+    return usersName;
+}
+
 // Listen for events
 
 exports.observeNewMessage = functions.firestore
@@ -143,7 +150,10 @@ exports.observeNewMessage = functions.firestore
                     const badge = values[2];
 
                     console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
-                    console.log("Sender display name:", sender.displayName);
+
+                    const hasDisplayName = sender.displayName !== undefined;
+                    const senderName = hasDisplayName ? sender.displayName : sender.username;
+
                     const message = {
     
                         data: {
