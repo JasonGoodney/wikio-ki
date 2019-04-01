@@ -212,7 +212,7 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
                 statusIndicatorView.configure(forStatus: .received, isOpened: false, type: type)
             case .opened:
                 usernameLabel.font = UIFont.boldSystemFont(ofSize: unlFontSize)
-                detailsLabel.attributedText = attibutedText(detailsText: "Opened", timeAgoString: timeAgoString)
+                detailsLabel.attributedText = attibutedText(detailsText: "Received", timeAgoString: timeAgoString)
                 cameraButton.tintColor = Theme.textColor
                 usernameLabel.font = UIFont.systemFont(ofSize: unlFontSize, weight: .medium)
                 detailsLabel.font = UIFont.systemFont(ofSize: detailsTextFontSize)

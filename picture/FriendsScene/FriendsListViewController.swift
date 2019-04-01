@@ -938,7 +938,9 @@ extension FriendsListViewController: UploadDelegate {
     func upload(started: Bool) {
         if started {
             UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseIn], animations: {
-                self.uploadProgressView.alpha = 1
+                DispatchQueue.main.async {                
+                    self.uploadProgressView.alpha = 1
+                }
             }, completion: nil)
         }
     }
