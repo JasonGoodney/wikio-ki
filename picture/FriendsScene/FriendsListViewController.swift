@@ -615,6 +615,43 @@ extension FriendsListViewController: ProfileImageButtonDelegate {
 
 // MARK: - FriendsListCellDelegate
 extension FriendsListViewController: FriendsListCellDelegate {
+    func openProfile(_ sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: tableView)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                var dataSource: [ChatWithFriend] = []
+                var profileDetailsViewController: ProfileDetailsViewController
+                var isBestFriend = false
+                
+                switch indexPath.section {
+                case 0:
+                    dataSource = UserController.shared.bestFriendsChats
+                    isBestFriend = true
+                case 1:
+                    dataSource = UserController.shared.recentChatsWithFriends
+                case 2:
+                    dataSource = UserController.shared.allChatsWithFriends
+                    if UserController.shared.bestFriendUids.contains(
+                        dataSource[indexPath.row].friend.uid) {
+                        isBestFriend = true
+                    }
+                default:
+                    print("SECTION ERROR 🤶\(#function)")
+                }
+                
+                let friend = dataSource[indexPath.row].friend
+                _ = dataSource[indexPath.row].chat
+                let chatWithFriend = dataSource[indexPath.row]
+                
+                profileDetailsViewController = ProfileDetailsViewController(chatWithFriend: chatWithFriend, isBestFriend: isBestFriend, addFriendState: .accepted)
+                
+                profileDetailsViewController.delegate = self
+                navigationController?.pushViewController(profileDetailsViewController, animated: true)
+            }
+        }
+        
+    }
+    
     @objc func didTapCameraButton(_ sender: PopButton) {
         
         #if targetEnvironment(simulator)

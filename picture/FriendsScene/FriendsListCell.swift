@@ -11,6 +11,7 @@ import SDWebImage
 
 protocol FriendsListCellDelegate: class {
     func didTapCameraButton(_ sender: PopButton)
+    func openProfile(_ sender: UILongPressGestureRecognizer)
 }
 
 protocol Resendable: class {
@@ -81,6 +82,11 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
     private let statusIndicatorView = StatusIndicatorView(subviewSize: 15)
 
     let profileImageView = ProfileImageButton(height: 56, width: 56, enabled: true)
+    
+    private lazy var longPressGesture: UILongPressGestureRecognizer = {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        return gesture
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -236,6 +242,10 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
         delegate?.didTapCameraButton(cameraButton)
     }
     
+    @objc private func handleLongPress() {
+        delegate?.openProfile(longPressGesture)
+    }
+    
     let separatorView = UIView()
     func separatorView(isHidden: Bool) {
         separatorView.isHidden = isHidden
@@ -246,6 +256,9 @@ class FriendsListCell: UITableViewCell, ReuseIdentifiable, Resendable {
 // MARK: - UI
 private extension FriendsListCell {
     func updateView() {
+        
+        addGestureRecognizer(longPressGesture)
+        
         backgroundColor = .white
         
         statusIndicatorView.configure(forStatus: .delivered, isOpened: false, type: .photo)
