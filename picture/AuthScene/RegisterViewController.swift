@@ -147,6 +147,9 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        let touchId = TouchIDAuth()
+//        touchId.authenticateUserUsingTouchID()
+        
         agreedToAgreements = false
         
         setupLayout()

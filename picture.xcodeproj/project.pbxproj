@@ -101,6 +101,7 @@
 		D7BDC9732236BB0800CF2C6B /* DatabaseService+Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BDC9722236BB0800CF2C6B /* DatabaseService+Report.swift */; };
 		D7C83BEC21FE94AA0086149B /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C83BEB21FE94AA0086149B /* AboutViewController.swift */; };
 		D7C874A92208CA0500238484 /* FileManager+Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79524ED220691E600455E6F /* FileManager+Persist.swift */; };
+		D7CD7178225A830A008C763F /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7CD7177225A830A008C763F /* LocalAuthentication.framework */; };
 		D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */; };
 		D7D0007721E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */; };
 		D7D0007921EC2CBE003C3A80 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007821EC2CBE003C3A80 /* Friend.swift */; };
@@ -112,6 +113,9 @@
 		D7DF9B9C21F390500087031B /* UnreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DF9B9B21F390500087031B /* UnreadView.swift */; };
 		D7DF9BA521F6674F0087031B /* CachingPlayerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DF9BA421F6674F0087031B /* CachingPlayerItem.swift */; };
 		D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */; };
+		D7E6295422598494001855DE /* KeychainPasswordItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6295322598494001855DE /* KeychainPasswordItem.swift */; };
+		D7E62956225984EC001855DE /* TouchIDAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E62955225984EC001855DE /* TouchIDAuth.swift */; };
+		D7E629582259859B001855DE /* KeychainConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E629572259859B001855DE /* KeychainConfiguration.swift */; };
 		D7E9F1602223160F0038FFDA /* PassBackDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E9F15F2223160F0038FFDA /* PassBackDelegate.swift */; };
 		D7F0EA3221F6DA1800B9522E /* UIView+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F0EA3121F6DA1800B9522E /* UIView+Animations.swift */; };
 		D7F0EA3421F6E7B400B9522E /* UIImage+Rotate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F0EA3321F6E7B400B9522E /* UIImage+Rotate.swift */; };
@@ -309,6 +313,7 @@
 		D7BDC9702236A3D900CF2C6B /* ReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
 		D7BDC9722236BB0800CF2C6B /* DatabaseService+Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+Report.swift"; sourceTree = "<group>"; };
 		D7C83BEB21FE94AA0086149B /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		D7CD7177225A830A008C763F /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
 		D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+DeleteAccount.swift"; sourceTree = "<group>"; };
 		D7D0007821EC2CBE003C3A80 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
@@ -320,6 +325,9 @@
 		D7DF9B9B21F390500087031B /* UnreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadView.swift; sourceTree = "<group>"; };
 		D7DF9BA421F6674F0087031B /* CachingPlayerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingPlayerItem.swift; sourceTree = "<group>"; };
 		D7E32BA921E3EB720058E8FE /* UserDestructionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDestructionType.swift; sourceTree = "<group>"; };
+		D7E6295322598494001855DE /* KeychainPasswordItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPasswordItem.swift; sourceTree = "<group>"; };
+		D7E62955225984EC001855DE /* TouchIDAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchIDAuth.swift; sourceTree = "<group>"; };
+		D7E629572259859B001855DE /* KeychainConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainConfiguration.swift; sourceTree = "<group>"; };
 		D7E9F15F2223160F0038FFDA /* PassBackDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassBackDelegate.swift; sourceTree = "<group>"; };
 		D7F0EA3121F6DA1800B9522E /* UIView+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Animations.swift"; sourceTree = "<group>"; };
 		D7F0EA3321F6E7B400B9522E /* UIImage+Rotate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Rotate.swift"; sourceTree = "<group>"; };
@@ -342,6 +350,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7CD7178225A830A008C763F /* LocalAuthentication.framework in Frameworks */,
 				A75ED217A945C681FB6CD78A /* Pods_picture.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -359,6 +368,7 @@
 		8E68B46E564B9AB3C88BC770 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7CD7177225A830A008C763F /* LocalAuthentication.framework */,
 				46A4A583030759959581799D /* Pods_picture.framework */,
 			);
 			name = Frameworks;
@@ -420,6 +430,9 @@
 				D72D792B21D0913900FB5327 /* LoginViewModel.swift */,
 				D715B51E21E84F29008A5E80 /* AuthValidation.swift */,
 				D7D58B2722388CBF005E6AFC /* EULAViewController.swift */,
+				D7E6295322598494001855DE /* KeychainPasswordItem.swift */,
+				D7E629572259859B001855DE /* KeychainConfiguration.swift */,
+				D7E62955225984EC001855DE /* TouchIDAuth.swift */,
 			);
 			path = AuthScene;
 			sourceTree = "<group>";
@@ -949,6 +962,7 @@
 				D786F67A21D92D80003DA3C6 /* AuthError.swift in Sources */,
 				D715B51C21E7EE0D008A5E80 /* ChangePasswordViewController.swift in Sources */,
 				D78BB2F7220DDB0F007DD089 /* PhotoCell.swift in Sources */,
+				D7E62956225984EC001855DE /* TouchIDAuth.swift in Sources */,
 				D7591F0A21C2C26100B3EAAD /* ReuseIdentifiable.swift in Sources */,
 				D778E68E21CDD77D005C6C96 /* Bindable.swift in Sources */,
 				D7E32BAA21E3EB720058E8FE /* UserDestructionType.swift in Sources */,
@@ -978,6 +992,7 @@
 				D7D0007921EC2CBE003C3A80 /* Friend.swift in Sources */,
 				D786F67C21D92EBC003DA3C6 /* Alert.swift in Sources */,
 				D73B8AFB21C86B1200DD4CA4 /* Merge.swift in Sources */,
+				D7E629582259859B001855DE /* KeychainConfiguration.swift in Sources */,
 				D7591F0721C2C23300B3EAAD /* FriendsListCell.swift in Sources */,
 				D797739B222CC9D1006A2F13 /* Constants.swift in Sources */,
 				D73B8AFD21C86DA100DD4CA4 /* CaptionProcessor.swift in Sources */,
@@ -1022,6 +1037,7 @@
 				D7BDC9732236BB0800CF2C6B /* DatabaseService+Report.swift in Sources */,
 				D7DF9BA521F6674F0087031B /* CachingPlayerItem.swift in Sources */,
 				D7F8992C21F250E500020A68 /* LoadingViewController.swift in Sources */,
+				D7E6295422598494001855DE /* KeychainPasswordItem.swift in Sources */,
 				D7591F1D21C3141E00B3EAAD /* PhotoViewController.swift in Sources */,
 				D74585F42226F2D600781713 /* Notification.swift in Sources */,
 				D7C83BEC21FE94AA0086149B /* AboutViewController.swift in Sources */,

@@ -25,8 +25,15 @@ class LoginViewModel {
     func performLogin(completion: @escaping (Error?) -> ()) {
         guard let email = email, let password = password else { return }
         isLoggingIn.value = true
+        
         Auth.auth().signIn(withEmail: email, password: password) { (res, err) in
-            completion(err)
+            if let error = err {
+                completion(error)
+            } else {
+//                let touchId = TouchIDAuth()
+//                touchId.saveAccountDetailsToKeychain(email: email.lowercased(), password: password)
+                completion(nil)
+            }
         }
     }
 }
