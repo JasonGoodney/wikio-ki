@@ -101,10 +101,12 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         let view = UITableView(frame: .zero, style: .grouped)
         view.dataSource = self
         view.delegate = self
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
+        view.contentInset.bottom = versionLabelHeight
         return view
     }()
     
+    private let versionLabelHeight: CGFloat = 56
     private let versionLabel: UILabel = {
         let label = UILabel()
         label.text = "\(Bundle.appName()) \(Bundle.main.releaseVersionNumberPretty)"
@@ -367,11 +369,19 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == sectionHeaders.count - 1 {
-            return  "\(Bundle.appName()) \(Bundle.main.releaseVersionNumberPretty)"
+        return ""
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if section > 0 {
+            (view as! UITableViewHeaderFooterView).backgroundView?.backgroundColor = .white
         }
-        
-        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+        if section > 0 {
+            (view as! UITableViewHeaderFooterView).backgroundView?.backgroundColor = .white
+        }
     }
 }
 
@@ -382,7 +392,7 @@ private extension SettingsViewController {
 
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
         
-        versionLabel.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: UIEdgeInsets.init(), size: .init(width: 0, height: 44))
+        versionLabel.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(), size: .init(width: 0, height: versionLabelHeight))
     }
     
     func deselectCell() {
