@@ -57,6 +57,12 @@ async function getUser(uid, store) {
     return user;
 }
 
+function usernameForNotification(user) {
+    const hasDisplayName = user.displayName !== undefined;
+    const username = hasDisplayName ? user.displayName : user.username;
+    return username;
+}
+
 async function badgeCount(userId) {
     
     var db = admin.firestore();
@@ -110,8 +116,8 @@ function createMessage(data, body, badge, sound) {
 // TODO: Have to update name sent to observeLike first to make notifications coherent
 function usersNotificationName(user) {
     const hasDisplayName = user.displayName !== undefined;
-    const usersName = hasDisplayName ? user.displayName : user.username;
-    return usersName;
+    const username = hasDisplayName ? user.displayName : user.username;
+    return username;
 }
 
 // Listen for events
@@ -149,10 +155,8 @@ exports.observeNewMessage = functions.firestore
                     const sender = values[1];
                     const badge = values[2];
 
-                    console.log(`Notification from ${sender.username}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
-
-                    const hasDisplayName = sender.displayName !== undefined;
-                    const senderName = hasDisplayName ? sender.displayName : sender.username;
+                    const senderName = usersNotificationName(sender);
+                    console.log(`Notification from ${senderName}(${sender.uid}) to ${receiver.username}(${receiver.uid})`);
 
                     const message = {
     
@@ -160,7 +164,7 @@ exports.observeNewMessage = functions.firestore
                             chat: chatUid,
                         },
                         notification: {
-                            body: `from ${sender.username}`,
+                            body: `from ${senderName}`,
                             badge: `${badge}`,
                             sound: "default",
                         },
@@ -195,6 +199,7 @@ exports.observeAddedUser = functions.firestore
                 const added = values[0];
                 const requestedBy = values[1];
 
+                const requestedByName = usersNotificationName(sender);
                 console.log(`User: ${added.username}(${added.uid}) added by: ${requestedBy.username}(${requestedBy.uid})`);
                 const message = {
     
@@ -202,7 +207,7 @@ exports.observeAddedUser = functions.firestore
                         requestedByUid: requestedBy.uid
                     },
                     notification: {
-                        body: `${requestedBy.username} added you!`,
+                        body: `${requestedByName} added you!`,
                         sound: "default",
                     },
                 }

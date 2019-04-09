@@ -219,9 +219,11 @@ class PreViewController: UIViewController {
             }
             print("Liked \(items[currentIndex].messageType.databaseValue().lowercased())")
             guard let friend = chatWithFriend?.friend else { return }
+            
             let data = ["friendUid": friend.uid,
-                        "likedByUsername": UserController.shared.currentUser!.username,
+                        "likedByUsername": UserController.shared.currentUser!.displayName,
                         "messageType": message.messageType.databaseValue().lowercased()]
+            
             functions.httpsCallable("observeLike").call(data) { (result, error) in
                 if let error = error as NSError? {
                     if error.domain == FunctionsErrorDomain {

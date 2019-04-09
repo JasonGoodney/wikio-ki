@@ -336,8 +336,9 @@ extension AddFriendViewController: AddFriendDelegate {
                 
                 print(UserController.shared.currentUser!.username, "and", user.username, "are friends")
 
+                let acceptedByUsername = UserController.shared.currentUser!.displayName
                 let data = ["friendUid": user.uid,
-                            "acceptedByUsername": UserController.shared.currentUser!.username]
+                            "acceptedByUsername": acceptedByUsername]
                 self.functions.httpsCallable("observeAcceptFriendRequest").call(data) { (result, error) in
                     if let error = error as NSError? {
                         if error.domain == FunctionsErrorDomain {
