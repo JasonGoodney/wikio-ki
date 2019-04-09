@@ -102,6 +102,11 @@
 		D7C83BEC21FE94AA0086149B /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C83BEB21FE94AA0086149B /* AboutViewController.swift */; };
 		D7C874A92208CA0500238484 /* FileManager+Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79524ED220691E600455E6F /* FileManager+Persist.swift */; };
 		D7CD7178225A830A008C763F /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7CD7177225A830A008C763F /* LocalAuthentication.framework */; };
+		D7CD717B225AABD9008C763F /* SpotifySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CD717A225AABD9008C763F /* SpotifySettingsViewController.swift */; };
+		D7CD717D225AADA8008C763F /* SpotifyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CD717C225AADA8008C763F /* SpotifyManager.swift */; };
+		D7CD717F225AB9FD008C763F /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7CD717E225AB9FD008C763F /* SpotifyiOS.framework */; };
+		D7CD7184225B7DEF008C763F /* StreamingConnectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CD7183225B7DEF008C763F /* StreamingConnectionCell.swift */; };
+		D7CD7186225BD1B2008C763F /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CD7185225BD1B2008C763F /* PlayerView.swift */; };
 		D7D0007521E98611003C3A80 /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */; };
 		D7D0007721E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */; };
 		D7D0007921EC2CBE003C3A80 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D0007821EC2CBE003C3A80 /* Friend.swift */; };
@@ -314,6 +319,12 @@
 		D7BDC9722236BB0800CF2C6B /* DatabaseService+Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+Report.swift"; sourceTree = "<group>"; };
 		D7C83BEB21FE94AA0086149B /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		D7CD7177225A830A008C763F /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		D7CD717A225AABD9008C763F /* SpotifySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySettingsViewController.swift; sourceTree = "<group>"; };
+		D7CD717C225AADA8008C763F /* SpotifyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyManager.swift; sourceTree = "<group>"; };
+		D7CD717E225AB9FD008C763F /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
+		D7CD7180225ABBE2008C763F /* picture-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "picture-Bridging-Header.h"; sourceTree = "<group>"; };
+		D7CD7183225B7DEF008C763F /* StreamingConnectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingConnectionCell.swift; sourceTree = "<group>"; };
+		D7CD7185225BD1B2008C763F /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		D7D0007421E98611003C3A80 /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
 		D7D0007621E9A0AD003C3A80 /* DatabaseService+DeleteAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseService+DeleteAccount.swift"; sourceTree = "<group>"; };
 		D7D0007821EC2CBE003C3A80 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
@@ -351,6 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7CD7178225A830A008C763F /* LocalAuthentication.framework in Frameworks */,
+				D7CD717F225AB9FD008C763F /* SpotifyiOS.framework in Frameworks */,
 				A75ED217A945C681FB6CD78A /* Pods_picture.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -368,6 +380,7 @@
 		8E68B46E564B9AB3C88BC770 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7CD717E225AB9FD008C763F /* SpotifyiOS.framework */,
 				D7CD7177225A830A008C763F /* LocalAuthentication.framework */,
 				46A4A583030759959581799D /* Pods_picture.framework */,
 			);
@@ -483,6 +496,7 @@
 				D7DF9BA421F6674F0087031B /* CachingPlayerItem.swift */,
 				D7736D1A2200BD77007299C4 /* AuthService.swift */,
 				D79524EB2206526300455E6F /* Cacher.swift */,
+				D7CD7180225ABBE2008C763F /* picture-Bridging-Header.h */,
 				D73B8AF321C80E4B00DD4CA4 /* Processor */,
 				D7643B4C21DD10F800ACE26F /* StorageService */,
 				D7643B4521DD0E8B00ACE26F /* DatabaseService */,
@@ -516,9 +530,10 @@
 			isa = PBXGroup;
 			children = (
 				D74F7E2321D0683900B5EF28 /* SettingsViewController.swift */,
+				D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */,
+				D7CD7179225AABB4008C763F /* SpotifySettingsScene */,
 				D715B51D21E7F430008A5E80 /* EditSettingScenes */,
 				D7869FBF21DEA90C00A1B863 /* BlockedUsersScene */,
-				D74F7E2521D06AD500B5EF28 /* SettingsCell.swift */,
 				D7C83BED21FE94AE0086149B /* AboutScenes */,
 			);
 			path = SettingsScene;
@@ -694,6 +709,17 @@
 				D7C83BEB21FE94AA0086149B /* AboutViewController.swift */,
 			);
 			path = AboutScenes;
+			sourceTree = "<group>";
+		};
+		D7CD7179225AABB4008C763F /* SpotifySettingsScene */ = {
+			isa = PBXGroup;
+			children = (
+				D7CD717A225AABD9008C763F /* SpotifySettingsViewController.swift */,
+				D7CD717C225AADA8008C763F /* SpotifyManager.swift */,
+				D7CD7183225B7DEF008C763F /* StreamingConnectionCell.swift */,
+				D7CD7185225BD1B2008C763F /* PlayerView.swift */,
+			);
+			path = SpotifySettingsScene;
 			sourceTree = "<group>";
 		};
 		D7D0008121ED74D1003C3A80 /* ProfileDetailsScene */ = {
@@ -960,6 +986,7 @@
 				D7591F0C21C2C27300B3EAAD /* UIView+Anchors.swift in Sources */,
 				D72D792A21D0912F00FB5327 /* LoginController.swift in Sources */,
 				D786F67A21D92D80003DA3C6 /* AuthError.swift in Sources */,
+				D7CD717B225AABD9008C763F /* SpotifySettingsViewController.swift in Sources */,
 				D715B51C21E7EE0D008A5E80 /* ChangePasswordViewController.swift in Sources */,
 				D78BB2F7220DDB0F007DD089 /* PhotoCell.swift in Sources */,
 				D7E62956225984EC001855DE /* TouchIDAuth.swift in Sources */,
@@ -1015,8 +1042,11 @@
 				D7F8992821F18D2E00020A68 /* CALayer+Shadow.swift in Sources */,
 				D74F7E2821D0709300B5EF28 /* NavigationTitleLabel.swift in Sources */,
 				D7591F1921C2DFCA00B3EAAD /* RecordButton.swift in Sources */,
+				D7CD7184225B7DEF008C763F /* StreamingConnectionCell.swift in Sources */,
 				D7D58B2822388CBF005E6AFC /* EULAViewController.swift in Sources */,
+				D7CD717D225AADA8008C763F /* SpotifyManager.swift in Sources */,
 				D7D0007E21ED6BFE003C3A80 /* UIButton.swift in Sources */,
+				D7CD7186225BD1B2008C763F /* PlayerView.swift in Sources */,
 				D7F0EA3221F6DA1800B9522E /* UIView+Animations.swift in Sources */,
 				D7BDC9712236A3D900CF2C6B /* ReportViewController.swift in Sources */,
 				D7F0EA3621F78F5900B9522E /* StatusIndicatorView.swift in Sources */,
@@ -1283,6 +1313,10 @@
 				CODE_SIGN_ENTITLEMENTS = picture/picture.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = K2R548H5LT;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = picture/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1290,6 +1324,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasongoodney.picture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "picture/picture-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1303,6 +1338,10 @@
 				CODE_SIGN_ENTITLEMENTS = picture/picture.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = K2R548H5LT;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = picture/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1310,6 +1349,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasongoodney.picture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "picture/picture-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

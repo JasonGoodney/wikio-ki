@@ -30,4 +30,6 @@ enum Theme {
     static let friendColor = #colorLiteral(red: 0, green: 0.737254902, blue: 1, alpha: 1)
     static let like = #colorLiteral(red: 0.9568627451, green: 0.02745098039, blue: 0.4392156863, alpha: 1)
     
+    static let spotifyGreen = #colorLiteral(red: 0.1137254902, green: 0.7254901961, blue: 0.3294117647, alpha: 1)
+    
 }

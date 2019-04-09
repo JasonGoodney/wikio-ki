@@ -26,7 +26,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AuthScene/TouchIDAuth.swift"
-            timestampString = "576366423.852722"
+            timestampString = "576473632.99743"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "21"
@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AuthScene/TouchIDAuth.swift"
-            timestampString = "576366423.852806"
+            timestampString = "576473632.997516"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "22"
@@ -58,7 +58,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AuthScene/TouchIDAuth.swift"
-            timestampString = "576366423.852873"
+            timestampString = "576473632.997584"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "24"
@@ -74,7 +74,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AuthScene/TouchIDAuth.swift"
-            timestampString = "576366423.8529381"
+            timestampString = "576473632.99765"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "17"
@@ -90,7 +90,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AuthScene/TouchIDAuth.swift"
-            timestampString = "576366423.853002"
+            timestampString = "576473632.997714"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "52"
@@ -106,12 +106,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "picture/AuthScene/TouchIDAuth.swift"
-            timestampString = "576366423.853063"
+            timestampString = "576473632.9977781"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "41"
             endingLineNumber = "41"
             landmarkName = "evaluateTouchIDAuthenticity(context:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "picture/SettingsScene/SpotifySettingsScene/SpotifyManager.swift"
+            timestampString = "576473632.998035"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "105"
+            endingLineNumber = "105"
+            landmarkName = "appRemoteAuthorization(from:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

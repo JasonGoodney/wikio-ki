@@ -288,6 +288,17 @@ private extension FriendsListViewController {
         
         navigationController?.setToolbarHidden(false, animated: false)
         toolbarItems = [UIBarButtonItem(customView: cameraButton)]
+        
+        let playerView = PlayerView()
+        let spotify = SpotifyManager()
+        let songTitle = "Feel My Love"//spotify.songTitle
+        let songArtist = "Jack Wins"//spotify.songArtist
+        playerView.songInfo = "\(songTitle)\n\(songArtist)"
+        view.addSubview(playerView)
+        playerView.anchor(top: nil, leading: view.leadingAnchor, bottom: view.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 0, left: 16, bottom: 44 + 8, right: 16), size: .init(width: 0, height: 44))
+        if !spotify.isConnected() {
+            playerView.isHidden = true
+        }
     }
     
     func setupNavigationBar() {
@@ -994,5 +1005,32 @@ extension FriendsListViewController: UploadDelegate {
             self.uploadProgressView.alpha = 0
             self.uploadProgressView.setProgress(0, animated: false)
         }
+    }
+}
+
+extension FriendsListViewController: SpotifyManagerDelegate {
+    func appRemoteConnecting(manager: SpotifyManager) {
+        print("appRemoteConnecting...")
+        
+    }
+    
+    func appRemoteConnected(manager: SpotifyManager) {
+        print("appRemoteConnected...")
+        
+        manager.subscribeToPlayerState()
+        manager.subscribeToCapabilityChanges()
+        manager.getPlayerState()
+        
+        //        enableInterface(true)
+        //        playerView.connected()
+    }
+    
+    func appRemoteDisconnect(manager: SpotifyManager) {
+        
+        manager.subscribedToPlayerState = false
+        manager.subscribedToCapabilities = false
+        
+        //        enableInterface(false)
+        //        playerView.disconnected()
     }
 }

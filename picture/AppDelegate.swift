@@ -24,13 +24,17 @@ extension UIApplication {
 class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
 
     var window: UIWindow?
+    var spotifyManager: SpotifyManager?
     let gcmMessageIDKey = "gcm.message_id"
     var backgroundUploadTask: UIBackgroundTaskIdentifier!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         FirebaseApp.configure()
-                
+        
+        spotifyManager = SpotifyManager()
+        
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         handleLogin(withWindow: window) { (_) in }
@@ -38,10 +42,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
         return true
     }
 
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        spotifyManager?.appRemoteAuthorization(from: url)
+        return true
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-        
+        spotifyManager?.disconnect()
     }
 
     
@@ -59,6 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, LoginFlowHandler {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        spotifyManager?.connect()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -200,5 +210,17 @@ extension AppDelegate {
     func endBackgroundUpload() {
         UIApplication.shared.endBackgroundTask(backgroundUploadTask)
         backgroundUploadTask = UIBackgroundTaskIdentifier.invalid
+    }
+}
+
+extension AppDelegate: SPTSessionManagerDelegate {
+    func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+        print("success", session)
+    }
+    func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        print("fail", error)
+    }
+    func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+        print("renewed", session)
     }
 }

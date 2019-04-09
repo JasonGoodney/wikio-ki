@@ -22,6 +22,7 @@ enum SettingsType: String {
     case password
     
     case notifications
+    case spotify
     
     case privacyPolicy
     case termsAndCondtions
@@ -80,7 +81,8 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
             (title: "Password", value: "", type: .password),
         ],
         [
-            (title: "Notifications", value: isNotificationsEnabled ? "On" : "Off", type: .notifications)
+            (title: "Notifications", value: isNotificationsEnabled ? "On" : "Off", type: .notifications),
+            //(title: "Spotify", value: isConnectedToSpotify ? "Connected" : "Not Connected", type: .spotify)
         ],
         [
             (title: "Privacy Policy", value: "", type: .privacyPolicy),
@@ -103,6 +105,7 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
         view.delegate = self
         view.backgroundColor = .clear
         view.contentInset.bottom = versionLabelHeight
+        view.register(StreamingConnectionCell.self, forCellReuseIdentifier: StreamingConnectionCell.reuseIdentifier)
         return view
     }()
     
@@ -151,6 +154,11 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
     }()
 
     private var isNotificationsEnabled = true
+    
+    private var isConnectedToSpotify: Bool {
+        let spotify = SpotifyManager()
+        return spotify.isConnected()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -232,6 +240,14 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
                     cell.accessoryType = .none
                     cell.selectionStyle = .none
                 }
+            case .spotify:
+                let spotifyCell = tableView.dequeueReusableCell(withIdentifier: StreamingConnectionCell.reuseIdentifier, for: indexPath) as! StreamingConnectionCell
+                spotifyCell.delegate = self
+                spotifyCell.textLabel?.text = "Spotify"
+                let buttonColors: ConnectButtonColors = (connect: Theme.spotifyGreen, disconnect: Theme.ultraDarkGray)
+                spotifyCell.buttonColors = buttonColors
+                spotifyCell.updateConnectButton(isConnected: isConnectedToSpotify)
+                return spotifyCell
             case .deleteAccount:
                 cell.textLabel?.textColor = .red
             default:
@@ -271,7 +287,17 @@ class SettingsViewController: UIViewController, LoginFlowHandler, UITableViewDel
 
                 }
             }
-
+        case .spotify:
+            let spotifySettingsVC = SpotifySettingsViewController()
+            //navigationController?.pushViewController(spotifySettingsVC, animated: true)
+            let spotifyCell = tableView.dequeueReusableCell(withIdentifier: StreamingConnectionCell.reuseIdentifier, for: indexPath) as! StreamingConnectionCell
+            let spotify = SpotifyManager()
+            
+            if !spotify.isConnected() {
+                connect()
+            } else {
+                disconnect()
+            }
         // MARK: - About
         case .privacyPolicy:
             let aboutVC = AboutViewController(type: .privacyPolicy)
@@ -550,6 +576,20 @@ extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationC
     }
 }
 
+extension SettingsViewController: StreamingConnectionCellDelegate {
+    func connect() {
+        print(#function)
+        let spotify = SpotifyManager()
+        spotify.connectToSpotify()
+    }
+    
+    func disconnect() {
+        
+    }
+    
+    
+}
+
 extension UITableViewController {
     func deselectCell() {
         if let index = self.tableView.indexPathForSelectedRow{
@@ -592,3 +632,4 @@ extension UIViewController {
         self.navigationController?.viewControllers[priorVCPosition].navigationItem.backBarButtonItem = UIBarButtonItem(title: title, style: .plain, target: self, action: nil)
     }
 }
+
