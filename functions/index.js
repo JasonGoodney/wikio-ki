@@ -11,6 +11,33 @@ admin.initializeApp();
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
 
+async function updateUsersScrore(uid, store) {
+    const userRef = store.collection('users').doc(uid);
+    console.log('RUNNING TRANSACTION');
+    return store.runTransaction(transaction => {
+        return transaction.get(userRef).then(userDoc => {
+            if (!userDoc.exists) {
+                const dne = "Document does not exist!";
+                throw dne;
+            }
+            const user = userDoc.data();
+            if (user.hasOwnProperty('score')) {
+                var newScore = userDoc.data().score + 1;
+                transaction.update(userRef, { score: newScore });
+            } else {
+                transaction.update(userRef, { score: 1 });
+            }
+            
+            return;
+        })
+    }).then(() => {
+        console.log("Transaction successfully committed!");
+        return;
+    }).catch(error => {
+        console.log("Transaction failed: ", error);
+    });
+}
+
 function send(message) {
     // Send a message to the device corresponding to the provided
     // registration token.
@@ -139,8 +166,13 @@ exports.observeNewMessage = functions.firestore
         const lastSenderUid = chat.lastSenderUid;
         const memberUids = chat.memberUids;
         const receiverUid = memberUids.filter(uid => uid !== lastSenderUid)[0];
-                
+
         const store = admin.firestore();
+        
+        // Update scores
+        updateUsersScrore(lastSenderUid, store);
+        updateUsersScrore(receiverUid, store);
+                
         // Handle Push Notifications
         if (chat.isSending === false && chat.status === "DELIVERED") {
             
@@ -277,7 +309,8 @@ exports.observeDeleteChat = functions.firestore
 // [START observeLike]
 exports.observeLike = functions.https.onCall((data, context) => {
     
-    const uid = data.friendUid;
+    const uid = data.uid;
+    const friendUid = data.friendUid;
     const username = data.likedByUsername;
     const type = data.messageType;
 
@@ -289,8 +322,12 @@ exports.observeLike = functions.https.onCall((data, context) => {
 
     const store = admin.firestore();
 
+    // Update scores
+    updateUsersScrore(uid, store);
+    updateUsersScrore(friendUid, store);
+
     // User to send notification to
-    const user = getUser(uid, store);
+    const user = getUser(friendUid, store);
 
     return Promise.all([user])
         .then(values => {
@@ -333,6 +370,35 @@ exports.observeAcceptFriendRequest = functions.https.onCall((data, context) => {
         })
 });
 // [END observeAcceptFriendRequest]
+
+// [START suggestedFriends]
+exports.suggestedFriends = functions.https.onCall((data, context) => { 
+    const uid = data.uid;
+    const friendUids = data.friendUids;
+
+    const store = admin.firestore();
+
+    for (let uid of friendUids) {
+        const friendsFriends = getFriends(uid, store);
+    }
+});
+// [END suggestedFriends]
+
+async function getFriends(uid, store) {
+    let user = await store.collection(`users/${uid}/friends`)
+        .get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+            });
+            return;
+        })
+        .catch(reason => {
+            console.log(reason);
+        })
+    return user;
+}
 
 // [START observeCreateAccount]
 // exports.observeCreateAccount = functions.firestore

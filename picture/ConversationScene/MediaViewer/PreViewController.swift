@@ -220,7 +220,8 @@ class PreViewController: UIViewController {
             print("Liked \(items[currentIndex].messageType.databaseValue().lowercased())")
             guard let friend = chatWithFriend?.friend else { return }
             
-            let data = ["friendUid": friend.uid,
+            let data = ["uid": UserController.shared.currentUser!.uid,
+                        "friendUid": friend.uid,
                         "likedByUsername": UserController.shared.currentUser!.displayName,
                         "messageType": message.messageType.databaseValue().lowercased()]
             
