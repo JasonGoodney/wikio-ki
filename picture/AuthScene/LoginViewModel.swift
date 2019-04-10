@@ -30,9 +30,13 @@ class LoginViewModel {
             if let error = err {
                 completion(error)
             } else {
-//                let touchId = TouchIDAuth()
-//                touchId.saveAccountDetailsToKeychain(email: email.lowercased(), password: password)
+                let hasLogin = UserDefaults.standard.bool(forKey: "hasLoginKey")
+                if !hasLogin {
+                    let touchId = TouchIDAuth()
+                    touchId.saveAccountDetailsToKeychain(email: email.lowercased(), password: password)
+                }
                 completion(nil)
+                
             }
         }
     }

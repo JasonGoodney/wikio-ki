@@ -8,54 +8,87 @@
 
 import Foundation
 import LocalAuthentication
+import FirebaseAuth
 
 class TouchIDAuth {
     
     private let lastAccessedEmailKey = "lastAccessedEmail"
+    private let hasLoginKey = "hasLoginKey"
     
     public func saveAccountDetailsToKeychain(email: String, password: String) {
-        guard !email.isEmpty, !password.isEmpty else {
+        if email.isEmpty || password.isEmpty {
             return
         }
-        #warning("ask to set email")
-        UserDefaults.standard.set(email, forKey: lastAccessedEmailKey)
-        let passwordItem = KeychainPasswordItem(service: KeychainConfiguration.serviceName, account: email, accessGroup: KeychainConfiguration.accessGroup)
+
+        let hasLogin = UserDefaults.standard.bool(forKey: hasLoginKey)
+        if !hasLogin {
+            UserDefaults.standard.set(email, forKey: lastAccessedEmailKey)
+        }
+        
+        
         do {
+            let passwordItem = KeychainPasswordItem(
+                service: KeychainConfiguration.serviceName,
+                account: email,
+                accessGroup: KeychainConfiguration.accessGroup)
             try passwordItem.savePassword(password)
         } catch {
             print("Error saving password to keychain")
         }
+        
+        UserDefaults.standard.set(true, forKey: hasLoginKey)
     }
     
-    public func authenticateUserUsingTouchID() {
+    public func authenticateUserUsingTouchID(completion: @escaping (Error?) -> ()) {
         let context = LAContext()
         if context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: nil) {
-            evaluateTouchIDAuthenticity(context: context)
+            evaluateTouchIDAuthenticity(context: context, completion: completion)
         }
     }
     
-    fileprivate func evaluateTouchIDAuthenticity(context: LAContext) {
+    fileprivate func evaluateTouchIDAuthenticity(context: LAContext, completion: @escaping (Error?) -> ()) {
         guard let lastAccessedEmail = UserDefaults.standard.object(forKey: lastAccessedEmailKey) as? String else { return }
         context.evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: lastAccessedEmail) { (authSuccessful, authError) in
             if authSuccessful {
-                self.loadPasswordFromKeychainAndAuthenticateUser(lastAccessedEmail)
+                self.loadPasswordFromKeychainAndAuthenticateUser(lastAccessedEmail, completion: completion)
             } else if let error = authError as? LAError {
                 self.showError(error)
+                completion(error)
             }
         }
     }
     
-    fileprivate func loadPasswordFromKeychainAndAuthenticateUser(_ account: String) {
+    fileprivate func loadPasswordFromKeychainAndAuthenticateUser(_ account: String, completion: @escaping (Error?) -> ()) {
         guard !account.isEmpty else { return }
         let passwordItem = KeychainPasswordItem(service: KeychainConfiguration.serviceName, account: account, accessGroup: KeychainConfiguration.accessGroup)
         do {
             let storedPassword = try passwordItem.readPassword()
-            //authenticateUser(storedPassword)
+            authenticateUser(account, storedPassword, completion: completion)
         } catch KeychainPasswordItem.KeychainError.noPassword {
             print("No saved password")
+            completion(KeychainPasswordItem.KeychainError.noPassword)
         } catch {
             print("Unhandled Touch ID auth error")
+            completion(nil)
         }
+    }
+    
+    #warning("This function repeats ")
+    fileprivate func authenticateUser(_ email: String, _ password: String, completion: @escaping (Error?) -> ()) {
+        Auth.auth().signIn(withEmail: email, password: password) { (res, err) in
+            if let error = err {
+                completion(error)
+            } else {
+                let hasLogin = UserDefaults.standard.bool(forKey: "hasLoginKey")
+                if !hasLogin {
+                    let touchId = TouchIDAuth()
+                    touchId.saveAccountDetailsToKeychain(email: email.lowercased(), password: password)
+                }
+                completion(nil)
+                
+            }
+        }
+        
     }
     
     fileprivate func showError(_ error: LAError) {

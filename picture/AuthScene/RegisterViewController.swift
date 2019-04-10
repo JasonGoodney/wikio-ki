@@ -144,11 +144,15 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
     
     private let agreeButton = PopButton()
 
+    private var observer: NSObjectProtocol?
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let touchId = TouchIDAuth()
-//        touchId.authenticateUserUsingTouchID()
+        observer = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [unowned self] notification in
+            self.didBecomeActive()
+        }
         
         agreedToAgreements = false
         
@@ -173,6 +177,7 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
     
+    // MARK: - Deinitialization
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -338,6 +343,42 @@ class RegisterViewController: UIViewController, LoginFlowHandler {
 
 // MARK: - Actions
 private extension RegisterViewController {
+    @objc func didBecomeActive() {
+        // Prevents repeat TouchID auth
+        NotificationCenter.default.removeObserver(observer)
+        
+        let hasLogin = UserDefaults.standard.bool(forKey: "hasLoginKey")
+        if hasLogin {
+            let touchId = TouchIDAuth()
+            touchId.authenticateUserUsingTouchID { (error) in
+                if let error = error {
+                    self.registeringHUD.dismiss()
+                    let title = error._userInfo!["error_name"] as! String
+                    let message = error.localizedDescription
+                    self.errorAlert(alertTitle: title, alertMessage: message)
+                    print("Failed to log in:", error)
+                    #warning("display error message to user")
+                    return
+                }
+                let loginHUD = JGProgressHUD(style: .dark)
+                loginHUD.textLabel.text = "Loading"
+                loginHUD.show(in: self.view)
+                print("Logged in successfully")
+                let window = UIApplication.shared.keyWindow
+                UserController.shared.fetchCurrentUser(completion: { (fetched) in
+                    if fetched {
+                        self.handleLogin(withWindow: window, completion: { (firebaseUser) in
+                            if let _ = firebaseUser {
+                                
+                            }
+                            loginHUD.dismiss()
+                        })
+                    }
+                })
+            }
+        }
+    }
+    
     @objc func handleGoToLogin() {
         let loginVC = LoginController()
         navigationController?.pushViewController(loginVC, animated: true)

@@ -26,5 +26,5 @@ struct KeychainConfiguration {
      Not specifying an access group to use with `KeychainPasswordItem` instances
      will create items specific to each app.
      */
-    static let accessGroup: String? = "picture.com.jasongoodney.KeychainShared"
+    static let accessGroup: String? = nil //"picture.com.jasongoodney.KeychainShared"
 }
